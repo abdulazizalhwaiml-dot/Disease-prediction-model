@@ -1,0 +1,33 @@
+name: Validate NHANES system
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  test-and-train:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      OPENBLAS_NUM_THREADS: "2"
+      OMP_NUM_THREADS: "2"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: requirements-dev.lock
+      - run: python -m pip install --require-hashes -r requirements-dev.lock
+      - run: python -m pip install --no-deps -e .
+      - run: ruff check src app tests && ruff format --check src app tests
+      # Real supplied data, all four algorithms and all eight diseases; no mocked training.
+      - run: python -m nhanes_ai.train --data DATA_SET --output models --reports reports --jobs 2
+      - run: pytest -q
+      - uses: actions/upload-artifact@v4
+        with:
+          name: trained-models-and-evaluation
+          path: |
+            models/
+            reports/
+      - run: docker build -t nhanes-ai:ci .

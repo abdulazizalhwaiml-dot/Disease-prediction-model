@@ -1,0 +1,42 @@
+{
+  "retrieved_date": "2026-10-23",
+  "source": "Official CDC NHANES codebooks",
+  "documents": [
+    {
+      "component": "DXX",
+      "url": "https://wwwn.cdc.gov/Nchs/Data/Nhanes/Public/2017/DataFiles/DXX_J.htm",
+      "status": 200,
+      "sha256": "b49bb9cc091a8bcbda2d6bc288d3e38ed5376f1f7dcd4984fa95fdfae25255df"
+    },
+    {
+      "component": "DEMO",
+      "url": "https://wwwn.cdc.gov/Nchs/Data/Nhanes/Public/2017/DataFiles/DEMO_J.htm",
+      "status": 200,
+      "sha256": "07f8f1e7f884fab180ccf53c705652de9d663833fdad85b0d759919c8464cde0"
+    },
+    {
+      "component": "MCQ",
+      "url": "https://wwwn.cdc.gov/Nchs/Data/Nhanes/Public/2017/DataFiles/MCQ_J.htm",
+      "status": 200,
+      "sha256": "46e21d2184592135585af1999e603ce47b5685abbeb828858bb429fbe6f8ae44"
+    },
+    {
+      "component": "BPQ",
+      "url": "https://wwwn.cdc.gov/Nchs/Data/Nhanes/Public/2017/DataFiles/BPQ_J.htm",
+      "status": 200,
+      "sha256": "1e3a1632530146d45f7fccba1a06da30db0e49e17b58842dca874b713a01021b"
+    },
+    {
+      "component": "BPX",
+      "url": "https://wwwn.cdc.gov/Nchs/Data/Nhanes/Public/2017/DataFiles/BPX_J.htm",
+      "status": 200,
+      "sha256": "a7583578150897efec8748a3bc05ecbc6e54d5a0b5a32cdfda87c883aba56a37"
+    },
+    {
+      "component": "DIQ",
+      "url": "https://wwwn.cdc.gov/Nchs/Data/Nhanes/Public/2017/DataFiles/DIQ_J.htm",
+      "status": 200,
+      "sha256": "d2545b2ef455fabf4f5ef8873b9c46d2ce5e599424f3f7d6bec236a57bf0d869"
+    }
+  ]
+}
