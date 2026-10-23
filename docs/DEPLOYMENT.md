@@ -19,6 +19,11 @@ Each training run produces eight joblib files plus `manifest.json` under a uniqu
 run can leave an inactive partial directory, but cannot replace the working release.
 Keep previous complete releases for rollback.
 
+Version 2 requires schema version 2, exactly eight user fields and eleven raw model
+features. The loader rejects older ten-input artifacts even if their hashes are valid.
+Run training again when upgrading from version 1. The Windows launcher checks this
+contract and trains if necessary. Prepared delivery archives contain the compatible release.
+
 Reports and model card should be reviewed for actual utility, not merely a successful fit
 or high ROC-AUC. Distribute the complete release and matching pointer through controlled
 GitHub Releases/CI artifacts; binaries are intentionally ignored by Git. The manifest alone

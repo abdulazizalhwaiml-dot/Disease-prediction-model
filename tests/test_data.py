@@ -104,7 +104,19 @@ def test_cohort_age_pregnancy_exam_missing_units_and_id_exclusion():
     cohort, audit = prepare_cohort(frame, LabelConfig())
     assert len(cohort) == audit["remaining_records"] == 2
     assert cohort.SEQN.tolist() == [1, 7]
-    assert cohort.bone_mass_kg.iloc[0] == 3
-    assert cohort.lean_mass_kg.iloc[0] == 53
+    assert cohort.fat_mass_kg.iloc[0] == 24
+    assert cohort.fat_free_mass_kg.iloc[0] == 56
+    assert "bone_mass_kg" not in cohort and "lean_mass_kg" not in cohort
     assert cohort.bmi.iloc[0] == pytest.approx(80 / 1.75**2)
     assert cohort.mec_weight_8yr.iloc[0] == 1
+
+
+def test_family_history_codes_and_unknowns_are_not_negative():
+    frame = raw_rows(6)
+    frame["MCQ300A"] = [1, 2, 7, 9, np.nan, 2]
+    frame["MCQ300C"] = [2, 1, 9, 7, np.nan, 1]
+    cohort, audit = prepare_cohort(frame, LabelConfig())
+    assert cohort.family_heart_early.iloc[:2].tolist() == [1, 0]
+    assert cohort.family_diabetes.iloc[:2].tolist() == [0, 1]
+    assert cohort[["family_diabetes", "family_heart_early"]].iloc[2:5].isna().all().all()
+    assert audit["family_history"]["family_diabetes"] == {"yes": 2, "no": 1, "unknown": 3}

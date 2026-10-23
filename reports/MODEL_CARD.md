@@ -1,6 +1,6 @@
 # Model card and actual held-out results
 
-Release: `20261023T052300Z-6e2717eb`. Seed: 42. Python: 3.12.14.
+Release: `20261023T131025Z-6012cdf9`. Seed: 42. Python: 3.12.14.
 
 ## Intended use and limits
 
@@ -21,22 +21,22 @@ Initial participants: 39,156. After filtering: **10,623**.
 
 | Target | Algorithm | Positive / N | Recall | Precision | F1 | ROC-AUC | Average precision |
 |---|---|---:|---:|---:|---:|---:|---:|
-| High cholesterol | logistic_regression | 606 / 2106 | 0.889 | 0.369 | 0.522 | 0.720 | 0.475 |
-| High blood pressure | logistic_regression | 624 / 2139 | 0.869 | 0.429 | 0.574 | 0.779 | 0.580 |
-| Diabetes | logistic_regression | 226 / 2088 | 0.752 | 0.256 | 0.382 | 0.816 | 0.348 |
-| Coronary artery disease | logistic_regression | 25 / 2195 | 0.120 | 0.086 | 0.100 | 0.790 | 0.046 |
-| Heart attack | logistic_regression | 33 / 2192 | 0.636 | 0.059 | 0.108 | 0.815 | 0.047 |
-| Angina | logistic_regression | 24 / 2192 | 0.000 | 0.000 | 0.000 | 0.692 | 0.028 |
-| Congestive heart failure | logistic_regression | 17 / 2194 | 0.059 | 0.010 | 0.017 | 0.682 | 0.017 |
-| Stroke | logistic_regression | 42 / 2195 | 0.262 | 0.060 | 0.098 | 0.788 | 0.058 |
+| High cholesterol | logistic_regression | 606 / 2106 | 0.939 | 0.348 | 0.507 | 0.719 | 0.490 |
+| High blood pressure | logistic_regression | 624 / 2139 | 0.923 | 0.392 | 0.550 | 0.773 | 0.563 |
+| Diabetes | logistic_regression | 226 / 2088 | 0.814 | 0.255 | 0.389 | 0.829 | 0.389 |
+| Coronary artery disease | logistic_regression | 25 / 2195 | 0.120 | 0.081 | 0.097 | 0.871 | 0.073 |
+| Heart attack | random_forest | 33 / 2192 | 0.606 | 0.059 | 0.107 | 0.828 | 0.067 |
+| Angina | logistic_regression | 24 / 2192 | 0.167 | 0.068 | 0.096 | 0.844 | 0.057 |
+| Congestive heart failure | logistic_regression | 17 / 2194 | 0.294 | 0.036 | 0.065 | 0.801 | 0.029 |
+| Stroke | logistic_regression | 42 / 2195 | 0.357 | 0.128 | 0.189 | 0.792 | 0.079 |
 
 All four algorithms were actually compared for each target; see `model_comparison.csv`.
-Selected algorithms: logistic_regression. No winner is hardcoded.
+Selected algorithms: logistic_regression, random_forest. No winner is hardcoded.
 The selection protocol is locked before test evaluation; poor test results are reported,
 not repaired by tuning against the held-out data.
 
-Rare outcomes have few positive test cases and unstable thresholds. In the initial run,
-angina sensitivity was zero and other cardiac labels had low recall and/or precision.
+Rare outcomes have few positive test cases and unstable thresholds. Low recall or
+precision is flagged per disease in the manifest and remains visible in the app.
 An above/below study threshold result must not be interpreted as a diagnosis or rule-out.
 
 ## Calibration, uncertainty and fairness
@@ -51,10 +51,15 @@ predictive benchmark. These results do not establish national prevalence or grou
 
 ## Explanation and deployment
 
-Permutation SHAP explains the calibrated positive-class probability using 32 fitting rows
-as background. Contributions are additive and checked against each model output.
-The baseline is a background-model average, not disease prevalence. Correlated features
-and independently perturbed one-hot columns can share/distort attribution; SHAP is not causal.
+Permutation SHAP explains calibrated probability over the original eight inputs using
+32 fitting rows. BMI and both masses are recomputed inside every model evaluation.
+Contributions are additive and checked against each model output. The baseline is a
+background-model average, not prevalence. Correlated inputs can share attribution.
+SHAP is not causal. Eight user inputs generate BMI, fat mass and fat-free mass identically
+in training and inference. Ethnicity, BMC and DXA lean soft tissue are not model inputs.
+Body fat was measured by DXA in NHANES; BIA smart-scale transfer is not validated.
+This temporal test cycle was also examined in the previous software version; this
+comparison is not a new independent external validation. No test results tune this run.
 
 Engineering validation and container packaging do not establish clinical readiness.
 Before patient-care deployment, independently validate performance, calibration, subgroup

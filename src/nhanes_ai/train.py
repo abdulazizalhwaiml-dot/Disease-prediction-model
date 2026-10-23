@@ -39,7 +39,7 @@ from xgboost import XGBClassifier
 
 from nhanes_ai.data import prepare_cohort, read_cycles
 from nhanes_ai.features import preprocessing
-from nhanes_ai.schema import DISEASES, FEATURES, NUMERIC, LabelConfig
+from nhanes_ai.schema import DISEASES, FEATURES, NUMERIC, SCHEMA_VERSION, USER_FIELDS, LabelConfig
 
 
 def classifiers(y, seed, jobs):
@@ -137,10 +137,10 @@ def bootstrap_intervals(y, probabilities, threshold, seed, repeats=300):
 def subgroup_metrics(frame, y, probabilities, threshold):
     """Report small-group limitations instead of treating sparse estimates as reliable."""
     result = {}
-    for attribute in ["gender", "ethnicity"]:
+    for attribute in ["gender", "ethnicity_audit", "family_diabetes", "family_heart_early"]:
         result[attribute] = {}
         for group in sorted(frame[attribute].dropna().unique()):
-            mask = frame[attribute].eq(group).to_numpy()
+            mask = frame[attribute].eq(group).fillna(False).to_numpy(dtype=bool)
             n, positive = int(mask.sum()), int(y[mask].sum())
             entry = {"n": n, "positive": positive, "sparse": positive < 20 or n - positive < 20}
             if len(np.unique(y[mask])) == 2:
@@ -199,8 +199,8 @@ def write_model_card(path, manifest):
         "The selection protocol is locked before test evaluation; poor test results are reported,",
         "not repaired by tuning against the held-out data.",
         "",
-        "Rare outcomes have few positive test cases and unstable thresholds. In the initial run,",
-        "angina sensitivity was zero and other cardiac labels had low recall and/or precision.",
+        "Rare outcomes have few positive test cases and unstable thresholds. Low recall or",
+        "precision is flagged per disease in the manifest and remains visible in the app.",
         "An above/below study threshold result must not be interpreted as a diagnosis or rule-out.",
         "",
         "## Calibration, uncertainty and fairness",
@@ -215,10 +215,15 @@ def write_model_card(path, manifest):
         "",
         "## Explanation and deployment",
         "",
-        "Permutation SHAP explains the calibrated positive-class probability using 32 fitting rows",
-        "as background. Contributions are additive and checked against each model output.",
-        "The baseline is a background-model average, not disease prevalence. Correlated features",
-        "and independently perturbed one-hot columns can share/distort attribution; SHAP is not causal.",
+        "Permutation SHAP explains calibrated probability over the original eight inputs using",
+        "32 fitting rows. BMI and both masses are recomputed inside every model evaluation.",
+        "Contributions are additive and checked against each model output. The baseline is a",
+        "background-model average, not prevalence. Correlated inputs can share attribution.",
+        "SHAP is not causal. Eight user inputs generate BMI, fat mass and fat-free mass identically",
+        "in training and inference. Ethnicity, BMC and DXA lean soft tissue are not model inputs.",
+        "Body fat was measured by DXA in NHANES; BIA smart-scale transfer is not validated.",
+        "This temporal test cycle was also examined in the previous software version; this",
+        "comparison is not a new independent external validation. No test results tune this run.",
         "",
         "Engineering validation and container packaging do not establish clinical readiness.",
         "Before patient-care deployment, independently validate performance, calibration, subgroup",
@@ -317,13 +322,16 @@ def train(data_root: Path, output: Path, reports: Path, config=LabelConfig(), se
             quality_flags.append("few_positive_test_cases")
         background_rows = fitting[FEATURES].sample(n=min(32, len(fitting)), random_state=seed)
         bundle = {
-            "schema_version": 1,
+            "schema_version": SCHEMA_VERSION,
             "disease": disease,
             "algorithm": algorithm,
             "pipeline": pipeline,
             "threshold": threshold,
-            "background": pipeline.named_steps["preprocess"].transform(background_rows),
-            "feature_names": pipeline.named_steps["preprocess"].get_feature_names_out().tolist(),
+            "background": background_rows[USER_FIELDS].to_numpy(dtype=float),
+            "feature_names": USER_FIELDS,
+            "encoded_feature_names": pipeline.named_steps["preprocess"]
+            .get_feature_names_out()
+            .tolist(),
             "seed": seed,
         }
         path = release / f"{disease}.joblib"
@@ -342,7 +350,14 @@ def train(data_root: Path, output: Path, reports: Path, config=LabelConfig(), se
         for path in sorted(data_root.glob("*/*.xpt"))
     }
     manifest = {
-        "schema_version": 1,
+        "schema_version": SCHEMA_VERSION,
+        "user_fields": USER_FIELDS,
+        "features": FEATURES,
+        "feature_engineering": {
+            "bmi": "weight_kg / (height_cm/100)^2",
+            "fat_mass_kg": "weight_kg * body_fat_pct / 100",
+            "fat_free_mass_kg": "weight_kg - fat_mass_kg",
+        },
         "run_id": run_id,
         "python": platform.python_version(),
         "versions": versions,

@@ -1,0 +1,37 @@
+{
+  "checked_date": "2026-10-23",
+  "sources": [
+    {
+      "url": "https://wwwn.cdc.gov/Nchs/Data/Nhanes/Public/2011/DataFiles/MCQ_G.htm",
+      "sha256": "f64eff0b2d74e2b3efd8857302fea12360efe85e3af98dcc75d008007717a80d",
+      "variables": {
+        "MCQ300A": "MCQ300a - Close relative had heart attack? Variable Name: MCQ300a SAS Label: Close relative had heart attack? English Text: Including living and deceased, were any of {SP's/your} close biological that is, blood relatives including father, mother, sisters or brothers, ever told by a health professional that they had a heart attack or angina (an-gi-na) before the age of 50? English Instructions: CAPI INSTRUCTION: TEXT OF QUESTION SHOULD BE OPTIONAL, ' [  ] 'S, AFTER FIRST TIME. Target: Both males and females 20 YEARS -\r\n\t\t\t150 YEARS Code or Value Value Description Count Cumulative Skip to Item 1 Yes 631 631 2 No 4805 5436 7 Refused 1 5437 9 Don't know 122 5559 . Missing 3805 9364",
+        "MCQ300C": "MCQ300c - Close relative had diabetes? Variable Name: MCQ300c SAS Label: Close relative had diabetes? English Text: Including living and deceased, were any of {SP's/your} close biological that is, blood relatives including father, mother, sisters or brothers, ever told by a health professional that they had diabetes? English Instructions: CAPI INSTRUCTION:  TEXT QUESTION SHOULD BE OPTIONAL, ' [  ] 'S, AFTER FIRST TIME. Target: Both males and females 20 YEARS -\r\n\t\t\t150 YEARS Code or Value Value Description Count Cumulative Skip to Item 1 Yes 2191 2191 2 No 3265 5456 7 Refused 1 5457 9 Don't know 102 5559 . Missing 3805 9364"
+      }
+    },
+    {
+      "url": "https://wwwn.cdc.gov/Nchs/Data/Nhanes/Public/2013/DataFiles/MCQ_H.htm",
+      "sha256": "b2f85accebed169cfd6af7894b7d528895f2ce17c19a9d03cfcceca6183de1cd",
+      "variables": {
+        "MCQ300A": "MCQ300a - Close relative had heart attack? Variable Name: MCQ300a SAS Label: Close relative had heart attack? English Text: Including living and deceased, were any of {SP's/your} close biological that is, blood relatives including father, mother, sisters or brothers, ever told by a health professional that they had a heart attack or angina (an-gi-na) before the age of 50? English Instructions: CAPI INSTRUCTION: TEXT OF QUESTION SHOULD BE OPTIONAL, ' [  ] 'S, AFTER FIRST TIME. Target: Both males and females 20 YEARS -\r\n\t\t\t150 YEARS Code or Value Value Description Count Cumulative Skip to Item 1 Yes 622 622 2 No 5003 5625 7 Refused 0 5625 9 Don't know 144 5769 . Missing 4001 9770",
+        "MCQ300C": "MCQ300c - Close relative had diabetes? Variable Name: MCQ300c SAS Label: Close relative had diabetes? English Text: Including living and deceased, were any of {SP's/your} close biological that is, blood relatives including father, mother, sisters or brothers, ever told by a health professional that they had diabetes? English Instructions: CAPI INSTRUCTION:  TEXT QUESTION SHOULD BE OPTIONAL, ' [  ] 'S, AFTER FIRST TIME. Target: Both males and females 20 YEARS -\r\n\t\t\t150 YEARS Code or Value Value Description Count Cumulative Skip to Item 1 Yes 2301 2301 2 No 3351 5652 7 Refused 0 5652 9 Don't know 117 5769 . Missing 4001 9770"
+      }
+    },
+    {
+      "url": "https://wwwn.cdc.gov/Nchs/Data/Nhanes/Public/2015/DataFiles/MCQ_I.htm",
+      "sha256": "284300ce5dcd393f2101fc995d7c51d9c309d667f78ca5fc45811ac989f0ed9e",
+      "variables": {
+        "MCQ300A": "MCQ300a - Close relative had heart attack? Variable Name: MCQ300a SAS Label: Close relative had heart attack? English Text: Including living and deceased, were any of {SP's/your} close biological that is, blood relatives including father, mother, sisters or brothers, ever told by a health professional that they had a heart attack or angina (an-gi-na) before the age of 50? English Instructions: CAPI INSTRUCTION: TEXT OF QUESTION SHOULD BE OPTIONAL, ' [  ] 'S, AFTER FIRST TIME. Target: Both males and females 20 YEARS -\r\n\t\t\t150 YEARS Code or Value Value Description Count Cumulative Skip to Item 1 Yes 687 687 2 No 4882 5569 7 Refused 1 5570 9 Don't know 149 5719 . Missing 3856 9575",
+        "MCQ300C": "MCQ300c - Close relative had diabetes? Variable Name: MCQ300c SAS Label: Close relative had diabetes? English Text: Including living and deceased, were any of {SP's/your} close biological that is, blood relatives including father, mother, sisters or brothers, ever told by a health professional that they had diabetes? English Instructions: CAPI INSTRUCTION:  TEXT QUESTION SHOULD BE OPTIONAL, ' [  ] 'S, AFTER FIRST TIME. Target: Both males and females 20 YEARS -\r\n\t\t\t150 YEARS Code or Value Value Description Count Cumulative Skip to Item 1 Yes 2474 2474 2 No 3135 5609 7 Refused 2 5611 9 Don't know 108 5719 . Missing 3856 9575"
+      }
+    },
+    {
+      "url": "https://wwwn.cdc.gov/Nchs/Data/Nhanes/Public/2017/DataFiles/MCQ_J.htm",
+      "sha256": "46e21d2184592135585af1999e603ce47b5685abbeb828858bb429fbe6f8ae44",
+      "variables": {
+        "MCQ300A": "MCQ300a - Close relative had heart attack? Variable Name: MCQ300a SAS Label: Close relative had heart attack? English Text: Including living and deceased, were any of {SP's/your} close biological that is, blood relatives including father, mother, sisters or brothers, ever told by a health professional that they had a heart attack or angina (an-gi-na) before the age of 50? English Instructions: CAPI INSTRUCTION: TEXT OF QUESTION SHOULD BE OPTIONAL, ' [  ] 'S, AFTER FIRST TIME. Target: Both males and females 20 YEARS -\r\n\t\t\t150 YEARS Code or Value Value Description Count Cumulative Skip to Item 1 Yes 709 709 2 No 4732 5441 7 Refused 1 5442 9 Don't know 127 5569 . Missing 3328 8897",
+        "MCQ300C": "MCQ300c - Close relative had diabetes? Variable Name: MCQ300c SAS Label: Close relative had diabetes? English Text: Including living and deceased, were any of {SP's/your} close biological that is, blood relatives including father, mother, sisters or brothers, ever told by a health professional that they had diabetes? English Instructions: CAPI INSTRUCTION:  TEXT QUESTION SHOULD BE OPTIONAL, ' [  ] 'S, AFTER FIRST TIME. Target: Both males and females 20 YEARS -\r\n\t\t\t150 YEARS Code or Value Value Description Count Cumulative Skip to Item 1 Yes 2624 2624 2 No 2863 5487 7 Refused 1 5488 9 Don't know 81 5569 . Missing 3328 8897"
+      }
+    }
+  ]
+}

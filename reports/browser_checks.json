@@ -1,0 +1,20 @@
+{
+  "mobile": {
+    "viewport": 390,
+    "eight_cards": true,
+    "eight_inputs": true,
+    "real_predictions": true,
+    "help_clickable": true,
+    "no_horizontal_overflow": true,
+    "javascript_errors": []
+  },
+  "desktop": {
+    "viewport": 1440,
+    "eight_cards": true,
+    "eight_inputs": true,
+    "real_predictions": true,
+    "help_clickable": true,
+    "no_horizontal_overflow": true,
+    "javascript_errors": []
+  }
+}

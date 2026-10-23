@@ -10,6 +10,18 @@ ETHNICITY = {
     6: "Non-Hispanic Asian",
     7: "Other / multiracial",
 }
+SCHEMA_VERSION = 2
+USER_FIELDS = [
+    "age",
+    "gender",
+    "height_cm",
+    "weight_kg",
+    "waist_cm",
+    "body_fat_pct",
+    "family_diabetes",
+    "family_heart_early",
+]
+FAMILY_FIELDS = ["family_diabetes", "family_heart_early"]
 NUMERIC = [
     "gender",
     "age",
@@ -17,12 +29,11 @@ NUMERIC = [
     "weight_kg",
     "height_cm",
     "bmi",
-    "bone_mass_kg",
     "body_fat_pct",
     "fat_mass_kg",
-    "lean_mass_kg",
+    "fat_free_mass_kg",
 ]
-FEATURES = NUMERIC + ["ethnicity"]
+FEATURES = NUMERIC + FAMILY_FIELDS
 DISEASES = {
     "high_cholesterol": "High cholesterol",
     "high_blood_pressure": "High blood pressure",

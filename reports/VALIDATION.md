@@ -1,98 +1,63 @@
-# Delivery validation — 2026-10-23
+# MIZAN v2 delivery validation — 2026-10-23
 
-This records work actually executed in the cloud environment, separate from remote CI,
-publication or clinical validation.
+These are engineering/research checks actually executed in the cloud, not clinical validation.
+Previous-version evidence is preserved in `reports/previous_version/VALIDATION.md`.
 
-## Data and training: passed
+## Data and training
 
-- Read and checked all 40 original SAS XPORT files; joined modules one-to-one by SEQN.
-- Initial records: **39,156**. Remaining after filtering: **10,623**.
-- Ran all **32** target/algorithm comparisons, using Logistic Regression, Random Forest,
-  CPU XGBoost and LightGBM for every target.
-- Used 2011–2014 fitting/calibration, 2015–2016 selection/thresholds, 2017–2018 testing.
-- Exported eight real, calibrated `.joblib` pipelines with checksums, runtime metadata,
-  source/data fingerprints, thresholds and results.
-- Active release: `20261023T052300Z-6e2717eb`.
-- A second metadata/report-producing training run reproduced the initial selected models
-  and reported metrics. No test-driven threshold or label tuning was performed.
+- All 40 supplied XPORT files read and one-to-one joins/participant IDs checked.
+- Original source files unchanged; all forty source hashes match the active release.
+- Cohort preserved: 39,156 → **10,623**, ages 20–59, original pregnancy/exam exclusions.
+- Eight entered inputs and eleven raw predictors. No ethnicity or BMC model inputs.
+- Family diabetes yes/no/unknown: **4422 / 6031 / 170**.
+- Early family cardiac yes/no/unknown: **1174 / 9222 / 227**.
+- Family definitions/codes verified against official codebooks in all four cycles;
+  URLs, hashes and exact excerpts are in `docs/family_history_provenance.json`.
+- Cholesterol OR threshold **190 mg/dL** retained: **3,122** positives. Other labels unchanged.
+- Shared BMI/fat mass/FFM derivation matches training, inference, UI and SHAP.
+- Ran all **32** comparisons (four actual algorithms × eight outcomes), class weighting,
+  separate sigmoid calibration, validation selection/thresholds and temporal evaluation.
+- Current complete schema-2 release: **`20261023T131025Z-6012cdf9`**.
+- All training-code hashes still match the release manifest after formatting.
+- The test cycle was previously inspected in v1: these are version comparisons, not
+  new independent external validation. No test score was used to retune this run.
 
-Command: `OPENBLAS_NUM_THREADS=2 OMP_NUM_THREADS=2 python -m nhanes_ai.train --jobs 2`.
+## Software and UI
 
-## Clean installation and software tests: passed
+- `ruff check src app tests scripts`: passed.
+- `ruff format --check src app tests scripts`: fifteen Python files formatted.
+- Full suite: **34 passed**; after replacing dropdowns with explicit radio choices,
+  both bilingual UI tests were rerun and passed. No model-dependent skips.
+- Real predictions and all eight SHAP explanations are finite and additive; the eight
+  original inputs are explained while derived values are recalculated inside SHAP.
+- Invalid/missing inputs, unknown-family coding, corruption/path traversal, older schema
+  rejection and stale results are checked.
+- Actual Chromium desktop **1440px** and touch/mobile **390px** interactions passed:
+  eight inputs, explicit family selections, actual eight predictions, clickable help,
+  no horizontal overflow and no browser JavaScript errors.
+- English/Arabic rendering and real SHAP chart rendering were checked in Chromium.
+- Notebook executed successfully; output saved outside the source checkout.
+- CSV and Excel copies read back successfully: 10,623 rows, 25 columns. Unknown labels
+  and family answers remain blank; protected audit attribute excluded from downloads.
 
-A fresh Python **3.12.14** virtual environment was created outside the checkout. All
-dependencies were installed from `requirements-dev.lock` with `--require-hashes`, and the
-project was installed editable with no dependency re-resolution.
+## Container
 
-| Check | Outcome |
-|---|---|
-| `uv pip check` in clean environment | Compatible dependencies |
-| `ruff check src app tests` | Passed |
-| `ruff format --check src app tests` | 13 files already formatted |
-| `pytest -q` in clean environment | **30 passed**, no skipped tests |
-| Eight exported model predictions | Finite probabilities, stable results |
-| All eight SHAP explanations | Baseline + contributions matched actual calibrated probability |
-| English/Arabic Streamlit AppTest | Passed real widgets, submission, explanations and translated content |
-| Input/unit/range/consistency errors | Rejected as expected |
-| Corrupted artifacts and traversal paths | Rejected before unpickling |
-| Changed inputs / model release | Stale-result invalidation covered |
+- Final image **`mizan-ai:2.0`** built successfully using verified cached dependency layers.
+- Image ID: `sha256:9c9041c3e5db955bf08233eec0b4429d2effa0077628adecabb864550cb8ee29`.
+- Final image checked with external networking disabled: UID **10001**, schema 2,
+  eight real predictions, additive eight-input SHAP, `/_stcore/health = ok`, page HTTP 200.
+- A daemon smoke run also reached Docker's **healthy** state. Only task smoke containers
+  were removed; the host Streamlit process remains available internally on port 8502.
 
-## Notebook and actual web startup: passed
+## Limits and platforms
 
-Executed all code cells in `notebooks/01_data_and_evaluation.ipynb` using the registered
-Python 3.12 kernel. Aggregate outputs, the data audit and comparison tables completed.
-Executed output is retained outside the source checkout in the cloud setup directory.
-
-Started the actual Streamlit server using `python -m streamlit run app/main.py
---server.address=127.0.0.1`. Internal requests returned `ok` from `/_stcore/health`
-and HTTP 200 from the page. Bilingual prediction interactions were independently exercised
-by AppTest; a health endpoint alone was not treated as functional model validation.
-
-## Container: passed
-
-Built the pinned Python 3.12 slim image using the supplied Dockerfile. This network's
-HTTPS inspection required forwarding existing proxy bindings and mounting the machine's
-trusted CA bundle as an optional BuildKit secret, as documented. The initial HTTP route,
-missing container trust and secret permissions were diagnosed and corrected. At no point
-were TLS verification, Debian signatures or Python artifact hashes disabled.
-
-The final built image passed:
-
-- UID **10001** execution and read-only source/artifact permissions.
-- Eight real model predictions and an additive calibrated-probability SHAP explanation.
-- Successful inference with external networking disabled.
-- Actual Streamlit startup, HTTP page response and a **healthy** Docker health status.
-- Container runtime limits of two CPUs and 2 GiB in the server smoke run.
-
-Only smoke containers started by this task were stopped. The host application process
-was left running; processes must be restarted after a new cloud machine is created.
-
-## Source and environment preservation
-
-Original `DATA_SET/` files remain unchanged. New source, tests, documentation, notebooks,
-dependency locks and deployment configuration are reviewable repository changes. Generated
-model binaries and historical run outputs are ignored by Git but included in the delivery
-archive for the active release. No patient-entered data are stored in that archive.
-
-Reusable cloud `install_script` and `start_skill` were updated and saved. The installer
-was executed successfully and verified all eight models. Draft saving is not environment
-publication. A future published-snapshot restore has not been independently tested.
-
-## Remaining limitations
-
-- **Not clinically production-ready.** Rare-target performance is weak. In particular,
-  test angina recall/F1 were zero and heart-failure recall was 0.059. See `MODEL_CARD.md`.
-- No independent clinical, non-US, prospective or external cohort validation was performed.
-- No survey-design-adjusted performance inference or clinical threshold optimization.
-- No older-adult coverage: source DXA limits the application to ages 20–59.
-- Country-to-ethnicity inference is deliberately replaced by direct optional self-identification.
-- Remote GitHub Actions outcomes are separate from the local validation recorded here;
-  consult the repository's Actions page for current remote results. No hosted clinical
-  deployment or environment publication was performed by these validation commands.
-
-## Windows startup follow-up
-
-The runtime dependencies were resolved for Windows x64 / Python 3.12 using binary-only
-packages and verified hashes, saved as `requirements-windows.lock`. Windows PowerShell
-instructions are in `docs/WINDOWS.md`; they do not require activating scripts or changing
-execution policy. Actual Windows execution was not available in this cloud environment.
+- Experimental, not clinically validated; rare cardiac outcomes still show low recall
+  and/or precision. Inspect `MODEL_CARD.md`, `test_metrics.json` and `VERSION_COMPARISON.csv`.
+- BIA smart-scale transfer, Saudi population validity and future-risk prediction are unproven.
+- The cohort remains selected for complete DXA measurements; no national prevalence inference.
+- Python runtime dependencies and locks did not change. Windows startup scripts were prepared
+  and reviewed; **actual Windows execution was not available** in this Linux environment.
+- A version-1 clean install/container was verified earlier; this record does not claim a
+  second fresh installation. Latest source and models were tested in the existing pinned runtime.
+- Source changes are local/reviewable. No new GitHub push, hosted deployment or publication
+  was performed during this rebuild.

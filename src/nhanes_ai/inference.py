@@ -18,29 +18,26 @@ import joblib
 import numpy as np
 import pandas as pd
 
-from nhanes_ai.schema import DISEASES, ETHNICITY, FEATURES
+from nhanes_ai.features import derive_features
+from nhanes_ai.schema import DISEASES, FAMILY_FIELDS, FEATURES, SCHEMA_VERSION, USER_FIELDS
 
 LIMITS = {
     "age": (20, 59),
     "waist_cm": (40, 200),
     "weight_kg": (25, 205),
     "height_cm": (120, 220),
-    "bone_mass_kg": (0.5, 7),
     "body_fat_pct": (3, 65),
-    "fat_mass_kg": (1, 150),
-    "lean_mass_kg": (10, 150),
 }
-USER_FIELDS = ["gender", "ethnicity", *LIMITS]
 
 
 class InputError(ValueError):
-    """An invalid measurement, unsupported age, or internally inconsistent DXA input."""
+    """An invalid measurement, unsupported age, or missing family-history answer."""
 
 
 def validate_record(record: dict) -> pd.DataFrame:
-    """Validate ten user fields and calculate BMI on the server as well as the UI."""
+    """Validate exactly eight inputs and derive BMI, fat mass and fat-free mass."""
     if set(record) != set(USER_FIELDS):
-        raise InputError(f"Expected exactly these ten inputs: {USER_FIELDS}")
+        raise InputError(f"Expected exactly these eight inputs: {USER_FIELDS}")
     clean = {}
     for key, (low, high) in LIMITS.items():
         try:
@@ -54,24 +51,12 @@ def validate_record(record: dict) -> pd.DataFrame:
         raise InputError("age: enter completed years")
     if isinstance(record["gender"], bool) or record["gender"] not in (1, 2):
         raise InputError("gender: use NHANES recorded sex code 1 or 2")
-    if record["ethnicity"] is not None and (
-        isinstance(record["ethnicity"], bool) or record["ethnicity"] not in ETHNICITY
-    ):
-        raise InputError("ethnicity: use a supported self-identified category or None")
     clean["gender"] = record["gender"]
-    clean["ethnicity"] = record["ethnicity"]
-    clean["bmi"] = clean["weight_kg"] / (clean["height_cm"] / 100) ** 2
-    dxa_total = clean["bone_mass_kg"] + clean["fat_mass_kg"] + clean["lean_mass_kg"]
-    if abs(dxa_total - clean["weight_kg"]) > max(10, 0.15 * clean["weight_kg"]):
-        raise InputError(
-            "composition_weight: bone + fat + lean mass disagree with weight; check kg units"
-        )
-    expected_fat = 100 * clean["fat_mass_kg"] / dxa_total
-    if abs(expected_fat - clean["body_fat_pct"]) > 5:
-        raise InputError(
-            "composition_fat: fat percentage disagrees with DXA masses by over 5 points"
-        )
-    return pd.DataFrame([clean])[FEATURES]
+    for name in FAMILY_FIELDS:
+        if isinstance(record[name], bool) or record[name] not in (0, 1):
+            raise InputError(f"{name}: choose yes (1) or no (0)")
+        clean[name] = int(record[name])
+    return derive_features(pd.DataFrame([clean]))
 
 
 def release_fingerprint(root: Path) -> str:
@@ -95,8 +80,13 @@ class ModelRegistry:
         if hashlib.sha256(manifest_bytes).hexdigest() != pointer["manifest_sha256"]:
             raise ValueError("Manifest checksum failed")
         self.manifest = json.loads(manifest_bytes)
-        if self.manifest["schema_version"] != 1 or self.manifest["run_id"] != run_id:
+        if self.manifest["schema_version"] != SCHEMA_VERSION or self.manifest["run_id"] != run_id:
             raise ValueError("Unsupported model schema or inconsistent release")
+        if (
+            self.manifest.get("user_fields") != USER_FIELDS
+            or self.manifest.get("features") != FEATURES
+        ):
+            raise ValueError("Model input contract does not match the eight-input app")
         if platform.python_version_tuple()[:2] != tuple(self.manifest["python"].split(".")[:2]):
             raise ValueError("Python major/minor differs from the training runtime")
         for package, expected in self.manifest["versions"].items():
@@ -118,7 +108,7 @@ class ModelRegistry:
             if hashlib.sha256(artifact_bytes).hexdigest() != entry["sha256"]:
                 raise ValueError(f"Model checksum failed: {disease}")
             bundle = joblib.load(io.BytesIO(artifact_bytes))
-            if bundle["schema_version"] != 1 or bundle["disease"] != disease:
+            if bundle["schema_version"] != SCHEMA_VERSION or bundle["disease"] != disease:
                 raise ValueError("Inconsistent artifact schema")
             self.bundles[disease] = bundle
 
@@ -146,6 +136,8 @@ class ModelRegistry:
         return {
             "id": str(uuid.uuid4()),
             "bmi": float(frame.bmi.iloc[0]),
+            "fat_mass_kg": float(frame.fat_mass_kg.iloc[0]),
+            "fat_free_mass_kg": float(frame.fat_free_mass_kg.iloc[0]),
             "predictions": predictions,
             "run_id": self.manifest["run_id"],
             "outside_training_range": outside_training,
@@ -154,9 +146,9 @@ class ModelRegistry:
     def explain(self, record: dict, disease: str):
         """Permutation SHAP on the actual calibrated probability, with additive validation.
 
-        The numeric masker uses transformed training-background rows. Ethnicity dummy
-        contributions are summed for display. Correlated measurements can share credit;
-        these are associations within a model, not causal or treatment effects.
+        Mask the original eight inputs, then recompute all derived measurements for
+        every perturbed row. This preserves mass/BMI identities and valid family
+        categories rather than independently perturbing derived/dummy columns.
         """
         import shap
 
@@ -165,24 +157,26 @@ class ModelRegistry:
         frame = validate_record(record)
         bundle = self.bundles[disease]
         pipeline = bundle["pipeline"]
-        encoded = pipeline.named_steps["preprocess"].transform(frame)
-        estimator = pipeline.named_steps["classifier"]
+        inputs = frame[USER_FIELDS].to_numpy(dtype=float)
+
+        def predict_rows(rows):
+            return pipeline.predict_proba(derive_features(pd.DataFrame(rows, columns=USER_FIELDS)))[
+                :, 1
+            ]
+
         explainer = shap.PermutationExplainer(
-            lambda rows: estimator.predict_proba(rows)[:, 1],
+            predict_rows,
             shap.maskers.Independent(bundle["background"], max_samples=32),
             feature_names=bundle["feature_names"],
             seed=bundle["seed"],
         )
-        explanation = explainer(encoded, max_evals=3 * (2 * encoded.shape[1] + 1), silent=True)
+        explanation = explainer(inputs, max_evals=3 * (2 * len(USER_FIELDS) + 1), silent=True)
         values = explanation.values[0]
         baseline = float(np.asarray(explanation.base_values).ravel()[0])
-        probability = float(estimator.predict_proba(encoded)[0, 1])
+        probability = float(pipeline.predict_proba(frame)[0, 1])
         if not np.isclose(baseline + values.sum(), probability, atol=1e-6):
             raise ValueError("SHAP explanation does not reconstruct the predicted probability")
-        grouped = {}
-        for name, value in zip(bundle["feature_names"], values):
-            key = "ethnicity" if name.startswith("ethnicity_") else name
-            grouped[key] = grouped.get(key, 0.0) + float(value)
+        grouped = dict(zip(bundle["feature_names"], map(float, values)))
         return {
             "baseline": baseline,
             "probability": probability,

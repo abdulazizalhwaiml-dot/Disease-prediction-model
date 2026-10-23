@@ -1,305 +1,297 @@
-"""Responsive English/Arabic research interface. Inputs never leave the local model runtime."""
+"""Eight-input bilingual research dashboard; inference stays in session memory."""
 
+import json
 import os
+from html import escape
 from pathlib import Path
 
 import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
 
-from app.i18n import DISEASE_AR, ETHNICITY_AR, TEXT
+from app.i18n import DISEASE_AR, TEXT
+from app.ui import LOGO, disease_grid, help_label
+from nhanes_ai.features import derive_features
 from nhanes_ai.inference import LIMITS, InputError, ModelRegistry, release_fingerprint
-from nhanes_ai.schema import DISEASES, ETHNICITY
+from nhanes_ai.schema import DISEASES, USER_FIELDS
 
 ROOT = Path(__file__).resolve().parents[1]
 MODELS = Path(os.environ.get("NHANES_MODELS_DIR", str(ROOT / "models")))
-st.set_page_config(page_title="Body & Health AI | ذكاء الجسم والصحة", page_icon="◈", layout="wide")
+st.set_page_config(page_title="ميزان | MIZAN — Research", page_icon="◈", layout="wide")
 language = st.sidebar.selectbox(
     "Language / اللغة",
-    ["en", "ar"],
-    format_func=lambda value: "English" if value == "en" else "العربية",
+    ["ar", "en"],
+    format_func=lambda value: "العربية" if value == "ar" else "English",
     key="language",
 )
 t = TEXT[language]
-names = DISEASES if language == "en" else DISEASE_AR
+names = DISEASE_AR if language == "ar" else DISEASES
 direction = "rtl" if language == "ar" else "ltr"
 st.markdown(
-    f"""
-<style>
- .stApp {{ background: #f4f7fb; color: #122c3b; font-family: Inter, Tahoma, sans-serif; }}
- [data-testid="stMainBlockContainer"] {{ max-width: 1240px; padding-top: 2rem; direction: {direction}; }}
- [data-testid="stSidebar"] {{ background: #e9f0f5; direction: {direction}; }}
- h1,h2,h3 {{ color:#102c3b; letter-spacing:-.035em; }}
- .hero {{ background:linear-gradient(125deg,#102c3b,#164d59); border-radius:24px;
-          padding:40px; margin-bottom:24px; color:white; }}
- .hero h1 {{ color:white; font-size:clamp(1.8rem,3.2vw,3rem); line-height:1.2; max-width:850px; }}
- .hero p {{ color:#d0e1e6; max-width:800px; font-size:1.08rem; line-height:1.7; }}
- .eyebrow {{ color:#b6e5a2; font-size:.75rem; font-weight:700; letter-spacing:.13em; margin-bottom:14px; }}
- .estimate-card {{ background:white; border:1px solid #e0e7ee; border-radius:18px;
-                   padding:20px; margin-bottom:16px; min-height:190px; }}
- .estimate-name {{ font-size:.88rem; color:#4f6470; min-height:42px; }}
- .estimate-number {{ font-size:2.3rem; color:#123949; font-weight:750; letter-spacing:-.04em; }}
- .estimate-meta {{ font-size:.74rem; color:#667d88; margin-top:8px; line-height:1.5; }}
- .track {{ height:5px; background:#edf2f5; border-radius:5px; margin-top:12px; overflow:hidden; }}
- .fill {{ height:100%; background:#238b85; border-radius:5px; }}
- [data-testid="stMetric"] {{ background:#fff; border-radius:14px; padding:14px; border:1px solid #e0e7ee; }}
- .stButton>button[kind="primary"] {{ background:#166f73; border:0; border-radius:12px; min-height:48px; }}
- .stNumberInput input {{ direction:ltr; }}
- @media(max-width:650px) {{ .hero {{ padding:24px; }} .estimate-card {{ min-height:160px; }} }}
-</style>
-""",
+    "<style>"
+    + (ROOT / "app/style.css").read_text()
+    + f'[data-testid="stMainBlockContainer"], [data-testid="stSidebar"] {{direction:{direction};}}'
+    + "</style>",
     unsafe_allow_html=True,
 )
+st.sidebar.markdown(
+    f'<div class="sidebar-brand">{LOGO}<div><div class="brand-name">'
+    f'{t["brand"]}</div><div class="brand-sub">BODY INSIGHTS LAB</div></div></div>',
+    unsafe_allow_html=True,
+)
+st.sidebar.markdown(
+    f'<div class="sidebar-fact">{t["scope"]}</div>'
+    f'<div class="sidebar-rule"></div><div class="sidebar-caption">{t["privacy"]}</div>',
+    unsafe_allow_html=True,
+)
+st.sidebar.caption("NHANES 2011–2018 · v2.0")
 
 
 @st.cache_resource(show_spinner=False)
 def registry(path, fingerprint):
-    """Cache immutable models, never patient measurements or predictions."""
+    """Cache immutable models; never cache inputs or predictions globally."""
     return ModelRegistry(Path(path))
 
 
-st.sidebar.title(t["brand"])
-st.sidebar.info(t["scope"])
-st.sidebar.caption(t["country"])
-st.sidebar.caption(t["privacy"])
-st.markdown(
-    f'<div class="hero"><div class="eyebrow">{t["edition"]}</div>'
-    f"<h1>{t['title']}</h1><p>{t['subtitle']}</p></div>",
-    unsafe_allow_html=True,
-)
-st.warning(t["notice"])
 try:
     models = registry(str(MODELS), release_fingerprint(MODELS))
 except (OSError, ValueError, KeyError, ImportError):
-    st.error(t["no_models"])
-    st.code("python -m nhanes_ai.train --data DATA_SET --output models --reports reports")
-    st.stop()
-st.sidebar.caption(f"{t['release']}: {models.manifest['run_id']}")
-assessment, evidence, method = st.tabs([t["assessment"], t["evidence"], t["method"]])
+    models = None
+
+st.markdown(
+    f'<div class="topbar"><div class="topbar-wordmark">{LOGO}{t["tagline"]}</div>'
+    f'<div class="research-badge"><i></i>{t["research"]}</div></div>'
+    f'<div class="hero"><div class="eyebrow">{t["eyebrow"]}</div><h1>{t["title"]}</h1>'
+    f'<p>{t["subtitle"]}</p><div class="hero-facts"><span>{t["input_count"]}</span>'
+    f"<span>{t['derived_count']}</span><span>{t['disease_count']}</span></div></div>"
+    f'<div class="research-notice"><span>ⓘ</span><div>{t["notice"]}</div></div>',
+    unsafe_allow_html=True,
+)
+assessment, evidence, guide = st.tabs([t["assessment"], t["evidence"], t["guide"]])
 
 with assessment:
-    st.subheader(t["inputs"])
-    st.caption(t["input_note"])
+    form_column, result_column = st.columns([0.85, 1.5], gap="large")
     record = {}
-    left, right = st.columns(2, gap="large")
-    with left:
-        with st.container(border=True):
-            st.markdown(f"#### {t['profile']}")
-            record["age"] = st.number_input(t["age"], 20, 59, 45, key="age")
-            record["gender"] = st.selectbox(
-                t["gender"],
-                [1, 2],
-                format_func=lambda value: t["male"] if value == 1 else t["female"],
-                key="gender",
-            )
-            record["ethnicity"] = st.selectbox(
-                t["ethnicity"],
-                [None, *ETHNICITY],
-                key="ethnicity",
-                format_func=lambda value: (
-                    t["unknown"]
-                    if value is None
-                    else (ETHNICITY[value] if language == "en" else ETHNICITY_AR[value])
-                ),
-            )
-            st.caption(t["ethnicity_note"])
-            record["height_cm"] = st.number_input(
-                t["height_cm"], 120.0, 220.0, 175.0, 0.5, key="height_cm"
-            )
-            record["weight_kg"] = st.number_input(
-                t["weight_kg"], 25.0, 205.0, 80.0, 0.5, key="weight_kg"
-            )
-    with right:
-        with st.container(border=True):
-            st.markdown(f"#### {t['composition']}")
-            for field, default, step in [
-                ("waist_cm", 95.0, 0.5),
-                ("bone_mass_kg", 3.0, 0.1),
-                ("body_fat_pct", 30.0, 0.5),
-                ("fat_mass_kg", 24.0, 0.5),
-                ("lean_mass_kg", 53.0, 0.5),
-            ]:
-                low, high = LIMITS[field]
-                record[field] = st.number_input(
-                    t[field], float(low), float(high), default, step, key=field
-                )
-            st.caption(t["dxa_note"])
-    c1, c2 = st.columns([1, 2])
-    c1.metric(
-        t["bmi"],
-        f"{record['weight_kg'] / (record['height_cm'] / 100) ** 2:.1f}",
-        "kg/m²",
-        delta_color="off",
-    )
-    if record["ethnicity"] is None:
-        c2.info(t["unknown_note"])
-    # Clear stale results whenever measurements or the active model release change.
-    if (
-        st.session_state.get("record") != record
-        or st.session_state.get("run_id") != models.manifest["run_id"]
-    ):
-        for key in ["result", "explanations"]:
-            st.session_state.pop(key, None)
-    if st.button(t["submit"], type="primary", width="stretch", key="predict"):
-        try:
-            with st.spinner(t["running"]):
-                result = models.predict(record)
-            st.session_state.update(
-                result=result,
-                record=record.copy(),
-                explanations={},
-                run_id=models.manifest["run_id"],
-            )
-        except InputError as error:
-            prefix = str(error).split(":")[0]
-            st.error(t.get(prefix, t["invalid"]))
-        except (ValueError, RuntimeError):
-            st.error(t["no_models"])
-    if "result" not in st.session_state:
-        st.info(t["empty"])
-    else:
-        st.divider()
-        st.subheader(t["results"])
-        st.caption(t["result_note"])
-        result = st.session_state.result
-        if result.get("outside_training_range"):
-            st.warning(
-                t["outside_training"]
-                + " "
-                + ", ".join(t[field] for field in result["outside_training_range"])
-            )
-        columns = st.columns(4)
-        for index, prediction in enumerate(result["predictions"]):
-            probability = prediction["probability"] * 100
-            status = t["above"] if prediction["above_threshold"] else t["below"]
-            quality_note = (
-                t["limited_evidence"]
-                if models.manifest["models"][prediction["disease"]].get("quality_flags")
-                else ""
-            )
-            columns[index % 4].markdown(
-                f'<div class="estimate-card"><div class="estimate-name">{names[prediction["disease"]]}</div>'
-                f'<div class="estimate-number">{probability:.1f}%</div>'
-                f'<div class="track"><div class="fill" style="width:{probability}%"></div></div>'
-                f'<div class="estimate-meta">{status}<br>{t["threshold"]}: '
-                f"{prediction['threshold'] * 100:.1f}%<br>{quality_note}</div></div>",
+    with form_column:
+        with st.container(key="input_panel"):
+            st.markdown(
+                f'<div class="section-title">{t["form_title"]}</div>'
+                f'<div class="section-note">{t["form_note"]}</div>'
+                f'<div class="form-section">{t["measurements"]}</div>',
                 unsafe_allow_html=True,
             )
-        chart = go.Figure(
-            go.Bar(
-                x=[p["probability"] * 100 for p in result["predictions"]],
-                y=[names[p["disease"]] for p in result["predictions"]],
-                orientation="h",
-                marker_color="#238b85",
-                name=t["probability"],
-            )
-        )
-        chart.add_trace(
-            go.Scatter(
-                x=[p["threshold"] * 100 for p in result["predictions"]],
-                y=[names[p["disease"]] for p in result["predictions"]],
-                mode="markers",
-                marker={"symbol": "diamond", "color": "#c07b37", "size": 9},
-                name=t["threshold"],
-            )
-        )
-        chart.update_layout(
-            height=380,
-            margin=dict(l=0, r=0, t=20, b=0),
-            xaxis_title=t["probability"],
-            xaxis_range=[0, 100],
-            yaxis_autorange="reversed",
-            legend_orientation="h",
-            paper_bgcolor="rgba(0,0,0,0)",
-        )
-        st.plotly_chart(chart, width="stretch")
-        st.subheader(t["explain"])
-        disease = st.selectbox(
-            t["select"], list(DISEASES), format_func=lambda key: names[key], key="explain_disease"
-        )
-        try:
-            if disease not in st.session_state.explanations:
-                with st.spinner(t["explaining"]):
-                    st.session_state.explanations[disease] = models.explain(
-                        st.session_state.record, disease
+            for field in USER_FIELDS:
+                if field == "family_diabetes":
+                    st.markdown(
+                        f'<div class="form-section">{t["family"]}</div>', unsafe_allow_html=True
                     )
-            explanation = st.session_state.explanations[disease]
-            base, value, net = st.columns(3)
-            base.metric(t["baseline"], f"{explanation['baseline'] * 100:.1f}%")
-            value.metric(t["estimate"], f"{explanation['probability'] * 100:.1f}%")
-            net.metric(
-                t["net"], f"{(explanation['probability'] - explanation['baseline']) * 100:+.1f} pp"
+                st.markdown(help_label(t[field], t["help"][field]), unsafe_allow_html=True)
+                if field == "gender":
+                    record[field] = st.radio(
+                        t[field],
+                        [1, 2],
+                        key=field,
+                        horizontal=True,
+                        format_func=lambda v: t["male"] if v == 1 else t["female"],
+                        label_visibility="collapsed",
+                    )
+                elif field.startswith("family_"):
+                    record[field] = st.radio(
+                        t[field],
+                        [1, 0],
+                        index=None,
+                        key=field,
+                        horizontal=True,
+                        format_func=lambda v: t["yes"] if v == 1 else t["no"],
+                        label_visibility="collapsed",
+                    )
+                else:
+                    low, high = LIMITS[field]
+                    default = {
+                        "age": 45,
+                        "height_cm": 175.0,
+                        "weight_kg": 80.0,
+                        "waist_cm": 95.0,
+                        "body_fat_pct": 30.0,
+                    }[field]
+                    record[field] = st.number_input(
+                        t[field],
+                        min_value=low if field == "age" else float(low),
+                        max_value=high if field == "age" else float(high),
+                        value=default,
+                        step=1 if field == "age" else 0.5,
+                        key=field,
+                        label_visibility="collapsed",
+                    )
+            derived = (
+                derive_features(pd.DataFrame([record]))[["bmi", "fat_mass_kg", "fat_free_mass_kg"]]
+                .iloc[0]
+                .to_dict()
             )
-            contributions = sorted(
-                explanation["contributions"].items(), key=lambda pair: abs(pair[1])
-            )
-            labels = [t.get(name, name) for name, _ in contributions]
-            impacts = [value * 100 for _, value in contributions]
-            waterfall = go.Figure(
-                go.Bar(
-                    x=impacts,
-                    y=labels,
-                    orientation="h",
-                    marker_color=["#c07b37" if value > 0 else "#238b85" for value in impacts],
+            st.markdown(
+                f'<div class="automatic-heading">{t["automatic"]}</div><div class="derived-grid">'
+                + "".join(
+                    f'<div class="derived"><div class="derived-label">{t[k]}</div>'
+                    f'<div class="derived-value">{v:.1f}<span class="derived-unit">'
+                    f"{'kg/m²' if k == 'bmi' else t['kg']}</span></div></div>"
+                    for k, v in derived.items()
                 )
+                + "</div>",
+                unsafe_allow_html=True,
             )
-            waterfall.update_layout(
-                height=420,
-                xaxis_title=t["impact"],
-                margin=dict(l=0, r=0, t=10, b=0),
-                paper_bgcolor="rgba(0,0,0,0)",
+            ready = all(record[field] is not None for field in USER_FIELDS)
+            if not ready:
+                st.markdown(
+                    f'<p class="required-note">{t["family_required"]}</p>', unsafe_allow_html=True
+                )
+            run_id = models.manifest["run_id"] if models else None
+            if st.session_state.get("record") != record or st.session_state.get("run_id") != run_id:
+                for key in ["result", "explanations"]:
+                    st.session_state.pop(key, None)
+            if st.button(
+                t["submit"],
+                type="primary",
+                width="stretch",
+                key="predict",
+                disabled=not ready or models is None,
+            ):
+                try:
+                    with st.spinner(t["running"]):
+                        result = models.predict(record)
+                    st.session_state.update(
+                        result=result, record=record.copy(), explanations={}, run_id=run_id
+                    )
+                except InputError as error:
+                    field = str(error).split(":")[0]
+                    st.error(t.get(field + "_error", t["invalid"]))
+                except (ValueError, RuntimeError):
+                    st.error(t["no_models"])
+            if models is None:
+                st.error(t["no_models"])
+                st.code("python -m nhanes_ai.train --jobs 2")
+    with result_column:
+        st.markdown(
+            f'<div class="results-header"><div class="section-title">{t["results"]}</div>'
+            '<span class="results-count">NHANES · 8</span></div>'
+            f'<div class="section-note">{t["results_subtitle"]}</div>',
+            unsafe_allow_html=True,
+        )
+        result = st.session_state.get("result")
+        if result is None:
+            st.markdown(
+                f'<div class="empty-note"><strong>{t["empty"]}</strong><br>{t["empty_note"]}</div>',
+                unsafe_allow_html=True,
             )
-            waterfall.add_vline(x=0, line_color="#adbcc6", line_width=1)
-            st.plotly_chart(waterfall, width="stretch")
-            st.caption(t["explain_note"])
-        except Exception:
-            # A failure to explain must never be hidden or replaced by made-up contributions.
-            st.error(t["explain_error"])
-            if st.button(t["retry"]):
-                st.session_state.explanations.pop(disease, None)
-                st.rerun()
+        elif result.get("outside_training_range"):
+            st.warning(
+                t["outside_training"] + ", ".join(t[f] for f in result["outside_training_range"])
+            )
+        st.markdown(
+            disease_grid(
+                result["predictions"] if result else None,
+                names,
+                t,
+                models.manifest["models"] if models else {},
+            ),
+            unsafe_allow_html=True,
+        )
+        st.markdown(f'<p class="legend">{t["legend"]}</p>', unsafe_allow_html=True)
+        if result:
+            st.markdown(
+                f'<div class="explain-header"><div class="section-title">{t["explain"]}</div>'
+                f'<div class="section-note">{t["explain_subtitle"]}</div></div>',
+                unsafe_allow_html=True,
+            )
+            disease = st.selectbox(
+                t["select"], list(DISEASES), format_func=lambda k: names[k], key="explain_disease"
+            )
+            if st.button(t["explain_button"], key="explain"):
+                try:
+                    with st.spinner(t["explaining"]):
+                        st.session_state.explanations[disease] = models.explain(
+                            st.session_state.record, disease
+                        )
+                except Exception:
+                    st.error(t["explain_error"])
+            explanation = st.session_state.explanations.get(disease)
+            if explanation:
+                first, second = st.columns(2)
+                first.metric(t["baseline"], f"{explanation['baseline'] * 100:.1f}%")
+                second.metric(t["estimate"], f"{explanation['probability'] * 100:.1f}%")
+                contributions = sorted(
+                    explanation["contributions"].items(), key=lambda item: abs(item[1])
+                )
+                values = [value * 100 for _, value in contributions]
+                chart = go.Figure(
+                    go.Bar(
+                        x=values,
+                        y=[t.get(k, k) for k, _ in contributions],
+                        orientation="h",
+                        marker_color=["#ce7a62" if v > 0 else "#229f90" for v in values],
+                    )
+                )
+                chart.update_layout(
+                    height=380,
+                    margin=dict(l=0, r=0, t=10, b=0),
+                    xaxis_title=t["impact"],
+                    font=dict(family="Tahoma, sans-serif", color="#486670"),
+                    paper_bgcolor="rgba(0,0,0,0)",
+                    plot_bgcolor="rgba(0,0,0,0)",
+                )
+                chart.add_vline(x=0, line_color="#d0dfe3", line_width=1)
+                st.plotly_chart(chart, width="stretch", config={"displayModeBar": False})
+                st.caption(t["explain_note"])
+            else:
+                st.caption(t["explain_empty"])
+            st.download_button(
+                t["download"],
+                json.dumps(result, ensure_ascii=False, indent=2),
+                "mizan-assessment.json",
+                "application/json",
+                key="download",
+            )
 
 with evidence:
-    st.subheader(t["evidence"])
+    st.subheader(t["evidence_title"])
     st.info(t["evidence_note"])
-    rows = []
-    for key, entry in models.manifest["models"].items():
-        score = entry["test"]
-        rows.append(
-            {
-                t["disease"]: names[key],
-                t["algorithm"]: entry["algorithm"],
-                **{
-                    t[metric]: round(score[metric], 3)
-                    for metric in ["recall", "precision", "f1", "roc_auc", "pr_auc", "brier"]
-                },
-                t["positive"]: score["positive"],
-                t["n"]: score["n"],
-            }
-        )
-    st.dataframe(pd.DataFrame(rows), hide_index=True, width="stretch")
-    selected = st.selectbox(
-        t["select"], list(DISEASES), format_func=lambda key: names[key], key="evidence_disease"
-    )
-    score = models.manifest["models"][selected]["test"]
-    st.caption(t["interval"])
-    st.dataframe(
-        pd.DataFrame(
-            [
-                {t["disease"]: t[key], "95% CI": f"{value[0]:.3f} – {value[1]:.3f}"}
-                for key, value in score["bootstrap_95_ci"].items()
-            ]
-        ),
-        hide_index=True,
-        width="stretch",
-    )
-
-with method:
-    st.subheader(t["audit"])
-    st.metric(t["remaining"], f"{models.manifest['cohort']['remaining_records']:,}")
-    st.write(t["method_text"])
-    st.write(t["labels_text"].format(**models.manifest["label_config"]))
+    if models:
+        st.metric(t["cohort"], f"{models.manifest['cohort']['remaining_records']:,}")
+        rows = []
+        for disease, entry in models.manifest["models"].items():
+            score = entry["test"]
+            rows.append(
+                {
+                    t["disease"]: names[disease],
+                    t["algorithm"]: entry["algorithm"],
+                    **{
+                        t[k]: round(score[k], 3)
+                        for k in ["recall", "precision", "f1", "roc_auc", "pr_auc", "brier"]
+                    },
+                    t["positive"]: score["positive"],
+                    t["n"]: score["n"],
+                }
+            )
+        st.dataframe(pd.DataFrame(rows), hide_index=True, width="stretch")
+        st.caption(f"{t['release']}: {models.manifest['run_id']}")
+        st.write(t["labels_text"].format(**models.manifest["label_config"]))
     st.write(t["training_text"])
-    st.caption(t["scope"])
-st.divider()
-st.caption(t["footer"])
+    st.write(t["feature_text"])
+    st.info(t["measurement_note"])
+with guide:
+    st.subheader(t["guide_title"])
+    st.caption(t["guide_note"])
+    for field in USER_FIELDS:
+        with st.expander(t[field]):
+            st.write(t["help"][field])
+    st.subheader(t["formulas"])
+    st.code(
+        "BMI = weight_kg / (height_cm / 100)²\nFat mass = weight_kg × body_fat_pct / 100\nFat-free mass = weight_kg − fat_mass_kg"
+    )
+    st.caption(t["formula_note"])
+    st.markdown(
+        "[NHANES family-history definitions](https://wwwn.cdc.gov/Nchs/Data/Nhanes/Public/2011/DataFiles/MCQ_G.htm#MCQ300a)"
+    )
+st.markdown(
+    f'<div class="app-footer"><span>{escape(t["footer"])}</span><span>{escape(t["scope"])}</span></div>',
+    unsafe_allow_html=True,
+)

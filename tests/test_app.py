@@ -1,29 +1,49 @@
-"""Execute real Streamlit widgets, both languages, invalid inputs and session invalidation."""
+"""Exercise the real eight-input UI, both languages and stale-result handling."""
 
 from pathlib import Path
 
 from streamlit.testing.v1 import AppTest
 
+from app.i18n import TEXT
+from nhanes_ai.schema import USER_FIELDS
 
-def test_bilingual_app_prediction_bmi_and_stale_result_invalidation(model_root):
+
+def test_bilingual_eight_input_app_and_clickable_help(model_root):
     root = Path(__file__).resolve().parents[1]
     app = AppTest.from_file(str(root / "app/main.py"), default_timeout=60).run()
     assert not app.exception
-    # Eight numeric fields and two profile selects = ten inputs, plus separate UI controls.
-    assert len(app.number_input) == 8
+    assert len(app.number_input) == 5
+    assert app.button(key="predict").disabled
+    assert len(app.radio) == 3
+    assert app.radio(key="family_diabetes").value is None
+    assert app.radio(key="family_heart_early").value is None
+    markup = "\n".join(element.value for element in app.markdown)
+    for field in USER_FIELDS:
+        assert TEXT["ar"]["help"][field] in markup
+    assert markup.count('<details class="field-help">') == 8
+    app.radio(key="family_diabetes").set_value(1)
+    app.radio(key="family_heart_early").set_value(0).run()
+    assert not app.button(key="predict").disabled
     app.button(key="predict").click().run(timeout=60)
     assert not app.exception
-    assert len(app.session_state["result"]["predictions"]) == 8
-    assert app.session_state["result"]["bmi"] > 26
-    assert "high_cholesterol" in app.session_state["explanations"]
-    assert any("Limited held-out performance" in element.value for element in app.markdown)
-    app.selectbox(key="language").set_value("ar").run()
+    assert len(app.session_state["record"]) == 8
+    result = app.session_state["result"]
+    assert len(result["predictions"]) == 8
+    assert result["fat_mass_kg"] == 24
+    assert result["fat_free_mass_kg"] == 56
+    app.button(key="explain").click().run(timeout=60)
     assert not app.exception
-    assert any("ثمانية" in element.value for element in app.subheader)
-    assert app.button(key="predict").label == "استكشف ملفي"
+    assert len(app.session_state["explanations"]["high_cholesterol"]["contributions"]) == 8
+    app.selectbox(key="language").set_value("en").run()
+    assert not app.exception
+    assert app.button(key="predict").label == "Explore my estimates"
+    assert len(app.session_state["result"]["predictions"]) == 8
     app.number_input(key="height_cm").set_value(180.0).run()
     assert "result" not in app.session_state
-    app.number_input(key="body_fat_pct").set_value(55.0).run()
-    app.button(key="predict").click().run()
-    assert not app.exception
-    assert any("لا تتوافق" in element.value for element in app.error)
+    assert "explanations" not in app.session_state
+
+
+def test_language_help_has_no_missing_input_definitions():
+    for language in ["ar", "en"]:
+        assert set(TEXT[language]["help"]) == set(USER_FIELDS)
+        assert "50" in TEXT[language]["help"]["family_heart_early"]

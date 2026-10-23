@@ -9,6 +9,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
+from nhanes_ai.features import derive_features
 from nhanes_ai.schema import CARDIAC_LABELS, DISEASES, FEATURES, LabelConfig
 
 CYCLES = {"2011-2012": "G", "2013-2014": "H", "2015-2016": "I", "2017-2018": "J"}
@@ -27,7 +28,7 @@ COMPONENTS = {
     "DXX": ["DXAEXSTS", "DXDTOBMC", "DXDTOPF", "DXDTOFAT", "DXDTOLE"],
     "BPQ": ["BPQ020", "BPQ080"],
     "DIQ": ["DIQ010"],
-    "MCQ": list(CARDIAC_LABELS.values()),
+    "MCQ": [*CARDIAC_LABELS.values(), "MCQ300A", "MCQ300C"],
     "TCHOL": ["LBXTC"],
     "HDL": ["LBDHDD"],
     "GHB": ["LBXGH"],
@@ -137,30 +138,42 @@ def prepare_cohort(raw: pd.DataFrame, config: LabelConfig):
     keep(frame.RIAGENDR.isin([1, 2]), "unknown_recorded_sex")
     labels = make_labels(frame, config)
     # Bone mineral content and soft tissue mass are in grams in the source XPORT files.
-    features = pd.DataFrame(
-        {
-            "gender": frame.RIAGENDR,
-            "age": frame.RIDAGEYR,
-            "ethnicity": frame.RIDRETH3,
-            "waist_cm": frame.BMXWAIST,
-            "weight_kg": frame.BMXWT,
-            "height_cm": frame.BMXHT,
-            "bmi": frame.BMXWT / (frame.BMXHT / 100).pow(2),
-            "bone_mass_kg": frame.DXDTOBMC / 1000,
-            "body_fat_pct": frame.DXDTOPF,
-            "fat_mass_kg": frame.DXDTOFAT / 1000,
-            "lean_mass_kg": frame.DXDTOLE / 1000,
-        },
-        index=frame.index,
+    features = derive_features(
+        pd.DataFrame(
+            {
+                "gender": frame.RIAGENDR,
+                "age": frame.RIDAGEYR,
+                "waist_cm": frame.BMXWAIST,
+                "weight_kg": frame.BMXWT,
+                "height_cm": frame.BMXHT,
+                "body_fat_pct": frame.DXDTOPF,
+                # Match the smart-scale form exactly: all three masses/BMI are derived
+                # from the entered weight/height/fat percentage, never mixed DXA/BMX masses.
+                "family_diabetes": yes_no(frame.MCQ300C),
+                "family_heart_early": yes_no(frame.MCQ300A),
+            },
+            index=frame.index,
+        )
     )
     result = pd.concat(
         [frame[["SEQN", "cycle", "WTMEC2YR", "SDMVSTRA", "SDMVPSU"]], features[FEATURES], labels],
         axis=1,
     ).reset_index(drop=True)
+    # This protected attribute is for offline subgroup auditing only, never FEATURES
+    # or an app input. Exclude it from downloadable training datasets.
+    result["ethnicity_audit"] = frame.RIDRETH3.to_numpy()
     # Four equal two-year cycles; retained for optional descriptive, not design-based inference.
     result["mec_weight_8yr"] = result.WTMEC2YR / 4
     audit["remaining_records"] = len(result)
     audit["cycles"] = result.groupby("cycle").size().to_dict()
+    audit["family_history"] = {
+        name: {
+            "yes": int(result[name].eq(1).sum()),
+            "no": int(result[name].eq(0).sum()),
+            "unknown": int(result[name].isna().sum()),
+        }
+        for name in ["family_diabetes", "family_heart_early"]
+    }
     audit["targets"] = {
         name: {
             "known": int(result[name].notna().sum()),
