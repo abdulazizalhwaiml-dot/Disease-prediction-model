@@ -2,15 +2,17 @@
 
 from pathlib import Path
 
+import pytest
 from streamlit.testing.v1 import AppTest
 
 from app.i18n import TEXT
 from nhanes_ai.schema import USER_FIELDS
 
 
-def test_bilingual_eight_input_app_and_clickable_help(model_root):
+@pytest.mark.parametrize("entrypoint", ["app/main.py", "streamlit_app.py"])
+def test_bilingual_eight_input_app_and_clickable_help(model_root, entrypoint):
     root = Path(__file__).resolve().parents[1]
-    app = AppTest.from_file(str(root / "app/main.py"), default_timeout=60).run()
+    app = AppTest.from_file(str(root / entrypoint), default_timeout=60).run()
     assert not app.exception
     assert len(app.number_input) == 5
     assert app.button(key="predict").disabled

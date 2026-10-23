@@ -61,6 +61,14 @@ py -3.12 -m venv .venv
 .\.venv\Scripts\python.exe -m streamlit run app/main.py
 ```
 
+## GitHub-connected hosting
+
+The `deploy/streamlit-cloud` branch includes the trusted trained release and the
+`streamlit_app.py` entry point. Deploy this branch on Streamlit Community Cloud with
+**Python 3.12**; `packages.txt` supplies Linux OpenMP. GitHub Pages cannot execute the
+Python app. Follow the [Arabic cloud-hosting guide](docs/STREAMLIT_CLOUD_AR.md).
+Account authorization and the final Deploy action occur in your own Streamlit account.
+
 ## Linux / macOS
 
 ```bash
