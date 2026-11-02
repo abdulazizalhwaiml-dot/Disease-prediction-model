@@ -33,3 +33,10 @@ Optional environment variables: `MIZANAK_TEST_URL` selects a different local app
 `MIZANAK_UI_OUTPUT` writes screenshots and JSON evidence, and
 `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH` selects a system Chromium executable.
 The application itself has no Node.js or Playwright dependency.
+
+## Ready releases
+
+The **Package ready Mizanak release** workflow runs manually on `main`. Supply the
+application version from `pyproject.toml`. It tests the shipped models, verifies the
+original source downloads, builds the complete ZIP with its checksum, and publishes
+both files to GitHub Releases. It does not train replacement models.

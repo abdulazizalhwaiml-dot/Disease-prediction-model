@@ -1,0 +1,64 @@
+name: Package ready Mizanak release
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Application version from pyproject.toml (without v)
+        required: true
+        default: "4.1.1"
+permissions:
+  contents: write
+jobs:
+  package-release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      OPENBLAS_NUM_THREADS: "2"
+      OMP_NUM_THREADS: "2"
+      RELEASE_VERSION: ${{ inputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: requirements-dev.lock
+      - name: Validate release version and paths
+        run: |
+          python - <<'PY'
+          import os, re, tomllib
+          from pathlib import Path
+          version = os.environ['RELEASE_VERSION']
+          assert re.fullmatch(r'\d+\.\d+\.\d+', version), 'Invalid version'
+          assert version == tomllib.loads(Path('pyproject.toml').read_text())['project']['version']
+          filename = 'MIZANAK_v' + version.replace('.', '_') + '.zip'
+          archive = str(Path(os.environ['RUNNER_TEMP']) / filename)
+          with open(os.environ['GITHUB_ENV'], 'a', encoding='utf-8') as env:
+              env.write(f'RELEASE_TAG=v{version}\nRELEASE_ARCHIVE={archive}\n')
+          Path(os.environ['RUNNER_TEMP'], 'release-notes.md').write_text(
+              f'ميزانك {version}\n\n'
+              'حمّل ملف ZIP أدناه وفك الضغط، ثم شغّل START_WINDOWS.bat مع Python 3.12 بنسخة 64-bit. '
+              'أوقف النسخة القديمة أولًا.\n\n'
+              'إصلاح تمرير صفوف الحقول الثمانية، وتبسيط توضيح الجنس والتاريخ العائلي. '
+              'المصدر والنماذج ودليل الاستضافة المجانية في main.\n\n'
+              'اجتازت النسخة اختبارات Python الـ43؛ تفاصيل التغييرات في CHANGELOG.md '
+              'وأدلة التحقق في reports/VALIDATION.md. النماذج والبيانات وحدود التنبيه لم تتغير.\n\n'
+              'مشروع بحثي تجريبي، وليس تشخيصًا طبيًا.\n', encoding='utf-8')
+          PY
+      - run: python -m pip install --require-hashes -r requirements-dev.lock
+      - run: python -m pip install --no-deps -e .
+      - run: pytest -q
+      - name: Fetch original sources with pinned hashes
+        run: python scripts/download_data.py
+      - name: Build and verify complete ready archive
+        run: python scripts/package_project.py --output "$RELEASE_ARCHIVE"
+      - name: Publish downloadable assets
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if ! gh release view "$RELEASE_TAG" > /dev/null 2>&1; then
+            gh release create "$RELEASE_TAG" --target "$GITHUB_SHA" \
+              --title "ميزانك $RELEASE_VERSION — إصلاح تمرير الحقول" \
+              --notes-file "$RUNNER_TEMP/release-notes.md" --latest
+          fi
+          gh release upload "$RELEASE_TAG" "$RELEASE_ARCHIVE" "$RELEASE_ARCHIVE.sha256" --clobber
