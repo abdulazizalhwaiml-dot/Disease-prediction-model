@@ -28,6 +28,12 @@ def logo_html():
     )
 
 
+@lru_cache(maxsize=1)
+def hero_art_html():
+    data = base64.b64encode((ASSETS / "hero-health.svg").read_bytes()).decode("ascii")
+    return f'<img class="hero-illustration" src="data:image/svg+xml;base64,{data}" alt="" width="200" height="170">'
+
+
 def probability_state(probability, threshold):
     """Display bands relative to research thresholds, never clinical risk classes."""
     ratio = probability / max(threshold, 1e-8)

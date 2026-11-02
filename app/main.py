@@ -10,7 +10,14 @@ import pandas as pd
 import streamlit as st
 
 from app.i18n import DISEASE_AR, TEXT
-from app.ui import ASSETS, disease_grid, logo_html, scroll_to_results_script, wellness_message
+from app.ui import (
+    ASSETS,
+    disease_grid,
+    hero_art_html,
+    logo_html,
+    scroll_to_results_script,
+    wellness_message,
+)
 from nhanes_ai.features import derive_features
 from nhanes_ai.inference import LIMITS, InputError, ModelRegistry, release_fingerprint
 from nhanes_ai.schema import DISEASES, USER_FIELDS
@@ -54,8 +61,7 @@ st.markdown(
     f'<div class="research-badge"><i></i>{t["research"]}</div>'
     f'<div class="hero"><div class="hero-copy"><span class="eyebrow">{t["eyebrow"]}</span><h1>{t["title"]}</h1>'
     f'<p>{t["subtitle"]}</p><span class="scope-pill">{t["scope"]}</span></div>'
-    '<div class="hero-art" aria-hidden="true"><span class="orbit orbit-one"></span><span class="orbit orbit-two"></span>'
-    f'<div class="hero-scale">{logo_html()}</div><span class="float-dot dot-one"></span><span class="float-dot dot-two"></span></div></div>',
+    f'<div class="hero-art" aria-hidden="true">{hero_art_html()}</div></div>',
     unsafe_allow_html=True,
 )
 

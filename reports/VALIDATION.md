@@ -14,8 +14,13 @@
 - Disease cards use short condition definitions plus one common medical limitation.
   User-facing “model threshold” is now “alert level” / «حد التنبيه», defined as a research
   calculation. Comparison operators and all model operating points are unchanged.
-- The original waist illustration is retained at the user's request. The alternative
-  numbered-logo image is a preview only and is not part of the application or archive.
+- The original waist illustration is retained at the user's request. The user-approved
+  hollow-display logo replaces the shared header and browser-icon asset. The hero uses
+  a separate decorative measurement-card/tape/heart SVG instead of repeating the logo. Earlier
+  numbered/leaf/filled-display logo drafts are excluded from the application and archive.
+- Approved-logo/hero follow-up: the four existing application tests passed. Real Chromium
+  checks at390/768/1285px in both languages verified the exact approved header/favicon
+  bytes, the separate SVG illustration, responsive visibility, and no header scroller.
 - Existing43-test suite passed locally and in both native Windows/Linux CI jobs. Real Chromium desktop/mobile report and help
   interactions, both languages and first/repeated auto-scroll passed.
 - Same trusted portable model release20261102T184611Z-ebdefc95; no refit or data changes.

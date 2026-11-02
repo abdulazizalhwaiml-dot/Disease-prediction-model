@@ -25,13 +25,7 @@
 .hero p { color:#65818b; font-size:14px; line-height:1.9; margin:0 0 14px; }
 .scope-pill { font-size:11px; color:#47777d; background:#ffffffa1; border:1px solid #ffffff; border-radius:25px; padding:5px 10px; }
 .hero-art { display:flex; justify-content:center; align-items:center; position:relative; width:200px; height:170px; flex:none; }
-.hero-scale { background:#ffffffdb; border:1px solid white; border-radius:27px; height:145px; width:145px; display:flex; justify-content:center; align-items:center; transform:rotate(-6deg); box-shadow:0 14px 32px #269eab12; z-index:1; }
-.hero-scale .brand-logo { width:118px; height:118px; }
-.orbit { position:absolute; border:1px solid #cfe9ea; border-radius:50%; width:185px; height:185px; }
-.orbit-two { width:225px; height:225px; opacity:.6; }
-.float-dot { width:9px; height:9px; border-radius:50%; position:absolute; background:#75ccd0; }
-.dot-one { top:12px; right:12px; }
-.dot-two { bottom:15px; left:0; width:6px; height:6px; background:#b4d9c0; }
+.hero-illustration { display:block; width:100%; height:100%; object-fit:contain; }
 .st-key-input_panel { background:#fff; border:1px solid #e4edef; border-radius:25px; padding:27px 29px 24px; box-shadow:0 5px 24px #17404d03; }
 .section-heading { display:flex; align-items:center; gap:13px; margin:0 0 7px; text-align:start; }
 .step-number { width:35px; height:35px; display:flex; justify-content:center; align-items:center; flex:none; background:#eaf7f8; color:#2999a4; border-radius:12px; font-size:12px; font-weight:750; direction:ltr; }
