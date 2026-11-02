@@ -8,7 +8,7 @@ collecting request bodies, websocket payloads or session memory dumps.
 For an exposed deployment, use a TLS-terminating reverse proxy with authentication,
 appropriate access restrictions and session timeouts. Streamlit itself supplies no
 clinical user authorization or electronic health-record controls. Keep CORS and XSRF
-protection enabled. Set resource limits for worker memory and concurrent SHAP requests.
+protection enabled. Set resource limits for worker memory and concurrent sessions.
 
 The container runs as a non-root user. Treat the source and model directories as
 read-only. Load only trusted model artifacts. Hash checks detect accidental corruption,

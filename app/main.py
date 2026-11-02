@@ -6,11 +6,10 @@ from html import escape
 from pathlib import Path
 
 import pandas as pd
-import plotly.graph_objects as go
 import streamlit as st
 
 from app.i18n import DISEASE_AR, TEXT
-from app.ui import LOGO, disease_grid, help_label
+from app.ui import LOGO, disease_grid, help_label, wellness_message
 from nhanes_ai.features import derive_features
 from nhanes_ai.inference import LIMITS, InputError, ModelRegistry, release_fingerprint
 from nhanes_ai.schema import DISEASES, USER_FIELDS
@@ -44,7 +43,7 @@ st.sidebar.markdown(
     f'<div class="sidebar-rule"></div><div class="sidebar-caption">{t["privacy"]}</div>',
     unsafe_allow_html=True,
 )
-st.sidebar.caption("NHANES 2011–2018 · v2.0")
+st.sidebar.caption("NHANES 1999–2006 + 2011–2018 · v3.0")
 
 
 @st.cache_resource(show_spinner=False)
@@ -67,7 +66,7 @@ st.markdown(
     f'<div class="research-notice"><span>ⓘ</span><div>{t["notice"]}</div></div>',
     unsafe_allow_html=True,
 )
-assessment, evidence, guide = st.tabs([t["assessment"], t["evidence"], t["guide"]])
+assessment, guide = st.tabs([t["assessment"], t["guide"]])
 
 with assessment:
     form_column, result_column = st.columns([0.85, 1.5], gap="large")
@@ -146,8 +145,7 @@ with assessment:
                 )
             run_id = models.manifest["run_id"] if models else None
             if st.session_state.get("record") != record or st.session_state.get("run_id") != run_id:
-                for key in ["result", "explanations"]:
-                    st.session_state.pop(key, None)
+                st.session_state.pop("result", None)
             if st.button(
                 t["submit"],
                 type="primary",
@@ -158,9 +156,7 @@ with assessment:
                 try:
                     with st.spinner(t["running"]):
                         result = models.predict(record)
-                    st.session_state.update(
-                        result=result, record=record.copy(), explanations={}, run_id=run_id
-                    )
+                    st.session_state.update(result=result, record=record.copy(), run_id=run_id)
                 except InputError as error:
                     field = str(error).split(":")[0]
                     st.error(t.get(field + "_error", t["invalid"]))
@@ -191,58 +187,14 @@ with assessment:
                 result["predictions"] if result else None,
                 names,
                 t,
-                models.manifest["models"] if models else {},
             ),
             unsafe_allow_html=True,
         )
         st.markdown(f'<p class="legend">{t["legend"]}</p>', unsafe_allow_html=True)
         if result:
-            st.markdown(
-                f'<div class="explain-header"><div class="section-title">{t["explain"]}</div>'
-                f'<div class="section-note">{t["explain_subtitle"]}</div></div>',
-                unsafe_allow_html=True,
-            )
-            disease = st.selectbox(
-                t["select"], list(DISEASES), format_func=lambda k: names[k], key="explain_disease"
-            )
-            if st.button(t["explain_button"], key="explain"):
-                try:
-                    with st.spinner(t["explaining"]):
-                        st.session_state.explanations[disease] = models.explain(
-                            st.session_state.record, disease
-                        )
-                except Exception:
-                    st.error(t["explain_error"])
-            explanation = st.session_state.explanations.get(disease)
-            if explanation:
-                first, second = st.columns(2)
-                first.metric(t["baseline"], f"{explanation['baseline'] * 100:.1f}%")
-                second.metric(t["estimate"], f"{explanation['probability'] * 100:.1f}%")
-                contributions = sorted(
-                    explanation["contributions"].items(), key=lambda item: abs(item[1])
-                )
-                values = [value * 100 for _, value in contributions]
-                chart = go.Figure(
-                    go.Bar(
-                        x=values,
-                        y=[t.get(k, k) for k, _ in contributions],
-                        orientation="h",
-                        marker_color=["#ce7a62" if v > 0 else "#229f90" for v in values],
-                    )
-                )
-                chart.update_layout(
-                    height=380,
-                    margin=dict(l=0, r=0, t=10, b=0),
-                    xaxis_title=t["impact"],
-                    font=dict(family="Tahoma, sans-serif", color="#486670"),
-                    paper_bgcolor="rgba(0,0,0,0)",
-                    plot_bgcolor="rgba(0,0,0,0)",
-                )
-                chart.add_vline(x=0, line_color="#d0dfe3", line_width=1)
-                st.plotly_chart(chart, width="stretch", config={"displayModeBar": False})
-                st.caption(t["explain_note"])
-            else:
-                st.caption(t["explain_empty"])
+            st.markdown(wellness_message(result["predictions"], t), unsafe_allow_html=True)
+            if record["age"] >= 60:
+                st.caption(t["older_note"])
             st.download_button(
                 t["download"],
                 json.dumps(result, ensure_ascii=False, indent=2),
@@ -251,32 +203,6 @@ with assessment:
                 key="download",
             )
 
-with evidence:
-    st.subheader(t["evidence_title"])
-    st.info(t["evidence_note"])
-    if models:
-        st.metric(t["cohort"], f"{models.manifest['cohort']['remaining_records']:,}")
-        rows = []
-        for disease, entry in models.manifest["models"].items():
-            score = entry["test"]
-            rows.append(
-                {
-                    t["disease"]: names[disease],
-                    t["algorithm"]: entry["algorithm"],
-                    **{
-                        t[k]: round(score[k], 3)
-                        for k in ["recall", "precision", "f1", "roc_auc", "pr_auc", "brier"]
-                    },
-                    t["positive"]: score["positive"],
-                    t["n"]: score["n"],
-                }
-            )
-        st.dataframe(pd.DataFrame(rows), hide_index=True, width="stretch")
-        st.caption(f"{t['release']}: {models.manifest['run_id']}")
-        st.write(t["labels_text"].format(**models.manifest["label_config"]))
-    st.write(t["training_text"])
-    st.write(t["feature_text"])
-    st.info(t["measurement_note"])
 with guide:
     st.subheader(t["guide_title"])
     st.caption(t["guide_note"])

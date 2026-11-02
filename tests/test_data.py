@@ -15,9 +15,14 @@ def raw_rows(n=1):
     defaults = dict(
         SEQN=1,
         cycle="2011-2012",
+        source_era="2011-2018",
+        WTMEC4YR=np.nan,
+        dxa_observed=True,
+        dxa_flag_conflict=False,
+        family_diabetes=0,
+        family_heart_early=0,
         RIAGENDR=1,
         RIDAGEYR=45,
-        RIDRETH3=3,
         RIDSTATR=2,
         BMDSTATS=1,
         DXAEXSTS=1,
@@ -98,7 +103,7 @@ def test_cohort_age_pregnancy_exam_missing_units_and_id_exclusion():
     frame.loc[1, ["RIAGENDR", "RIDAGEYR", "RIDEXPRG"]] = [2, 30, 1]
     frame.loc[2, "DXAEXSTS"] = 6
     frame.loc[3, "BMXWAIST"] = np.nan
-    frame.loc[4, "RIDAGEYR"] = 60
+    frame.loc[4, "RIDAGEYR"] = 80
     frame.loc[5, ["RIAGENDR", "RIDAGEYR", "RIDEXPRG"]] = [2, 35, 3]
     frame.loc[6, ["RIAGENDR", "RIDAGEYR", "RIDEXPRG"]] = [2, 35, 2]
     cohort, audit = prepare_cohort(frame, LabelConfig())
@@ -108,15 +113,80 @@ def test_cohort_age_pregnancy_exam_missing_units_and_id_exclusion():
     assert cohort.fat_free_mass_kg.iloc[0] == 56
     assert "bone_mass_kg" not in cohort and "lean_mass_kg" not in cohort
     assert cohort.bmi.iloc[0] == pytest.approx(80 / 1.75**2)
-    assert cohort.mec_weight_8yr.iloc[0] == 1
+    assert cohort.WTMEC2YR.iloc[0] == 4
+    assert "mec_weight_8yr" not in cohort
 
 
 def test_family_history_codes_and_unknowns_are_not_negative():
     frame = raw_rows(6)
     frame["MCQ300A"] = [1, 2, 7, 9, np.nan, 2]
     frame["MCQ300C"] = [2, 1, 9, 7, np.nan, 1]
+    frame["family_diabetes"] = yes_no(frame.MCQ300C)
+    frame["family_heart_early"] = yes_no(frame.MCQ300A)
     cohort, audit = prepare_cohort(frame, LabelConfig())
     assert cohort.family_heart_early.iloc[:2].tolist() == [1, 0]
     assert cohort.family_diabetes.iloc[:2].tolist() == [0, 1]
     assert cohort[["family_diabetes", "family_heart_early"]].iloc[2:5].isna().all().all()
     assert audit["family_history"]["family_diabetes"] == {"yes": 2, "no": 1, "unknown": 3}
+
+
+def test_old_family_history_excludes_grandparents_and_preserves_unknown():
+    from nhanes_ai.data import OLD_FAMILY, old_family_history
+
+    f = pd.DataFrame(np.nan, index=range(7), columns=OLD_FAMILY)
+    f["MCQ250A"] = [2, 1, 1, 1, 9, 1, 1]
+    f.loc[1, "MCQ260AA"] = 1  # Mother.
+    f.loc[2, "MCQ260AC"] = 3  # Grandmother only: no first-degree history.
+    f.loc[3, "MCQ260AA"] = 99  # Kin unknown: not a negative.
+    f.loc[5, "MCQ260AG"] = 7  # Brother code, not questionnaire refusal.
+    result = old_family_history(f, "A")
+    assert result.iloc[:3].tolist() == [0, 1, 0]
+    assert result.iloc[3:5].isna().all()
+    assert result.iloc[5] == 1
+    assert pd.isna(result.iloc[6])  # General yes, all kin details missing.
+
+
+def test_old_dxa_is_not_duplicated_or_arbitrarily_imputed():
+    from nhanes_ai.data import DXA_MEASURES, collapse_observed_dxa
+
+    f = pd.concat([raw_rows(1)] * 5, ignore_index=True)
+    f["_MULT_"] = range(1, 6)
+    f["DXITOT"] = 0
+    assert len(collapse_observed_dxa(f)) == 1
+    assert collapse_observed_dxa(f).dxa_observed.iloc[0]
+    f.loc[1, DXA_MEASURES[1]] += 1
+    collapsed = collapse_observed_dxa(f)
+    assert not collapsed.dxa_observed.iloc[0]
+    assert collapsed.dxa_flag_conflict.iloc[0]
+    with pytest.raises(ValueError, match="five versions"):
+        collapse_observed_dxa(f.iloc[:4])
+
+
+def test_old_dxa_invalid_regions_override_a_zero_summary_flag():
+    from nhanes_ai.data import collapse_observed_dxa
+
+    f = pd.concat([raw_rows(1)] * 5, ignore_index=True)
+    f["_MULT_"] = range(1, 6)
+    f["DXITOT"] = 0
+    f["DXARATV"] = 4
+    collapsed = collapse_observed_dxa(f)
+    assert not collapsed.dxa_observed.iloc[0]
+    assert collapsed.dxa_flag_conflict.iloc[0]
+
+
+def test_sas_ibm_zero_decoding_is_normalized(monkeypatch):
+    from pathlib import Path
+
+    from nhanes_ai.data import read_xport
+
+    monkeypatch.setattr(
+        pd,
+        "read_sas",
+        lambda *a, **kw: pd.DataFrame(
+            {"SEQN": [1, 2, 3], "flag": [5.397605346934028e-79, 1, np.nan]}
+        ),
+    )
+    f = read_xport(Path("unused.xpt"))
+    assert f.flag.iloc[0] == 0
+    assert f.flag.iloc[1] == 1
+    assert pd.isna(f.flag.iloc[2])

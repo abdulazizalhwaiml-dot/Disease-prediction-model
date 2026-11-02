@@ -1,66 +1,54 @@
-# Model card and actual held-out results
+# MIZAN — trained models
 
-Release: `20261023T131025Z-6012cdf9`. Seed: 42. Python: 3.12.14.
+Release: `20261102T140111Z-4ba2271e`; seed 42; schema 3.
 
-## Intended use and limits
+Research only: cross-sectional NHANES disease labels, not future risk or diagnosis.
+Non-pregnant adults aged 20–79; ages 60–79 come only from 1999–2006.
+There is no contemporary external validation for older adults or home scales.
 
-Research into cross-sectional disease-label associations in US NHANES participants
-aged 20–59, excluding known/indeterminate pregnancy and incomplete body/DXA exams.
-No model has been clinically or externally validated. These are not forecasts of
-future disease, diagnostic tests, rule-out tools, or treatment recommendations.
+Cohort: 80,630 → **21,117** participants.
+Older DXA: retain fully observed scans only; count each participant once.
 
-## Cohort
+## Fixed evaluation partitions
 
-Initial participants: 39,156. After filtering: **10,623**.
+- Development: 1999–2000 and 2011–2014; 80% fit / 20% sigmoid calibration per target.
+- Validation: 2001–2002 and 2015–2016; select the mean AP across age groups
+  20–39, 40–59 and 60–79; ties use overall AP then ROC-AUC. Threshold maximizes F2.
+- Test: 2003–2006 and 2017–2018; no refitting or threshold tuning after evaluation.
 
-2011–2014: 80% model fitting, 20% independent sigmoid calibration (stratified per target).
-2015–2016: algorithm selection by average precision; operating threshold by maximum F2.
-2017–2018: untouched final evaluation. Selected models are not refit on validation or test.
+The 2017–2018 cycle was examined in earlier software; it is not a fresh external test.
+Older test cycles provide historical validation, not evidence of current clinical utility.
 
-## Test results
+## Combined test results
 
-| Target | Algorithm | Positive / N | Recall | Precision | F1 | ROC-AUC | Average precision |
-|---|---|---:|---:|---:|---:|---:|---:|
-| High cholesterol | logistic_regression | 606 / 2106 | 0.939 | 0.348 | 0.507 | 0.719 | 0.490 |
-| High blood pressure | logistic_regression | 624 / 2139 | 0.923 | 0.392 | 0.550 | 0.773 | 0.563 |
-| Diabetes | logistic_regression | 226 / 2088 | 0.814 | 0.255 | 0.389 | 0.829 | 0.389 |
-| Coronary artery disease | logistic_regression | 25 / 2195 | 0.120 | 0.081 | 0.097 | 0.871 | 0.073 |
-| Heart attack | random_forest | 33 / 2192 | 0.606 | 0.059 | 0.107 | 0.828 | 0.067 |
-| Angina | logistic_regression | 24 / 2192 | 0.167 | 0.068 | 0.096 | 0.844 | 0.057 |
-| Congestive heart failure | logistic_regression | 17 / 2194 | 0.294 | 0.036 | 0.065 | 0.801 | 0.029 |
-| Stroke | logistic_regression | 42 / 2195 | 0.357 | 0.128 | 0.189 | 0.792 | 0.079 |
+| Disease | Algorithm | Positive / N | Recall | Precision | F1 | ROC-AUC | AP | Brier |
+|---|---|---:|---:|---:|---:|---:|---:|---:|
+| High cholesterol | xgboost | 2025 / 4949 | 0.963 | 0.447 | 0.611 | 0.703 | 0.588 | 0.215 |
+| High blood pressure | logistic_regression | 1987 / 6313 | 0.911 | 0.422 | 0.577 | 0.790 | 0.624 | 0.167 |
+| Diabetes | lightgbm | 584 / 6213 | 0.813 | 0.222 | 0.349 | 0.834 | 0.358 | 0.072 |
+| Coronary artery disease | logistic_regression | 137 / 6457 | 0.613 | 0.089 | 0.155 | 0.841 | 0.109 | 0.020 |
+| Heart attack | xgboost | 145 / 6463 | 0.503 | 0.098 | 0.164 | 0.833 | 0.097 | 0.021 |
+| Angina | logistic_regression | 113 / 6452 | 0.549 | 0.081 | 0.140 | 0.817 | 0.068 | 0.017 |
+| Congestive heart failure | logistic_regression | 88 / 6458 | 0.273 | 0.056 | 0.092 | 0.783 | 0.046 | 0.013 |
+| Stroke | logistic_regression | 135 / 6465 | 0.207 | 0.074 | 0.109 | 0.791 | 0.061 | 0.020 |
 
-All four algorithms were actually compared for each target; see `model_comparison.csv`.
-Selected algorithms: logistic_regression, random_forest. No winner is hardcoded.
-The selection protocol is locked before test evaluation; poor test results are reported,
-not repaired by tuning against the held-out data.
+Four real algorithms per disease: Logistic Regression, Random Forest, XGBoost, LightGBM.
+Class weights address imbalance; calibration uses separate natural-prevalence rows.
+`model_comparison.csv` contains validation comparisons. `age_validation.csv` and
+`test_metrics.json` report performance by age, cycle and era, with sparse-cell flags.
+The latter includes 300 participant-bootstrap intervals, not survey-design intervals.
+Low precision and false negatives remain possible, especially for rare cardiac labels.
+No national prevalence claim: survey weights are metadata, not model-fitting weights.
 
-Rare outcomes have few positive test cases and unstable thresholds. Low recall or
-precision is flagged per disease in the manifest and remains visible in the app.
-An above/below study threshold result must not be interpreted as a diagnosis or rule-out.
+## Inputs and use
 
-## Calibration, uncertainty and fairness
+Eight inputs; BMI, fat mass and FFM use the same formulas in training and inference.
+No ethnicity, ID, bone mineral, disease labs or own-diagnosis variables are predictors.
+Historical family history is reconstructed for parents/siblings; unknown is not no.
+All diagnostic thresholds remain unchanged (non-HDL ≥190; BP ≥140/90; HbA1c ≥6.5%).
 
-Class-weighted models receive sigmoid calibration on natural-prevalence held-out training
-rows. Calibration is measured with Brier score, not assumed perfect. `test_metrics.json`
-includes confusion matrices, prevalence, 95% participant-bootstrap intervals (300 resamples),
-and recorded-sex/background subgroup metrics with sparse-cell flags. Intervals are
-unweighted and do not account for NHANES cluster/stratum sampling. MEC weights and
-design variables are retained for future survey-aware analysis but not used in this
-predictive benchmark. These results do not establish national prevalence or group parity.
+The app displays fixed general wellness messages according to model thresholds.
+They are not personalized treatment or proof of health. No explanation module is used.
 
-## Explanation and deployment
-
-Permutation SHAP explains calibrated probability over the original eight inputs using
-32 fitting rows. BMI and both masses are recomputed inside every model evaluation.
-Contributions are additive and checked against each model output. The baseline is a
-background-model average, not prevalence. Correlated inputs can share attribution.
-SHAP is not causal. Eight user inputs generate BMI, fat mass and fat-free mass identically
-in training and inference. Ethnicity, BMC and DXA lean soft tissue are not model inputs.
-Body fat was measured by DXA in NHANES; BIA smart-scale transfer is not validated.
-This temporal test cycle was also examined in the previous software version; this
-comparison is not a new independent external validation. No test results tune this run.
-
-Engineering validation and container packaging do not establish clinical readiness.
-Before patient-care deployment, independently validate performance, calibration, subgroup
-behavior and clinical operating thresholds in the intended population and measurement setting.
+Sources, hashes, runtime versions and selected pipeline checksums are in manifest.json.
+Historical assay/device changes, complete-case selection and population transfer limit use.

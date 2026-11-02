@@ -1,4 +1,4 @@
-"""Serializable preprocessing shared verbatim by training, inference and SHAP."""
+"""Serializable preprocessing shared verbatim by training and inference."""
 
 import numpy as np
 import pandas as pd
@@ -12,7 +12,7 @@ from nhanes_ai.schema import FAMILY_FIELDS, FEATURES, NUMERIC
 
 
 def derive_features(frame):
-    """One shared definition for training, UI, inference and SHAP perturbations."""
+    """One shared definition for training, UI and inference."""
     result = frame.copy()
     result["bmi"] = result.weight_kg / (result.height_cm / 100).pow(2)
     result["fat_mass_kg"] = result.weight_kg * result.body_fat_pct / 100

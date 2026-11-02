@@ -1,15 +1,15 @@
-# Trusted model releases
+# Trusted model release
 
-Run `python -m nhanes_ai.train` from the project root. Training writes eight calibrated
-`.joblib` pipelines to a versioned release directory, plus `manifest.json` containing
-SHA256 checksums, runtime versions, label definitions, cohort counts and test results.
-`current.json` is atomically updated only after the complete run succeeds.
+`current.json` selects the active directory containing eight calibrated joblib pipelines and
+`manifest.json`. The manifest records exact sources, schema3, ages20–79, runtime versions,
+selection rules, evaluation results and artifact checksums.
 
-The app checks all eight models, manifest integrity and dependency versions before use.
-Do not edit the pointer or checksums manually. Only load locally trained or independently
-trusted artifacts: joblib/pickle can execute code, and a checksum is not a digital signature.
+The ready application includes a complete trusted release. Rebuild with:
 
-Model binaries are generated artifacts, excluded from Git. Publish a complete release
-directory **and** its `current.json` as a GitHub release/CI artifact or bake them into the
-container. Keep the directory read-only in deployment. Retain the previous release for
-rollback. The current training runtime and source data are recorded in the manifest.
+```bash
+python scripts/download_data.py
+python -m nhanes_ai.train --jobs 2
+```
+
+Activation is atomic: a failed run does not replace the working release. Do not edit checksums
+or load user-uploaded pickle/joblib files. Keep code and model storage trusted and read-only.

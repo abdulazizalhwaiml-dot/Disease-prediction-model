@@ -15,3 +15,9 @@ models/*
 !models/README.md
 reports/runs/
 *.log
+
+# Downloadable public older XPORT sources (verified by data/older_sources.json).
+DATA_SET/1999-2000/
+DATA_SET/2001-2002/
+DATA_SET/2003-2004/
+DATA_SET/2005-2006/

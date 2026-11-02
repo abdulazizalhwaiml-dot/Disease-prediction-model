@@ -1,102 +1,91 @@
-# MIZAN v2 technical methodology
+# Methodology and cycle harmonization
 
-## Research question and cohort
+## Scope
 
-Estimate eight cross-sectional disease-label associations from eight entered measurements
-and family-history answers. This is neither prospective risk prediction nor clinical
-diagnosis. NHANES diagnoses may precede measurements or treatment. Smart-scale BIA data
-and Saudi populations have not been externally validated against these DXA-trained models.
+Eight cross-sectional disease-label models, ages 20–79, non-pregnant adults with complete
+observed DXA/body measurements. These are neither prospective forecasts nor diagnoses.
+The final cohort is 21,117: 10,494 from 1999–2006 and 10,623 from 2011–2018.
+All 2,789 participants aged 60–79 come from the older era. This selection is not nationally representative.
 
-Version 2 preserves the original 10,623-person complete-DXA cohort, ages 20–59, so the
-requested label thresholds and previous cohort remain comparable. Retaining complete-DXA
-requirements introduces selection even when BMC is no longer a predictor. Unknown family
-answers remain in the cohort; unknown outcomes are excluded separately for each disease.
-See the data dictionary for exact exclusions, questions and OR-label semantics.
+## Harmonization before joining
 
-## Feature engineering and leakage prevention
+- Read 77 original SAS XPORT files; require unique SEQN in each ordinary module and one-to-one joins.
+- Older DXA contains five imputation versions per person. Check all five, then retain one
+  record only where overall imputation flags are zero, released regional invalidity codes
+  are zero, and original DXA measurements agree across versions. Never select an arbitrary
+  imputation for training. In 2005 use both DXITOTBN and DXITOTST.
+- The 2003 DXA file has 80 cases whose zero summary flag conflicts with invalid regional
+  data and/or varying measurements; exclude them. Of these, 34 would otherwise pass the
+  20–79 project filters. This corrects the earlier feasibility count of 10,528 older records.
+- Normalize the SAS IBM-zero decoding artifact (~5.3976e-79) to numeric zero, preserving missing values.
+- Apply zero normalization to all cycles. It also corrects three recent BP labels from
+  negative to unknown where a zero reading had previously looked like a tiny positive number.
+  The number of BP-positive recent participants remains2,944; recent cohort size is unchanged.
+- Map older LAB13/L13 cholesterol and LAB10/L10 HbA1c files to common label columns.
+  HDL uses published LBDHDL (1999–2002), LBXHDD (2003–2004), LBDHDD thereafter.
+  Published assay corrections are not applied twice. HDL method changes remain a limitation.
+- Reconstruct older family history for parents/siblings only from MCQ260 detail fields.
+  MCQ250 alone includes grandparents and cannot be substituted directly. Valid grandparent-only
+  answers become no first-degree history; missing/refused kin details remain unknown.
+- Retain original survey weights/design metadata; do not invent one pooled weight for
+  these eras. Current modeling and intervals are unweighted research benchmarks.
 
-Inputs: age, sex, height, weight, waist, body-fat percentage, family diabetes and family
-heart attack/angina before age 50. Biological father/mother/siblings are included; a spouse
-and the participant's own diagnosis are excluded. The under-50 cutoff matches the actual
-NHANES questionnaire for either sex, not a different clinical 55/65 definition.
+Source download URLs, byte counts and SHA256 hashes are pinned in `data/older_sources.json`.
+The training manifest fingerprints all 77 files. Original 2011–2018 source files are unchanged.
+Official sources:
+[DXA index](https://wwwn.cdc.gov/nchs/nhanes/dxa/dxa.aspx),
+[2003 DXA](https://wwwn.cdc.gov/nchs/data/nhanes/public/2003/datafiles/dxx_c.pdf),
+[2005 DXA](https://wwwn.cdc.gov/Nchs/Data/Nhanes/Public/2005/DataFiles/DXX_D.htm),
+[2003 MCQ](https://wwwn.cdc.gov/Nchs/Data/Nhanes/Public/2003/DataFiles/MCQ_C.htm),
+[2003 cholesterol assay notes](https://wwwn.cdc.gov/Nchs/Data/Nhanes/Public/2003/DataFiles/L13_C.htm).
 
-`derive_features()` centrally calculates BMI, fat mass and FFM in training, app inference,
-live UI and every SHAP evaluation. Fat mass = weight × fat% /100; FFM = weight − fat mass.
-Do not train on independent DXA mass columns and then silently replace them with derived
-smart-scale estimates at prediction. Derived features are correlated, not independent
-new measurements. Regularization and constrained tree complexity reduce overfitting.
+## Features and labels
 
-Family 1/2 map to 1/0; refused=7, don't know=9 and blanks become unknown. Fixed
-`pd.get_dummies()` no/yes/unknown columns preserve missingness and avoid column drift.
-Nine numeric features plus six family dummies yield fifteen encoded features. Median
-imputation and standardization are fitted on fitting rows only and stored in each pipeline.
-Unknown history is never imputed as a negative answer. The UI requires explicit yes/no.
+Eight original inputs produce BMI, fat mass and FFM using `derive_features()` in training,
+UI and inference. These are correlated derived values, not three new independent measurements.
+Eleven predictors become fifteen encoded columns: nine numeric and six fixed family-history
+no/yes/unknown dummies, using `pd.get_dummies()`. Imputation medians and scaling are fitted
+only on fitting rows. Unknown history is never encoded as no.
 
-ID, cycle, survey weights, ethnicity, own-diagnosis questions, BP readings and lab results
-are excluded from FEATURES. Labels use clinical evidence, predictors do not. Ethnicity
-remains in a separately named column solely for offline subgroup auditing.
+Labels use self-reported diagnoses OR valid clinical evidence for cholesterol, BP and diabetes.
+Thresholds remain non-HDL190, BP140/90, HbA1c6.5. Unknown is not healthy. Details are in the data dictionary.
+ID, cycle, age-group labels, design variables, ethnicity, bone mineral, diagnostic labs and
+own-diagnosis answers never enter predictors. Age is the participant's current measurement age.
 
-## Algorithms, imbalance and calibration
+## Algorithms and fixed selection
 
-All four candidates are actually trained per target with a fixed seed:
-
-| Candidate | Constraints |
+| Candidate | Configuration |
 |---|---|
-| Logistic Regression | L2, C=0.5, balanced class weights, max_iter=2000 |
-| Random Forest | 160 trees, max depth 9, minimum leaf 12, balanced subsample weights |
-| XGBoost | 160 depth-3 trees, learning rate .04, subsample/column sample .85, L2=5, minimum child weight 8, fitting-set negative/positive class ratio |
-| LightGBM | 160 trees, depth 4, 12 leaves, learning rate .04, minimum leaf 30, L2=5, balanced classes |
+| Logistic Regression | L2, C=.5, balanced classes, max_iter2000 |
+| Random Forest | 160 trees, depth9, minimum leaf12, balanced subsample |
+| XGBoost | 160 depth3 trees, learning rate.04, subsample/column sample.85, L2=5, minimum child weight8, fit-set negative/positive ratio |
+| LightGBM | 160 trees, depth4, 12 leaves, learning rate.04, minimum leaf30, L2=5, balanced classes |
 
-These are bounded reproducible configurations, not exhaustive optimization. No SMOTE
-is applied to test/calibration data. Class weights address rarity without manufacturing
-synthetic clinical records. Weights alter raw probability behavior, so every candidate is
-sigmoid-calibrated on a disjoint natural-prevalence development partition. Brier score
-measures probability error; calibration is not assumed perfect, especially for rare targets.
+1. **Development:** 1999–2000 and2011–2014, stratified80% fitting/20% calibration separately per disease, seed42.
+2. **Validation:** 2001–2002 and2015–2016. Select the highest unweighted mean average precision
+   across ages20–39,40–59,60–79, then overall AP and ROC-AUC for ties. Each age band contributes
+   equally so the larger younger cohort does not dominate selection. Choose threshold by maximum
+   validationF2. No model is selected using accuracy alone.
+3. **Test:** 2003–2006 and2017–2018, after algorithm/threshold selection, without refitting.
 
-## Locked selection and evaluation protocol
+Each class-weighted candidate receives independent sigmoid calibration on natural-prevalence
+calibration rows. Report Recall, Precision, F1, F2, ROC-AUC, AP, Brier and confusion matrices.
+AP is sklearn average precision, not trapezoidal area. Calibration is measured, not presumed perfect.
+Three hundred participant-bootstrap resamples supply descriptive95% intervals, not survey-aware intervals.
 
-- 2011–2014: stratified per target, 80% fitting / 20% calibration, seed 42.
-- 2015–2016: select highest average precision, with ROC-AUC then F1 breaking ties.
-  Choose operating threshold by maximum F2, weighting recall more strongly.
-- 2017–2018: evaluate only after model and operating-point selection. No test tuning,
-  threshold repair or post-test refitting. This cycle was inspected in version 1;
-  this is temporal evaluation for comparison, not a new independent external validation.
+Age/cycle/era/sex/family subgroup results flag fewer than20 positives or negatives as sparse.
+The 2017–2018 cycle was already examined in previous versions. Historical elder holdouts are
+useful but do not establish contemporary older-adult or clinical validity. Smart-scale and
+Saudi population performance remain unvalidated. Poor rare-outcome results are reported honestly.
 
-Report recall, precision, F1, F2, ROC-AUC, average precision, Brier, confusion matrices,
-prevalence and split sizes. Accuracy is not the selection criterion. Three hundred
-participant-bootstrap resamples provide descriptive 95% intervals, not survey-design CIs.
-Subgroup metrics by sex, background and family history flag cells with fewer than 20
-positives or negatives. No national prevalence or parity claims follow from these reports.
-The generated model card always reflects the selected artifacts' actual outcomes.
+## Simple app and trusted artifacts
 
-## SHAP over the original eight inputs
+The interface has eight inputs, three automatic values, eight disease cards and one fixed
+wellness message. If any estimate crosses its own model threshold, show the attention message;
+otherwise show the maintain-habits message. Neither branch diagnoses disease or certifies health.
+No disease-specific advice or feature-attribution module is used. Colors follow research thresholds.
 
-Permutation SHAP receives eight original variables and 32 deterministically sampled
-fitting rows as background. Each perturbation recomputes BMI, fat mass and FFM, then
-applies the complete trained/calibrated pipeline. This preserves the derived mass and
-BMI identities and valid family categories, avoiding independent dummy-column masks.
-Use `3 × (2 × 8 + 1)` evaluations and verify baseline + contributions = probability.
-
-All eight contributions are shown in percentage points. The baseline is a background
-model average, not prevalence. Independent masking can still create unusual combinations
-of correlated original measurements; associations and attributions are not causal effects.
-
-## Interface and artifact integrity
-
-Arabic is default; English and RTL/LTR layouts use one shared implementation. Exactly
-five numeric fields plus sex and two family selectors produce eight user inputs. BMI and
-both masses update automatically. Native details/summary labels support click, touch,
-keyboard and hover explanations. The scope is always visible and age bounds enforced.
-
-Eight cards show real calibrated probabilities. Teal/amber/coral are relative to each
-model's research threshold (<.65×, .65–1×, ≥1×); they are not validated clinical risk bands.
-Actual poor performance is flagged. A permanent top badge identifies experimental use.
-User records stay session-local; changing inputs or release clears results/explanations.
-
-Schema version 2 and an explicit eight-input/eleven-feature contract reject older models.
-The registry verifies manifest hashes, exact dependencies, paths and artifact bytes before
-deserialization. A new current pointer activates only after a complete successful run.
-Hashes detect corruption, not untrusted-pickle safety. Keep model storage trusted/read-only.
-
-Engineering validation does not establish clinical readiness. Clinical deployment requires
-new independent population/device validation, calibrated operating points and utility studies.
+Schema3 records age limits20–79. Loading checks schema, input contract, Python/package versions,
+paths and SHA256 hashes before trusted joblib deserialization. The active pointer changes atomically
+only when all eight pipelines and reports are written. Hashes detect corruption, not malicious
+replacement of both manifest and model. Inputs remain session-local; changes clear old results.

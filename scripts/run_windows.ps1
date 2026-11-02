@@ -33,6 +33,8 @@ except Exception:
 '@
     & $MizanPython -c $CheckModels
     if ($LASTEXITCODE -ne 0) {
+        Write-Host 'Downloading and verifying the older public NHANES files...'
+        Invoke-Checked { & $MizanPython scripts/download_data.py }
         Write-Host 'Training the eight-input models. Each algorithm will print its progress...'
         Invoke-Checked { & $MizanPython -m nhanes_ai.train --jobs 2 }
     }

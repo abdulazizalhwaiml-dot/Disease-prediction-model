@@ -1,20 +1,22 @@
-{
-  "mobile": {
-    "viewport": 390,
-    "eight_cards": true,
-    "eight_inputs": true,
-    "real_predictions": true,
-    "help_clickable": true,
-    "no_horizontal_overflow": true,
-    "javascript_errors": []
+[
+  {
+    "viewport": "1440 desktop",
+    "age": 70,
+    "inputs": 8,
+    "cards": 8,
+    "help": true,
+    "wellness": "خطوة صحية تبدأ اليوم\n\nتجاوز أحد التقديرات عتبة النموذج. احرص على النشاط البدني المنتظم والغذاء المتوازن، واستشر مختصًا لتحديد الفحوصات المناسبة. هذه النتيجة ليست تشخيصًا.",
+    "overflow": false,
+    "errors": []
   },
-  "desktop": {
-    "viewport": 1440,
-    "eight_cards": true,
-    "eight_inputs": true,
-    "real_predictions": true,
-    "help_clickable": true,
-    "no_horizontal_overflow": true,
-    "javascript_errors": []
+  {
+    "viewport": "390 touch",
+    "age": 70,
+    "inputs": 8,
+    "cards": 8,
+    "help": true,
+    "wellness": "خطوة صحية تبدأ اليوم\n\nتجاوز أحد التقديرات عتبة النموذج. احرص على النشاط البدني المنتظم والغذاء المتوازن، واستشر مختصًا لتحديد الفحوصات المناسبة. هذه النتيجة ليست تشخيصًا.",
+    "overflow": false,
+    "errors": []
   }
-}
+]

@@ -1,4 +1,4 @@
-"""Input, encoding, serialization-integrity and real prediction/explanation checks."""
+"""Input, encoding, serialization-integrity and real prediction checks."""
 
 import json
 import shutil
@@ -9,7 +9,7 @@ import pytest
 
 from nhanes_ai.features import FeatureEncoder, preprocessing
 from nhanes_ai.inference import InputError, ModelRegistry, validate_record
-from nhanes_ai.schema import DISEASES, FEATURES, USER_FIELDS
+from nhanes_ai.schema import DISEASES, FEATURES
 from nhanes_ai.train import choose_threshold, metrics
 
 
@@ -29,7 +29,7 @@ def test_eight_inputs_automatic_composition_no_id(record):
 @pytest.mark.parametrize(
     "field,value",
     [
-        ("age", 60),
+        ("age", 80),
         ("age", 19),
         ("age", 30.5),
         ("weight_kg", np.nan),
@@ -89,23 +89,20 @@ def test_threshold_optimizes_validation_f2():
     assert metrics(y, p, threshold)["f2"] == max(metrics(y, p, t)["f2"] for t in p)
 
 
-def test_real_release_predicts_eight_targets_and_exact_shap(model_root, record):
+def test_real_release_predicts_eight_targets_and_expanded_ages(model_root, record):
     registry = ModelRegistry(model_root)
-    first = registry.predict(record)
-    second = registry.predict(record)
-    assert first["id"] != second["id"]
-    assert first["predictions"] == second["predictions"]
-    assert {p["disease"] for p in first["predictions"]} == set(DISEASES)
-    for prediction in first["predictions"]:
-        assert 0 <= prediction["probability"] <= 1
-        explanation = registry.explain(record, prediction["disease"])
-        assert explanation["probability"] == pytest.approx(prediction["probability"])
-        assert set(explanation["contributions"]) == set(USER_FIELDS)
-        assert explanation["baseline"] + sum(
-            explanation["contributions"].values()
-        ) == pytest.approx(prediction["probability"], abs=1e-6)
-    assert registry.manifest["cohort"]["remaining_records"] == 10623
+    for age in [20, 45, 60, 79]:
+        first = registry.predict({**record, "age": age})
+        second = registry.predict({**record, "age": age})
+        assert first["id"] != second["id"]
+        assert first["predictions"] == second["predictions"]
+        assert {p["disease"] for p in first["predictions"]} == set(DISEASES)
+        assert all(0 <= p["probability"] <= 1 for p in first["predictions"])
+    assert registry.manifest["cohort"]["remaining_records"] == 21117
+    assert registry.manifest["cohort"]["age_groups"]["60-79"] == 2789
     assert registry.manifest["clinical_validation"] is False
+    assert registry.manifest["age_limits"] == [20, 79]
+    assert not hasattr(registry, "explain")
 
 
 def test_corruption_fails_before_unpickling(model_root, tmp_path):

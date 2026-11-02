@@ -36,7 +36,7 @@ def probability_color(probability, threshold):
     return "#c96856", "#fff1ed"
 
 
-def disease_grid(predictions, names, text, model_entries):
+def disease_grid(predictions, names, text):
     predictions = {p["disease"]: p for p in predictions} if predictions else {}
     cards = []
     for index, disease in enumerate(DISEASES):
@@ -49,10 +49,6 @@ def disease_grid(predictions, names, text, model_entries):
             text["above"] if p and p["above_threshold"] else text["below"] if p else text["waiting"]
         )
         threshold = f"{text['threshold']} {p['threshold'] * 100:.1f}%" if p else text["probability"]
-        limited = bool(p and model_entries[disease].get("quality_flags"))
-        quality = (
-            f'<div class="quality">{escape(text["limited_evidence"])}</div>' if limited else ""
-        )
         width = p["probability"] * 100 if p else 0
         cards.append(
             f'<article class="disease-card" style="--accent:{color};--tint:{background}" '
@@ -65,6 +61,17 @@ def disease_grid(predictions, names, text, model_entries):
             f'<div class="probability" dir="ltr">{value}</div>'
             f'<div class="probability-track"><span style="width:{width:.4f}%"></span></div>'
             f'<div class="card-foot"><span class="status-dot"></span>{escape(status)}</div>'
-            f'<div class="threshold">{escape(threshold)}</div>{quality}</article>'
+            f'<div class="threshold">{escape(threshold)}</div></article>'
         )
     return '<div class="disease-grid">' + "".join(cards) + "</div>"
+
+
+def wellness_message(predictions, text):
+    """One fixed message per outcome branch, never individualized medical advice."""
+    attention = any(item["above_threshold"] for item in predictions)
+    key = "attention" if attention else "maintain"
+    return (
+        f'<div class="wellness-message {key}" role="status">'
+        f"<strong>{escape(text[key + '_title'])}</strong>"
+        f"<p>{escape(text[key + '_message'])}</p></div>"
+    )

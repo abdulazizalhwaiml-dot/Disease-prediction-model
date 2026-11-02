@@ -1,6 +1,7 @@
-"""Export the exact v2 cohort without the protected audit column.
+"""Export the merged, unscaled cohort and a machine-readable column dictionary.
 
-Run: python scripts/export_dataset.py . Preserves physical units and unknown values.
+Run from the project folder: python scripts/export_dataset.py
+Unknown labels/history stay blank. ID, design and partition columns are never predictors.
 """
 
 import argparse
@@ -19,10 +20,8 @@ def main():
     parser.add_argument("--data", type=Path, default=root / "DATA_SET")
     parser.add_argument("--output", type=Path, default=root / "data/processed")
     args = parser.parse_args()
-    config = LabelConfig(non_hdl_mg_dl=190)
-    cohort, audit = prepare_cohort(read_cycles(args.data), config)
-    frame = cohort.drop(columns="ethnicity_audit")
-    assert len(frame) == 10623 and len(frame.columns) == 25
+    config = LabelConfig()
+    frame, audit = prepare_cohort(read_cycles(args.data), config)
     for name in [
         "SEQN",
         "age",
@@ -35,15 +34,17 @@ def main():
     ]:
         frame[name] = frame[name].astype("Int64")
     args.output.mkdir(parents=True, exist_ok=True)
-    path = args.output / "NHANES_MIZAN_v2.csv"
+    path = args.output / "NHANES_MIZAN.csv"
     frame.to_csv(path, index=False, encoding="utf-8-sig")
     pd.testing.assert_frame_equal(pd.read_csv(path), frame, check_dtype=False)
     metadata = {
         "rows": len(frame),
         "columns": len(frame.columns),
+        "column_names": frame.columns.tolist(),
         "user_inputs": USER_FIELDS,
         "model_features": FEATURES,
         "targets": list(DISEASES),
+        "metadata_columns": [c for c in frame if c not in FEATURES + list(DISEASES)],
         "label_config": config.to_dict(),
         "cohort": audit,
         "derived_formulas": {
@@ -55,7 +56,7 @@ def main():
         "target_codes": {"1": "positive", "0": "known negative", "blank": "unknown"},
         "scaled": False,
         "imputed": False,
-        "ethnicity_exported": False,
+        "pooled_survey_weight": None,
     }
     (args.output / "dataset_metadata.json").write_text(json.dumps(metadata, indent=2) + "\n")
     print(f"Exported and verified {len(frame):,} rows / {len(frame.columns)} columns: {path}")

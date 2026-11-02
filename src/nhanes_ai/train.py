@@ -39,7 +39,17 @@ from xgboost import XGBClassifier
 
 from nhanes_ai.data import prepare_cohort, read_cycles
 from nhanes_ai.features import preprocessing
-from nhanes_ai.schema import DISEASES, FEATURES, NUMERIC, SCHEMA_VERSION, USER_FIELDS, LabelConfig
+from nhanes_ai.schema import (
+    AGE_MAX,
+    AGE_MIN,
+    DISEASES,
+    FEATURES,
+    NUMERIC,
+    PARTITIONS,
+    SCHEMA_VERSION,
+    USER_FIELDS,
+    LabelConfig,
+)
 
 
 def classifiers(y, seed, jobs):
@@ -137,7 +147,14 @@ def bootstrap_intervals(y, probabilities, threshold, seed, repeats=300):
 def subgroup_metrics(frame, y, probabilities, threshold):
     """Report small-group limitations instead of treating sparse estimates as reliable."""
     result = {}
-    for attribute in ["gender", "ethnicity_audit", "family_diabetes", "family_heart_early"]:
+    for attribute in [
+        "age_group",
+        "source_era",
+        "cycle",
+        "gender",
+        "family_diabetes",
+        "family_heart_early",
+    ]:
         result[attribute] = {}
         for group in sorted(frame[attribute].dropna().unique()):
             mask = frame[attribute].eq(group).fillna(False).to_numpy(dtype=bool)
@@ -145,7 +162,7 @@ def subgroup_metrics(frame, y, probabilities, threshold):
             entry = {"n": n, "positive": positive, "sparse": positive < 20 or n - positive < 20}
             if len(np.unique(y[mask])) == 2:
                 entry.update(metrics(y[mask], probabilities[mask], threshold))
-            result[attribute][str(int(group))] = entry
+            result[attribute][str(group)] = entry
     return result
 
 
@@ -154,80 +171,66 @@ def save_json(path, value):
 
 
 def write_model_card(path, manifest):
-    """Keep the human-readable evaluation synchronized with the exact exported release."""
+    """Write a short model card directly from the exported release."""
     lines = [
-        "# Model card and actual held-out results",
+        "# MIZAN — trained models",
         "",
-        f"Release: `{manifest['run_id']}`. Seed: {manifest['seed']}. Python: {manifest['python']}.",
+        f"Release: `{manifest['run_id']}`; seed {manifest['seed']}; schema {SCHEMA_VERSION}.",
         "",
-        "## Intended use and limits",
+        "Research only: cross-sectional NHANES disease labels, not future risk or diagnosis.",
+        "Non-pregnant adults aged 20–79; ages 60–79 come only from 1999–2006.",
+        "There is no contemporary external validation for older adults or home scales.",
         "",
-        "Research into cross-sectional disease-label associations in US NHANES participants",
-        "aged 20–59, excluding known/indeterminate pregnancy and incomplete body/DXA exams.",
-        "No model has been clinically or externally validated. These are not forecasts of",
-        "future disease, diagnostic tests, rule-out tools, or treatment recommendations.",
+        f"Cohort: {manifest['cohort']['initial_records']:,} → **{manifest['cohort']['remaining_records']:,}** participants.",
+        "Older DXA: retain fully observed scans only; count each participant once.",
         "",
-        "## Cohort",
+        "## Fixed evaluation partitions",
         "",
-        f"Initial participants: {manifest['cohort']['initial_records']:,}. "
-        f"After filtering: **{manifest['cohort']['remaining_records']:,}**.",
+        "- Development: 1999–2000 and 2011–2014; 80% fit / 20% sigmoid calibration per target.",
+        "- Validation: 2001–2002 and 2015–2016; select the mean AP across age groups",
+        "  20–39, 40–59 and 60–79; ties use overall AP then ROC-AUC. Threshold maximizes F2.",
+        "- Test: 2003–2006 and 2017–2018; no refitting or threshold tuning after evaluation.",
         "",
-        "2011–2014: 80% model fitting, 20% independent sigmoid calibration (stratified per target).",
-        "2015–2016: algorithm selection by average precision; operating threshold by maximum F2.",
-        "2017–2018: untouched final evaluation. Selected models are not refit on validation or test.",
+        "The 2017–2018 cycle was examined in earlier software; it is not a fresh external test.",
+        "Older test cycles provide historical validation, not evidence of current clinical utility.",
         "",
-        "## Test results",
+        "## Combined test results",
         "",
-        "| Target | Algorithm | Positive / N | Recall | Precision | F1 | ROC-AUC | Average precision |",
-        "|---|---|---:|---:|---:|---:|---:|---:|",
+        "| Disease | Algorithm | Positive / N | Recall | Precision | F1 | ROC-AUC | AP | Brier |",
+        "|---|---|---:|---:|---:|---:|---:|---:|---:|",
     ]
     for disease, entry in manifest["models"].items():
-        result = entry["test"]
+        score = entry["test"]
         lines.append(
-            f"| {DISEASES[disease]} | {entry['algorithm']} | {result['positive']} / {result['n']} | "
+            f"| {DISEASES[disease]} | {entry['algorithm']} | {score['positive']} / {score['n']} | "
             + " | ".join(
-                f"{result[key]:.3f}" for key in ["recall", "precision", "f1", "roc_auc", "pr_auc"]
+                f"{score[key]:.3f}"
+                for key in ["recall", "precision", "f1", "roc_auc", "pr_auc", "brier"]
             )
             + " |"
         )
     lines += [
         "",
-        "All four algorithms were actually compared for each target; see `model_comparison.csv`.",
-        "Selected algorithms: "
-        + ", ".join(sorted({entry["algorithm"] for entry in manifest["models"].values()}))
-        + ". No winner is hardcoded.",
-        "The selection protocol is locked before test evaluation; poor test results are reported,",
-        "not repaired by tuning against the held-out data.",
+        "Four real algorithms per disease: Logistic Regression, Random Forest, XGBoost, LightGBM.",
+        "Class weights address imbalance; calibration uses separate natural-prevalence rows.",
+        "`model_comparison.csv` contains validation comparisons. `age_validation.csv` and",
+        "`test_metrics.json` report performance by age, cycle and era, with sparse-cell flags.",
+        "The latter includes 300 participant-bootstrap intervals, not survey-design intervals.",
+        "Low precision and false negatives remain possible, especially for rare cardiac labels.",
+        "No national prevalence claim: survey weights are metadata, not model-fitting weights.",
         "",
-        "Rare outcomes have few positive test cases and unstable thresholds. Low recall or",
-        "precision is flagged per disease in the manifest and remains visible in the app.",
-        "An above/below study threshold result must not be interpreted as a diagnosis or rule-out.",
+        "## Inputs and use",
         "",
-        "## Calibration, uncertainty and fairness",
+        "Eight inputs; BMI, fat mass and FFM use the same formulas in training and inference.",
+        "No ethnicity, ID, bone mineral, disease labs or own-diagnosis variables are predictors.",
+        "Historical family history is reconstructed for parents/siblings; unknown is not no.",
+        "All diagnostic thresholds remain unchanged (non-HDL ≥190; BP ≥140/90; HbA1c ≥6.5%).",
         "",
-        "Class-weighted models receive sigmoid calibration on natural-prevalence held-out training",
-        "rows. Calibration is measured with Brier score, not assumed perfect. `test_metrics.json`",
-        "includes confusion matrices, prevalence, 95% participant-bootstrap intervals (300 resamples),",
-        "and recorded-sex/background subgroup metrics with sparse-cell flags. Intervals are",
-        "unweighted and do not account for NHANES cluster/stratum sampling. MEC weights and",
-        "design variables are retained for future survey-aware analysis but not used in this",
-        "predictive benchmark. These results do not establish national prevalence or group parity.",
+        "The app displays fixed general wellness messages according to model thresholds.",
+        "They are not personalized treatment or proof of health. No explanation module is used.",
         "",
-        "## Explanation and deployment",
-        "",
-        "Permutation SHAP explains calibrated probability over the original eight inputs using",
-        "32 fitting rows. BMI and both masses are recomputed inside every model evaluation.",
-        "Contributions are additive and checked against each model output. The baseline is a",
-        "background-model average, not prevalence. Correlated inputs can share attribution.",
-        "SHAP is not causal. Eight user inputs generate BMI, fat mass and fat-free mass identically",
-        "in training and inference. Ethnicity, BMC and DXA lean soft tissue are not model inputs.",
-        "Body fat was measured by DXA in NHANES; BIA smart-scale transfer is not validated.",
-        "This temporal test cycle was also examined in the previous software version; this",
-        "comparison is not a new independent external validation. No test results tune this run.",
-        "",
-        "Engineering validation and container packaging do not establish clinical readiness.",
-        "Before patient-care deployment, independently validate performance, calibration, subgroup",
-        "behavior and clinical operating thresholds in the intended population and measurement setting.",
+        "Sources, hashes, runtime versions and selected pipeline checksums are in manifest.json.",
+        "Historical assay/device changes, complete-case selection and population transfer limit use.",
     ]
     path.write_text("\n".join(lines) + "\n")
 
@@ -243,14 +246,14 @@ def train(data_root: Path, output: Path, reports: Path, config=LabelConfig(), se
     comparisons, evaluations, entries = [], {}, {}
     versions = {
         pkg: version(pkg)
-        for pkg in ["numpy", "pandas", "scikit-learn", "scipy", "lightgbm", "joblib", "shap"]
+        for pkg in ["numpy", "pandas", "scikit-learn", "scipy", "lightgbm", "joblib"]
     }
     versions["xgboost"] = __import__("xgboost").__version__
     for disease in DISEASES:
         known = cohort.loc[cohort[disease].notna()].copy()
-        development = known.loc[known.cycle.isin(["2011-2012", "2013-2014"])]
-        validation = known.loc[known.cycle.eq("2015-2016")]
-        test = known.loc[known.cycle.eq("2017-2018")]
+        development = known.loc[known.partition.eq("development")]
+        validation = known.loc[known.partition.eq("validation")]
+        test = known.loc[known.partition.eq("test")]
         for name, partition in [
             ("development", development),
             ("validation", validation),
@@ -277,6 +280,12 @@ def train(data_root: Path, output: Path, reports: Path, config=LabelConfig(), se
             probability = pipeline.predict_proba(validation[FEATURES])[:, 1]
             threshold = choose_threshold(y_val, probability)
             score = metrics(y_val, probability, threshold)
+            age_scores = []
+            for group in sorted(validation.age_group.unique()):
+                mask = validation.age_group.eq(group).to_numpy()
+                if len(np.unique(y_val[mask])) == 2:
+                    age_scores.append(average_precision_score(y_val[mask], probability[mask]))
+            score["age_macro_ap"] = float(np.mean(age_scores))
             comparisons.append(
                 {
                     "disease": disease,
@@ -285,10 +294,17 @@ def train(data_root: Path, output: Path, reports: Path, config=LabelConfig(), se
                 }
             )
             candidates.append(
-                (score["pr_auc"], score["roc_auc"], score["f1"], algorithm, pipeline, threshold)
+                (
+                    score["age_macro_ap"],
+                    score["pr_auc"],
+                    score["roc_auc"],
+                    algorithm,
+                    pipeline,
+                    threshold,
+                )
             )
             print(
-                f"{disease} / {algorithm}: validation AP={score['pr_auc']:.3f}, "
+                f"{disease} / {algorithm}: age-macro AP={score['age_macro_ap']:.3f}, AP={score['pr_auc']:.3f}, "
                 f"recall={score['recall']:.3f}, F1={score['f1']:.3f}",
                 flush=True,
             )
@@ -320,15 +336,12 @@ def train(data_root: Path, output: Path, reports: Path, config=LabelConfig(), se
             quality_flags.append("low_heldout_precision")
         if evaluation["positive"] < 30:
             quality_flags.append("few_positive_test_cases")
-        background_rows = fitting[FEATURES].sample(n=min(32, len(fitting)), random_state=seed)
         bundle = {
             "schema_version": SCHEMA_VERSION,
             "disease": disease,
             "algorithm": algorithm,
             "pipeline": pipeline,
             "threshold": threshold,
-            "background": background_rows[USER_FIELDS].to_numpy(dtype=float),
-            "feature_names": USER_FIELDS,
             "encoded_feature_names": pipeline.named_steps["preprocess"]
             .get_feature_names_out()
             .tolist(),
@@ -363,9 +376,11 @@ def train(data_root: Path, output: Path, reports: Path, config=LabelConfig(), se
         "versions": versions,
         "seed": seed,
         "label_config": config.to_dict(),
-        "selection": "validation average precision, then ROC-AUC, then F1",
+        "selection": "validation mean age-group average precision, then overall AP, then ROC-AUC",
+        "partitions": PARTITIONS,
+        "age_limits": [AGE_MIN, AGE_MAX],
         "threshold_selection": "maximum validation F2; no test-set tuning",
-        "scope": "Non-pregnant US NHANES participants aged 20-59 with complete DXA exams",
+        "scope": "Non-pregnant US NHANES participants aged 20-79 with observed complete DXA exams",
         "clinical_validation": False,
         "cohort": audit,
         "sources_sha256": sources,
@@ -375,8 +390,8 @@ def train(data_root: Path, output: Path, reports: Path, config=LabelConfig(), se
         },
         "training_reference_ranges": {
             name: {
-                "min": float(cohort.loc[cohort.cycle.isin(["2011-2012", "2013-2014"]), name].min()),
-                "max": float(cohort.loc[cohort.cycle.isin(["2011-2012", "2013-2014"]), name].max()),
+                "min": float(cohort.loc[cohort.partition.eq("development"), name].min()),
+                "max": float(cohort.loc[cohort.partition.eq("development"), name].max()),
             }
             for name in NUMERIC
         },
@@ -384,12 +399,29 @@ def train(data_root: Path, output: Path, reports: Path, config=LabelConfig(), se
     }
     save_json(release / "manifest.json", manifest)
     pd.DataFrame(comparisons).to_csv(report_dir / "model_comparison.csv", index=False)
+    age_rows = []
+    for disease, evaluation in evaluations.items():
+        for group, score in evaluation["subgroups"]["age_group"].items():
+            age_rows.append(
+                {
+                    "disease": disease,
+                    "age_group": group,
+                    **{key: value for key, value in score.items() if key != "confusion_matrix"},
+                }
+            )
+    pd.DataFrame(age_rows).to_csv(report_dir / "age_validation.csv", index=False)
     save_json(report_dir / "test_metrics.json", evaluations)
     save_json(report_dir / "cohort.json", audit)
     save_json(report_dir / "manifest.json", manifest)
     write_model_card(report_dir / "MODEL_CARD.md", manifest)
     reports.mkdir(parents=True, exist_ok=True)
-    for filename in ["model_comparison.csv", "test_metrics.json", "cohort.json", "MODEL_CARD.md"]:
+    for filename in [
+        "model_comparison.csv",
+        "age_validation.csv",
+        "test_metrics.json",
+        "cohort.json",
+        "MODEL_CARD.md",
+    ]:
         (reports / filename).write_bytes((report_dir / filename).read_bytes())
     # Atomic pointer activation: a failed run never replaces the previously working release.
     pointer = {

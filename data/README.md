@@ -1,22 +1,17 @@
-# Data layout
+# Data
 
-Original public NHANES SAS XPORT files remain unchanged in `../DATA_SET/`:
+`DATA_SET/` contains the original XPORT files, one folder per two-year cycle.
 
-```
-DATA_SET/
-  2011-2012/   # suffix G
-  2013-2014/   # suffix H
-  2015-2016/   # suffix I
-  2017-2018/   # suffix J
-```
+- 2011–2018: 40 supplied files, tracked unchanged.
+- 1999–2006: 37 public CDC files, downloaded with `python scripts/download_data.py`.
+  URLs, hashes and sizes are in `older_sources.json`; large older raw files are not tracked.
 
-Each cycle has DEMO, BMX, DXX, BPQ, BPX, DIQ, MCQ, TCHOL, HDL and GHB files.
-`read_cycles()` checks required variables and one-to-one participant joins. No downloads
-are required. Files are fingerprinted in every model manifest.
+Run `python scripts/export_dataset.py` to reproduce:
 
-`processed/` holds local ignored exports. Run `python scripts/export_dataset.py` to save
-`NHANES_MIZAN_v2.csv` and metadata JSON: 10,623 rows with eight entered inputs, three
-derived features, eight targets and six metadata columns (25 total). Family yes/no are
-1/0; unknown histories/outcomes stay blank. The offline-only ethnicity audit column is
-excluded from exports. Training works in memory and never alters the source files.
-See [the data dictionary](../docs/DATA_DICTIONARY.md) for variable mappings and units.
+- `processed/NHANES_MIZAN.csv`: 21,117 rows, 28 columns; UTF-8 BOM for Excel.
+- `processed/dataset_metadata.json`: exact columns, formulas, label definitions and filter counts.
+
+Columns: 11 predictors, eight nullable targets and nine metadata columns. Metadata never enters
+prediction. Values use original units; unknown history/targets stay blank. The export has no
+ethnicity or bone-mineral field. It contains only one row per participant and observed DXA data.
+See [the dictionary](../docs/DATA_DICTIONARY.md) for mappings and the historical-DXA quality correction.

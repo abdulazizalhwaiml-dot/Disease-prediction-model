@@ -2,15 +2,14 @@
 
 from dataclasses import asdict, dataclass
 
-ETHNICITY = {
-    1: "Mexican American",
-    2: "Other Hispanic",
-    3: "Non-Hispanic White",
-    4: "Non-Hispanic Black",
-    6: "Non-Hispanic Asian",
-    7: "Other / multiracial",
+SCHEMA_VERSION = 3
+AGE_MIN, AGE_MAX = 20, 79
+# Separate earlier/later cycles within each era; never tune using test outcomes.
+PARTITIONS = {
+    "development": ["1999-2000", "2011-2012", "2013-2014"],
+    "validation": ["2001-2002", "2015-2016"],
+    "test": ["2003-2004", "2005-2006", "2017-2018"],
 }
-SCHEMA_VERSION = 2
 USER_FIELDS = [
     "age",
     "gender",

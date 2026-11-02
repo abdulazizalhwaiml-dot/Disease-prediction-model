@@ -1,0 +1,201 @@
+{
+  "rows": 21117,
+  "columns": 28,
+  "column_names": [
+    "SEQN",
+    "cycle",
+    "WTMEC2YR",
+    "WTMEC4YR",
+    "SDMVSTRA",
+    "SDMVPSU",
+    "gender",
+    "age",
+    "waist_cm",
+    "weight_kg",
+    "height_cm",
+    "bmi",
+    "body_fat_pct",
+    "fat_mass_kg",
+    "fat_free_mass_kg",
+    "family_diabetes",
+    "family_heart_early",
+    "high_cholesterol",
+    "high_blood_pressure",
+    "diabetes",
+    "coronary_artery_disease",
+    "heart_attack",
+    "angina",
+    "heart_failure",
+    "stroke",
+    "partition",
+    "source_era",
+    "age_group"
+  ],
+  "user_inputs": [
+    "age",
+    "gender",
+    "height_cm",
+    "weight_kg",
+    "waist_cm",
+    "body_fat_pct",
+    "family_diabetes",
+    "family_heart_early"
+  ],
+  "model_features": [
+    "gender",
+    "age",
+    "waist_cm",
+    "weight_kg",
+    "height_cm",
+    "bmi",
+    "body_fat_pct",
+    "fat_mass_kg",
+    "fat_free_mass_kg",
+    "family_diabetes",
+    "family_heart_early"
+  ],
+  "targets": [
+    "high_cholesterol",
+    "high_blood_pressure",
+    "diabetes",
+    "coronary_artery_disease",
+    "heart_attack",
+    "angina",
+    "heart_failure",
+    "stroke"
+  ],
+  "metadata_columns": [
+    "SEQN",
+    "cycle",
+    "WTMEC2YR",
+    "WTMEC4YR",
+    "SDMVSTRA",
+    "SDMVPSU",
+    "partition",
+    "source_era",
+    "age_group"
+  ],
+  "label_config": {
+    "non_hdl_mg_dl": 190.0,
+    "systolic_mm_hg": 140.0,
+    "diastolic_mm_hg": 90.0,
+    "hba1c_pct": 6.5
+  },
+  "cohort": {
+    "initial_records": 80630,
+    "exclusions": {
+      "outside_age_20_79": 41095,
+      "pregnant_or_indeterminate_pregnancy": 2182,
+      "missing_or_incomplete_clinical_exam": 13136,
+      "imputed_or_unknown_dxa": 1665,
+      "missing_or_nonpositive_measurements": 1435,
+      "unknown_recorded_sex": 0
+    },
+    "dxa_flag_conflicts_in_sources": 80,
+    "remaining_records": 21117,
+    "cycles": {
+      "1999-2000": 2918,
+      "2001-2002": 3302,
+      "2003-2004": 2380,
+      "2005-2006": 1894,
+      "2011-2012": 2647,
+      "2013-2014": 3044,
+      "2015-2016": 2736,
+      "2017-2018": 2196
+    },
+    "age_groups": {
+      "20-39": 9431,
+      "40-59": 8897,
+      "60-79": 2789
+    },
+    "era_age_groups": {
+      "1999-2006": {
+        "20-39": 4086,
+        "40-59": 3619,
+        "60-79": 2789
+      },
+      "2011-2018": {
+        "20-39": 5345,
+        "40-59": 5278,
+        "60-79": 0
+      }
+    },
+    "partitions": {
+      "development": 8609,
+      "test": 6470,
+      "validation": 6038
+    },
+    "family_history": {
+      "family_diabetes": {
+        "yes": 7840,
+        "no": 12874,
+        "unknown": 403
+      },
+      "family_heart_early": {
+        "yes": 2147,
+        "no": 18438,
+        "unknown": 532
+      }
+    },
+    "targets": {
+      "high_cholesterol": {
+        "known": 17221,
+        "positive": 6623,
+        "unknown": 3896
+      },
+      "high_blood_pressure": {
+        "known": 20674,
+        "positive": 6517,
+        "unknown": 443
+      },
+      "diabetes": {
+        "known": 20238,
+        "positive": 1991,
+        "unknown": 879
+      },
+      "coronary_artery_disease": {
+        "known": 21068,
+        "positive": 415,
+        "unknown": 49
+      },
+      "heart_attack": {
+        "known": 21099,
+        "positive": 445,
+        "unknown": 18
+      },
+      "angina": {
+        "known": 21068,
+        "positive": 352,
+        "unknown": 49
+      },
+      "heart_failure": {
+        "known": 21080,
+        "positive": 278,
+        "unknown": 37
+      },
+      "stroke": {
+        "known": 21103,
+        "positive": 384,
+        "unknown": 14
+      }
+    }
+  },
+  "derived_formulas": {
+    "bmi": "weight_kg / (height_cm / 100)^2",
+    "fat_mass_kg": "weight_kg * body_fat_pct / 100",
+    "fat_free_mass_kg": "weight_kg - fat_mass_kg"
+  },
+  "family_codes": {
+    "1": "yes",
+    "0": "no",
+    "blank": "unknown; not negative"
+  },
+  "target_codes": {
+    "1": "positive",
+    "0": "known negative",
+    "blank": "unknown"
+  },
+  "scaled": false,
+  "imputed": false,
+  "pooled_survey_weight": null
+}

@@ -1,94 +1,80 @@
-# Version 2 data dictionary
+# قاموس بيانات ميزان
 
-## Eight entered inputs
+## مدخلات النموذج
 
-| App / feature field | Source | Meaning |
+| العمود | المعنى | مصدر NHANES |
 |---|---|---|
-| `age` | DEMO `RIDAGEYR` | Completed years, 20–59 |
-| `gender` | DEMO `RIAGENDR` | 1 male / 2 female |
-| `height_cm` | BMX `BMXHT` | Standing height, cm |
-| `weight_kg` | BMX `BMXWT` | Body weight, kg |
-| `waist_cm` | BMX `BMXWAIST` | Circumference at upper right iliac border, cm |
-| `body_fat_pct` | DXX `DXDTOPF` | DXA body-fat percentage; BIA transfer is unvalidated |
-| `family_diabetes` | MCQ `MCQ300C` | A biological father/mother/sister/brother, living or deceased, ever told by a health professional they had diabetes; no age condition |
-| `family_heart_early` | MCQ `MCQ300A` | The same biological relatives ever told they had a heart attack or angina **before age 50**, for either sex |
+| age | العمر المكتمل 20–79 | RIDAGEYR |
+| gender | 1 ذكر، 2 أنثى | RIAGENDR |
+| height_cm | الطول بالسم | BMXHT |
+| weight_kg | الوزن بالكغ | BMXWT |
+| waist_cm | محيط الخصر بالسم | BMXWAIST |
+| body_fat_pct | نسبة الدهون، مثل 25 وليس 0.25 | DXDTOPF |
+| family_diabetes | السكري لدى الأب/الأم/الإخوة/الأخوات | مواءمة أسئلة MCQ |
+| family_heart_early | نوبة قلبية أو ذبحة لدى الأقارب أنفسهم قبل 50 سنة | مواءمة أسئلة MCQ |
+| bmi | الوزن ÷ مربع الطول بالمتر | يحسب تلقائيًا |
+| fat_mass_kg | الوزن × نسبة الدهون ÷100 | يحسب تلقائيًا |
+| fat_free_mass_kg | الوزن − كتلة الدهون | يحسب تلقائيًا |
 
-Original family-history codes: **1 yes, 2 no, 7 refused, 9 don't know, blank missing**.
-Training maps 1→1 and 2→0; all others stay unknown and receive a distinct dummy category.
-The app offers only yes/no and requires an explicit selection. Unknown history is not no.
-The definition is not the alternative clinical family-history cutoff of 55/65 years.
-Nor does it include every cardiac disorder, hypertension or stroke.
+ثمانية مدخلات و3 مشتقات؛ المشتقات لا تمثل قياسات مستقلة إضافية. FFM تشمل الماء والأعضاء والعضلات والمعادن.
+التاريخ العائلي في التصدير: **1 نعم، 0 لا، فارغ مجهول**. الأصل 1 نعم و2 لا و7 رفض و9 لا أعرف.
+لا يُستدل على تاريخ الفرد العائلي من عمره أو جنسه أو مرضه الشخصي.
 
-The official codebooks use case variants `MCQ300a`/`MCQ300c`; supplied XPORT columns
-are uppercase. Definitions and codes were checked across all four cycles. Saved URLs,
-retrieval hashes and exact definitions: [family-history provenance](family_history_provenance.json).
+في 2005–2006 و2011–2018 استخدمنا MCQ300C للسكري وMCQ300A للقلب.
+في 1999–2004 السؤالان MCQ250A/G يشملان الأجداد أيضًا؛ استخرجنا الأب والأم والإخوة فقط من
+MCQ260AA/AB/AG/AH وMCQ260GA/GB/GG/GH. أكواد الأقارب 1 أم، 2 أب، 7 أخ، 8 أخت.
+إذا كانت الإجابة العامة «نعم» وتفاصيل القرابة مجهولة، تبقى مجهولة. الأجداد وحدهم لا يحققون تعريفنا.
 
-## Three derived model features
+## الأهداف الثمانية
 
-| Field | Shared formula |
+| العمود | التصنيف الموجب |
 |---|---|
-| `bmi` | `weight_kg / (height_cm / 100)^2` |
-| `fat_mass_kg` | `weight_kg * body_fat_pct / 100` |
-| `fat_free_mass_kg` | `weight_kg - fat_mass_kg` |
+| high_cholesterol | BPQ080=1 أو LBXTC−HDL ≥190 mg/dL |
+| high_blood_pressure | BPQ020=1 أو متوسط BPXSY1–4 ≥140 أو BPXDI1–4 ≥90 |
+| diabetes | DIQ010=1 أو LBXGH ≥6.5% |
+| coronary_artery_disease | MCQ160C=1؛ إبلاغ عن مرض تاجي سابق |
+| heart_attack | MCQ160E=1 |
+| angina | MCQ160D=1 |
+| heart_failure | MCQ160B=1 |
+| stroke | MCQ160F=1 |
 
-Training, UI, validation and SHAP call `derive_features()`. FFM includes minerals and
-all nonfat tissues; it is not pure muscle. The new masses are derived from BMX weight
-and DXA percentage to reproduce the app's exact measurement contract. They are not
-the previous dataset's `DXDTOLE + DXDTOBMC` reference FFM or independent DXA fat mass.
-These derived quantities do not add three independent biological measurements.
+التصدير: **1 موجب، 0 سالب معروف، فارغ مجهول**. أي مصدر موجب يجعل الهدف موجبًا؛
+السالب يتطلب سلبية كل المصادر. لا يُحوّل الرفض أو الغياب أو السكري الحدّي إلى سالب.
+تستبعد قراءة الضغط الصفرية عند حساب المتوسط. non-HDL ليس LDL؛ حد 190 تعريف اختاره صاحب المشروع.
+قياس ضغط بزيارة واحدة أو HbA1c منفرد لا يثبت تشخيصًا سريريًا.
 
-There are **eleven raw predictors**, expanded to fifteen preprocessing columns: nine
-numeric columns and three fixed no/yes/unknown dummy columns per family question.
-No ethnicity, BMC, ID, clinical labs, own diagnosis questions or cycle enter the model.
+HDL: استخدمنا LBDHDL في 1999–2002، وLBXHDD في 2003–2004، وLBDHDD في الدورات التالية.
+تلك قيم الإصدارات العامة المنشورة؛ لم نطبق تصحيحات إضافية غير موثقة. ملفات المختبر القديمة LAB13/L13 وLAB10/L10 تقابل ملفات الدهون وHbA1c الأحدث.
 
-## Disease labels
+## أعمدة التعريف وتصميم المسح — ليست مدخلات
 
-- Cholesterol: BPQ `BPQ080=1` OR non-HDL `LBXTC−LBDHDD ≥190 mg/dL`.
-  Require positive TC/HDL and TC≥HDL for valid laboratory evidence. Non-HDL is not LDL.
-  The threshold is an explicitly user-selected study definition, not a universal desirable goal.
-- Blood pressure: BPQ `BPQ020=1` OR mean nonzero systolic `BPXSY1–4 ≥140`
-  OR mean nonzero diastolic `BPXDI1–4 ≥90 mmHg`.
-- Diabetes: DIQ `DIQ010=1` OR positive GHB `LBXGH ≥6.5%`.
-- CAD proxy / heart attack / angina / CHF / stroke: yes to `MCQ160C/E/D/B/F` respectively.
+| العمود | الغرض |
+|---|---|
+| SEQN | ربط سجلات المشارك، لا يستخدم للتنبؤ |
+| cycle | دورة جمع البيانات |
+| source_era | 1999–2006 أو 2011–2018 للتقييم المنفصل |
+| age_group | 20–39 أو40–59 أو60–79 للمراجعة فقط |
+| partition | development أوvalidation أوtest بحسب الدورة |
+| WTMEC2YR | وزن فحص المسح الأصلي لسنتين |
+| WTMEC4YR | الوزن الأصلي لأربع سنوات، متاح في 1999–2002 فقط |
+| SDMVSTRA | طبقة المعاينة |
+| SDMVPSU | وحدة المعاينة الأولية |
 
-Questionnaire yes=1/no=2. Borderline, refused, uncertain and missing stay unknown.
-For OR outcomes: any positive wins; negative requires every source known negative;
-otherwise unknown. Unknown outcomes are excluded per target, never globally imputed healthy.
-Single-visit BP or one HbA1c does not establish a confirmed clinical diagnosis.
+لا نستخدم أوزان المسح لتدريب النموذج ولا نزعم تمثيل انتشار وطني. لم ننشئ وزنًا موحدًا بقسمة
+جميع الأوزان على عدد الدورات؛ الدورات القديمة لها متطلبات وزن مختلفة. لا يوجد عرق أو معادن عظام في التصدير.
 
-## Cohort — preserved from version 1
+## التصفية
 
-| Exclusion | Removed |
-|---|---:|
-| Outside ages 20–59 | 24,222 |
-| Pregnant or indeterminate pregnancy | 608 |
-| Incomplete body/clinical/DXA examination | 2,340 |
-| Missing/nonpositive required measurements | 1,363 |
-| Unknown recorded sex | 0 |
-| **Remaining from 39,156** | **10,623** |
+من **80,630** شخصًا في الدورات الثماني بقي **21,117**:
 
-Require `RIDSTATR=2`, `BMDSTATS=1`, `DXAEXSTS=1`, and positive waist/weight/height,
-DXA BMC/fat percentage/fat mass/lean mass. Although some are no longer predictors,
-the original cohort restriction remains for version comparability. Exclude pregnancy
-`RIDEXPRG=1`, and require known nonpregnancy `RIDEXPRG=2` for women 20–44.
+- العمر 20–79؛ لا ندعم الأصغر من20 أو العمر80 فأكثر.
+- استبعاد الحمل الموثق، وللنساء20–44 يلزم إثبات عدم الحمل.
+- فحص MEC وDXA مكتملان؛ BMDSTATS=1 عندما يتوافر. في 1999–2002 لا يوجد هذا المتغير، فاشترطنا القياسات الجسمية الفعلية المكتملة.
+- قياسات موجبة مكتملة للخصر والوزن والطول ونسبة الدهون، مع شرط اكتمال DXA الأصلي للمعادن والدهون والكتلة اللينة. المعادن ليست خاصية للنموذج.
+- في DXA القديم نتحقق من علامات عدم التعويض، صلاحية المناطق، وثبات القيم بين النسخ الخمس. نحتفظ بسجل واحد فقط.
+- التاريخ العائلي المجهول لا يستبعد الشخص؛ الهدف المجهول يستبعد سجله لذلك المرض فقط.
 
-Family history is not an exclusion: diabetes yes/no/unknown **4422/6031/170**;
-early cardiac yes/no/unknown **1174/9222/227**. Counts are sample descriptions,
-not weighted national prevalence. Target positive counts remain unchanged.
-
-## Metadata, not prediction inputs
-
-`SEQN` is the public participant join key. `cycle` identifies the sampling period, not
-a longitudinal follow-up. `WTMEC2YR` is the two-year MEC survey weight.
-`mec_weight_8yr=WTMEC2YR/4` combines four equal cycles; the two weights are not multiplied.
-`SDMVSTRA` and `SDMVPSU` are masked variance strata/primary units for survey-aware uncertainty.
-Weights alone do not correct the selection induced by the complete-DXA cohort.
-
-`ethnicity_audit` retains `RIDRETH3` solely for offline subgroup auditing. It is excluded
-from FEATURES, the UI and processed training-data downloads. It is never inferred from
-nationality. Original files and all forty source hashes remain unchanged.
-
-Sources: [MCQ 2011–2012](https://wwwn.cdc.gov/Nchs/Data/Nhanes/Public/2011/DataFiles/MCQ_G.htm),
-[MCQ 2017–2018](https://wwwn.cdc.gov/Nchs/Data/Nhanes/Public/2017/DataFiles/MCQ_J.htm),
-[body measures](https://wwwn.cdc.gov/Nchs/Data/Nhanes/Public/2017/DataFiles/BMX_J.htm),
-[DXA](https://wwwn.cdc.gov/Nchs/Data/Nhanes/Public/2017/DataFiles/DXX_J.htm).
+الفحص التفصيلي كشف80 مشاركًا في ملف2003–2004 تشير علامة الاكتمال العامة لديهم إلى عدم التعويض رغم تعارض القياسات/صلاحية المناطق.
+من هؤلاء34 كانوا سيدخلون عينة20–79 حسب العد الأولي؛ استُبعدوا الآن. لذلك عدد القديم النهائي **10,494** بدل10,528، والحالي **10,623** دون تغيير.
+تصحيح قراءة الصفر في SAS جعل3 أهداف ضغط من الدورات الحديثة مجهولة بدل سلبية؛ عدد الموجبين2944 لم يتغير.
+التوزيع الدقيق والاستبعادات في [cohort.json](../reports/cohort.json).

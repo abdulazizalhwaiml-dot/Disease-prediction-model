@@ -1,100 +1,70 @@
-# Deployment and operations
+# Running and deploying
 
-## Development and training
-
-Use Python 3.12 and install `requirements-dev.lock` with `--require-hashes`, followed by
-`pip install --no-deps -e .`. Run from the repository root with `python -m streamlit run
-app/main.py`, not `python app/main.py`. The data are already under `DATA_SET/`.
-
-Training CLI defaults: `--data DATA_SET --output models --reports reports --jobs 2`.
-Define labels with `--non-hdl 190 --systolic 140 --diastolic 90 --hba1c 6.5`; changing
-definitions requires retraining and interpreting a different study outcome. Algorithms
-run sequentially, with two threads per model; additionally bound BLAS/OpenMP if needed:
-`OPENBLAS_NUM_THREADS=2 OMP_NUM_THREADS=2`.
-
-## Model lifecycle
-
-Each training run produces eight joblib files plus `manifest.json` under a unique
-`models/<run-id>/`. The pointer activates only a complete successful run. An interrupted
-run can leave an inactive partial directory, but cannot replace the working release.
-Keep previous complete releases for rollback.
-
-Version 2 requires schema version 2, exactly eight user fields and eleven raw model
-features. The loader rejects older ten-input artifacts even if their hashes are valid.
-Run training again when upgrading from version 1. The Windows launcher checks this
-contract and trains if necessary. Prepared delivery archives contain the compatible release.
-
-Reports and model card should be reviewed for actual utility, not merely a successful fit
-or high ROC-AUC. Distribute the complete release and matching pointer through controlled
-GitHub Releases/CI artifacts; binaries are intentionally ignored by Git. The manifest alone
-cannot reconstruct a model. Keep artifact storage trusted and read-only.
-
-`NHANES_MODELS_DIR` can point the app at an alternate trusted directory. The default is
-the repository's `models/`. A new pointer changes the cache fingerprint; input/model changes
-invalidate session estimates. Exact package versions are checked against the manifest.
-Dependency upgrades require lock regeneration, retraining and revalidation; never manually
-edit checksums to bypass a failed load.
-
-## Container and hosting
-
-Train before building:
+Use Python3.12. Install `requirements.lock` (or the Windows lock) with `--require-hashes`,
+then `pip install --no-deps -e .`. The ready project includes the current schema3 models.
 
 ```bash
-docker build -t nhanes-ai:1.0 .
-docker run --rm -p 8501:8501 --memory=2g --cpus=2 nhanes-ai:1.0
+python -m streamlit run streamlit_app.py
 ```
 
-The image installs CPU dependencies with hashes, includes OpenMP, copies source/models,
-excludes raw data and runs as UID 10001. `/_stcore/health` checks server liveness; actual
-model correctness is covered separately by integration tests. Container binding to all
-interfaces supports proxy routing.
+## Retraining
 
-If your network uses an HTTPS inspection proxy, supply its trusted CA bundle as a
-temporary BuildKit secret and forward the existing proxy bindings by name:
+```bash
+python scripts/download_data.py
+python -m nhanes_ai.train --jobs 2
+python scripts/export_dataset.py
+pytest -q
+```
+
+Older raw data are fetched from official CDC URLs and verified against pinned hashes.
+Training defaults: non-HDL190, systolic140, diastolic90, HbA1c6.5, seed42, two threads.
+A successful run creates `models/<run-id>/` and activates `current.json` atomically.
+The app checks schema3, age limits20–79, eight-input contract, versions and checksums.
+Do not bypass these checks; retrain after changing model-runtime dependencies.
+
+`NHANES_MODELS_DIR` selects an alternate trusted model directory. Input or model changes
+clear session results. Keep models/code read-only. Do not accept uploaded pickle/joblib files.
+
+## Docker
+
+Train first or use the prepared trusted model release:
+
+```bash
+docker build -t mizan-ai:3.0 .
+docker run --rm -p 8501:8501 --memory=2g --cpus=2 mizan-ai:3.0
+```
+
+The container excludes raw data and runs as UID10001. For an HTTPS inspection proxy,
+pass the administrator's trusted CA as a temporary BuildKit secret:
 
 ```bash
 docker build --build-arg HTTP_PROXY --build-arg HTTPS_PROXY \
   --secret id=build_ca,src=/etc/ssl/certs/ca-certificates.crt \
-  -t nhanes-ai:1.0 .
+  -t mizan-ai:3.0 .
 ```
 
-Use your administrator-provided trusted CA path on other systems. The optional bundle
-is mounted only during apt/pip steps and is not copied into the image. TLS, Debian package
-signatures and Python artifact hashes remain verified. Never disable certificate checks.
+No certificate/hash verification is disabled. A reverse proxy must support WebSockets;
+keep CORS/XSRF enabled and avoid recording health inputs in logs. See SECURITY.md.
+`/_stcore/health` proves server liveness; integration tests check actual prediction.
 
-For exposed hosting, supply a TLS/authentication reverse proxy with websocket support,
-request limits and session policy. Streamlit has no clinical user-authorization system.
-Keep CORS/XSRF enabled. Hosting logs must not record health measurements or websocket
-payloads. Limit concurrent SHAP requests and worker resources. See `SECURITY.md`.
-
-## Validation and CI
+## Checks and dependency updates
 
 ```bash
-ruff check src app tests
-ruff format --check src app tests
-python -m nhanes_ai.train --jobs 2
+ruff check src app tests scripts
+ruff format --check src app tests scripts
 pytest -q
 ```
 
-Model-dependent tests skip explicitly if no release is present. CI trains on the supplied
-data before testing, uploads complete artifacts/reports, then builds the container.
-The suite covers labels, filtering, encoding, imputation, unit/consistency validation,
-artifact corruption, eight real predictions/explanations and bilingual widget execution.
-Passing tests do not imply good disease discrimination or clinical effectiveness.
+CI downloads original older files, trains, tests and builds a container. Model-dependent
+tests skip if no release exists; delivery verification requires no such skips.
+Actual executed checks are recorded in reports/VALIDATION.md.
 
-## Dependency updates
-
-Direct versions live in `.txt`; transitive versions/hashes live in `.lock`. After deliberate
-pin updates, use a verified `uv` installation to regenerate:
+After intentional dependency changes, regenerate all three locks using verified `uv`:
 
 ```bash
-uv pip compile requirements.txt --python-version 3.12 --only-binary :all: --generate-hashes -o requirements.lock
-uv pip compile requirements-dev.txt --python-version 3.12 --only-binary :all: --generate-hashes -o requirements-dev.lock
+uv pip compile requirements.txt --python-version 3.12 --generate-hashes -o requirements.lock
+uv pip compile requirements-dev.txt --python-version 3.12 --generate-hashes -o requirements-dev.lock
+uv pip compile requirements.txt --python-version 3.12 --python-platform windows --generate-hashes -o requirements-windows.lock
 ```
 
-Install into a clean environment, retrain and rerun checks. Preserve TLS and artifact
-verification. Never accept patient-uploaded pickle/joblib files.
-
-The actual delivery commands/outcomes are in `reports/VALIDATION.md`. Docker builds and
-remote GitHub CI runs are separate from local Python validation; configuration files alone
-do not establish that either ran successfully.
+Use a clean environment and retrain before distributing new runtime versions.

@@ -1,185 +1,123 @@
-# ميزان | MIZAN — Body Insights Lab
+# ميزان | MIZAN
 
-A bilingual Arabic/English Streamlit research app built from the supplied **NHANES
-2011–2018** files. Version 2 takes **exactly eight inputs**, derives three measurements,
-and uses eight freshly trained, calibrated models with probability-level SHAP explanations.
+تطبيق بحثي بالعربية والإنجليزية يعرض تقديرات ثماني حالات صحية من **ثمانية مدخلات**.
+الإصدار 3 يدمج NHANES **1999–2006 و2011–2018**: **21,117 مشاركًا** بعمر **20–79**، منهم **2,789 بعمر 60–79**.
 
-**Experimental, not medically validated.** Estimates describe cross-sectional study labels,
-not future disease risk or confirmed diagnoses. Some cardiac outcomes still have poor
-recall/precision. The interface displays the actual held-out performance and its limitations.
+**مشروع تجريبي غير معتمد طبيًا.** النتائج ارتباطات بحالات الدراسة، وليست تشخيصًا أو توقعًا للإصابة مستقبلًا.
+انخفاض التقدير لا يثبت الخلو من المرض. بيانات كبار السن تاريخية، وتحتاج تحققًا على عينة حديثة.
 
-## The eight inputs
+## التشغيل على Windows
 
-1. Age, **20–59 completed years**; intended for non-pregnant adults.
-2. Recorded sex: male / female.
-3. Height in centimeters.
-4. Weight in kilograms.
-5. Waist circumference in centimeters, following the NHANES iliac-crest method.
-6. Body-fat percentage.
-7. Family history of diabetes: yes / no.
-8. Early family cardiac history: yes / no.
+1. ثبّت **Python 3.12 بنسخة 64-bit** مع Python Launcher.
+2. فك ضغط المشروع وافتح المجلد الذي يحتوي على هذا الملف.
+3. انقر **START_WINDOWS.bat** مرتين.
+4. افتح **http://localhost:8501** وأبقِ نافذة التشغيل مفتوحة.
 
-Every field name is a keyboard-accessible, clickable explanation and has hover help.
-Family questions concern biological father, mother, sisters or brothers, living or
-deceased. Diabetes has no age restriction. Early cardiac history means a health
-professional reported **heart attack or angina before age 50**, for either sex. This
-matches `MCQ300A`; it is not a generic question about every kind of heart disease.
-The app requires an explicit yes/no selection; unknown history is not silently defaulted to no.
+الحزمة الجاهزة تتضمن النماذج المدربة. إذا كانت النماذج ناقصة أو غير متوافقة، يجلب المشغّل
+ملفات البيانات القديمة من CDC، ويتحقق من بصماتها ثم يعيد التدريب. يلزم اتصال إنترنت للتثبيت والتنزيل فقط.
+[شرح Windows وحلول الأخطاء](docs/WINDOWS.md).
 
-Three values update automatically using the **same function in training, UI, inference and SHAP**:
+## ما يدخله المستخدم
+
+العمر، الجنس، الطول بالسم، الوزن بالكغ، الخصر بالسم، نسبة الدهون، التاريخ العائلي للسكري، والتاريخ العائلي القلبي المبكر.
+لكل خانة شرح بالضغط أو تمرير المؤشر. السؤالان العائليان يخصان **الأب والأم والإخوة والأخوات البيولوجيين**؛
+القلب يعني نوبة قلبية أو ذبحة **قبل 50 سنة** لأي من الجنسين. عدم المعرفة ليس «لا».
+
+تحسب الواجهة والتدريب بالطريقة نفسها:
 
 ```text
 BMI = weight_kg / (height_cm / 100)²
-fat_mass_kg = weight_kg × body_fat_pct / 100
-fat_free_mass_kg = weight_kg − fat_mass_kg
+Fat mass = weight_kg × body_fat_pct / 100
+Fat-free mass = weight_kg − fat_mass_kg
 ```
 
-FFM includes minerals, water, muscle and organs; it is not skeletal muscle mass alone.
-There are no ethnicity, bone-mineral, separately entered fat-mass or lean-mass inputs.
-The new derived masses use body weight and fat percentage consistently; they are not
-the older exports' independently measured DXA masses. Original fat percentage was
-measured by DXA: transferring models to BIA smart scales remains unvalidated.
+لا يدخل العرق أو معادن العظام أو المعرّف ضمن النموذج. FFM ليست كتلة العضلات وحدها.
+نسبة الدهون في الدراسة مقاسة بـDXA؛ لم يُتحقق من الأداء على جهاز المستخدم أو السكان السعوديين.
 
-## Windows: easiest start
+[معاينة الواجهة](docs/previews/desktop-ar.png) · [معاينة الهاتف](docs/previews/mobile-ar.png)
 
-Install **64-bit Python 3.12** including the `py` launcher, extract the complete project,
-and double-click **`START_WINDOWS.bat`**. It creates a local environment, installs the
-Windows lock, checks the eight-input model contract, trains if a compatible release is
-missing, and starts Streamlit. Open **http://localhost:8501**. Keep the terminal open.
+## النتائج
 
-The prepared ZIP includes the current trained models. A source-only GitHub checkout
-requires training. Version-1 models cannot be used with the new form.
-See [الشرح العربي لتشغيل Windows](docs/WINDOWS.md).
+ثماني بطاقات: الكوليسترول، الضغط، السكري، مرض الشرايين التاجية، النوبة القلبية، الذبحة، قصور القلب، والسكتة الدماغية.
+الألوان تتبع عتبات النماذج البحثية وليست درجات خطر طبية.
 
-Manual PowerShell commands, one at a time from the project folder:
+- إذا تجاوز أي تقدير عتبته: رسالة موحدة تشجع النشاط والغذاء المتوازن ومراجعة مختص للفحوصات المناسبة.
+- إذا لم يتجاوز أي منها: رسالة موحدة تشجع استمرار العادات الصحية والفحوصات، دون تأكيد السلامة.
 
-```powershell
-py -3.12 -m venv .venv
-.\.venv\Scripts\python.exe -m pip install --require-hashes -r requirements-windows.lock
-.\.venv\Scripts\python.exe -m pip install --no-deps -e .
-.\.venv\Scripts\python.exe -m nhanes_ai.train --jobs 2
-.\.venv\Scripts\python.exe -m streamlit run app/main.py
-```
+مدخلات الجلسة لا تحفظ في قاعدة بيانات. يمكن تنزيل نتائجها؛ وتُمسح النتائج عند تغيير المدخلات.
 
-## GitHub-connected hosting
+## البيانات والتدريب
 
-The `deploy/streamlit-cloud` branch includes the trusted trained release and the
-`streamlit_app.py` entry point. Deploy this branch on Streamlit Community Cloud with
-**Python 3.12**; `packages.txt` supplies Linux OpenMP. GitHub Pages cannot execute the
-Python app. Follow the [Arabic cloud-hosting guide](docs/STREAMLIT_CLOUD_AR.md).
-Account authorization and the final Deploy action occur in your own Streamlit account.
+| الحالة | شرط التصنيف الموجب |
+|---|---|
+| الكوليسترول | إبلاغ ذاتي **أو** non-HDL = الإجمالي − HDL ≥ **190 mg/dL** |
+| الضغط | إبلاغ ذاتي **أو** متوسط الانقباضي ≥140 أو الانبساطي ≥90 |
+| السكري | إبلاغ ذاتي **أو** HbA1c ≥6.5% |
+| الأهداف الخمسة الأخرى | أسئلة التشخيص السابق المناسبة لكل حالة؛ راجع قاموس البيانات |
 
-## Linux / macOS
+الموجب يتغلب على المصدر المفقود. السالب يتطلب سلبية جميع المصادر؛ غير ذلك يبقى مجهولًا.
+يستبعد الحمل والفحص الناقص، وتقبل قياسات DXA الفعلية دون التعويض. كل شخص سجل واحد.
+أعيد بناء التاريخ العائلي القديم لاستبعاد الأجداد وتوحيد التعريف.
+
+قورنت أربع خوارزميات لكل مرض: Logistic Regression وRandom Forest وXGBoost وLightGBM.
+تستخدم أوزان الفئات ومعايرة مستقلة. تختار الخوارزمية بمتوسط AP للفئات 20–39 و40–59 و60–79؛
+وتختار عتبة القرار بأعلى F2 من بيانات الاختيار فقط. بيانات الاختبار لا تدخل التدريب أو ضبط العتبات.
+
+| الغرض | الدورات |
+|---|---|
+| التدريب والمعايرة | 1999–2000 و2011–2014؛ تقسيم 80% و20% لكل مرض |
+| اختيار النموذج والعتبة | 2001–2002 و2015–2016 |
+| الاختبار | 2003–2006 و2017–2018 |
+
+نتائج Recall وPrecision وF1 وROC-AUC وAP وBrier منشورة كما هي، بما فيها ضعف بعض أمراض القلب النادرة.
+الدورة 2017–2018 فُحصت في إصدارات سابقة؛ هذه ليست دراسة تحقق خارجي جديدة.
+
+- [النتائج الفعلية](reports/MODEL_CARD.md) · [الاختبار حسب العمر](reports/age_validation.csv)
+- [البيانات المدمجة CSV](data/processed/NHANES_MIZAN.csv) · [وصف التصفية والأعمدة](data/processed/dataset_metadata.json)
+- [قاموس البيانات](docs/DATA_DICTIONARY.md) · [المواءمة والمنهجية](docs/METHODOLOGY.md)
+- [ما جرى اختباره](reports/VALIDATION.md)
+
+## للمطور: التثبيت وإعادة التدريب
+
+Python 3.12؛ من داخل مجلد المشروع:
 
 ```bash
-python3.12 -m venv .venv
-source .venv/bin/activate
 python -m pip install --require-hashes -r requirements-dev.lock
 python -m pip install --no-deps -e .
+python scripts/download_data.py
 python -m nhanes_ai.train --jobs 2
-python -m streamlit run app/main.py
+python scripts/export_dataset.py
+pytest -q
+python -m streamlit run streamlit_app.py
 ```
 
-Runtime-only installations can use `requirements.lock`. Linux LightGBM needs `libgomp1`;
-macOS may need `libomp`. No GPU, API key or external inference service is required.
-Cloud environment: `source /workspace/.cloud-setup/disease-prediction-model/activate.sh`.
-
-## Interface
-
-- A new teal/navy visual identity, responsive layout and Arabic RTL support; Arabic is default.
-- Eight disease cards with real calibrated probabilities, progress bars and study thresholds.
-- Colors follow each disease's model threshold: teal below, amber nearby, coral above.
-  They are research display bands, **not clinically validated risk categories**.
-- Persistent experimental/non-medical badge above the form.
-- Click/hover definitions, a measurement guide and actual evaluation tables.
-- On-demand SHAP explanations over the original eight inputs, preserving derived identities.
-- Automatic clearing of stale results when any input or the model release changes.
-- Session-local inputs and downloadable session results; no patient database.
-
-## Study labels — unchanged
-
-| Outcome | Positive label |
-|---|---|
-| High cholesterol | `BPQ080=1` OR `LBXTC−LBDHDD ≥190 mg/dL` |
-| High blood pressure | `BPQ020=1` OR mean systolic ≥140 OR mean diastolic ≥90 mmHg |
-| Diabetes | `DIQ010=1` OR HbA1c ≥6.5% |
-| Coronary artery disease | `MCQ160C=1`, self-reported coronary heart disease proxy |
-| Heart attack | `MCQ160E=1` |
-| Angina | `MCQ160D=1` |
-| Congestive heart failure | `MCQ160B=1` |
-| Stroke | `MCQ160F=1` |
-
-Any positive source establishes a positive. Negative requires all relevant sources to be
-known negative; other combinations stay unknown and are excluded per target. Missing
-questionnaire answers never become healthy labels. The cholesterol threshold is the
-user-selected **190**, not the previously explored 130/160 alternatives.
-
-The existing complete-DXA cohort is preserved for comparability: **39,156 → 10,623**.
-Pregnant/indeterminate pregnancy, incomplete exams and missing core measurements remain
-excluded. Although BMC is no longer a predictor, original complete-case selection still
-requires those measurements; removing that restriction would create a different cohort.
-
-## Model comparison and evaluation
-
-Four algorithms are actually fitted per target: regularized Logistic Regression, Random
-Forest, XGBoost and LightGBM. Class weights address imbalance. Independent sigmoid
-calibration limits the probability distortion introduced by class weighting.
-
-1. **2011–2014:** stratified 80% model-fitting / 20% calibration per target.
-2. **2015–2016:** select by average precision, then ROC-AUC/F1 on ties; operating threshold
-   maximizes F2. No accuracy-only selection.
-3. **2017–2018:** temporal evaluation after selection. This cycle was already inspected
-   in version 1; this is a version comparison, **not a new independent external validation**.
-
-Preprocessing, imputation and scaling are fitted only on fitting rows. Family-history
-codes 1/2 become 1/0; 7/9/missing get an explicit unknown dummy category. Ethnicity is
-excluded from predictors and retained separately only for offline subgroup auditing.
-
-The selected release's actual results are in [the generated model card](reports/MODEL_CARD.md),
-[32 validation comparisons](reports/model_comparison.csv), and
-[test metrics, uncertainty and subgroup checks](reports/test_metrics.json).
-Previous-version reports remain under `reports/previous_version/`. Better results on
-some metrics do not establish clinical suitability or transfer to Saudi populations.
-See [the complete version comparison](reports/VERSION_COMPARISON.csv), including metrics
-that decreased. Run `python scripts/export_dataset.py` to reproduce the processed CSV;
-the prepared delivery includes CSV and a convenient Excel copy under `data/processed/`.
-
-## Structure
+على Windows استخدم `requirements-windows.lock` للتشغيل، ثم أوامر Python الخاصة بالبيئة في [الدليل](docs/WINDOWS.md).
+ملفات 2011–2018 الأصلية محفوظة في المستودع؛ يجلب سكربت التنزيل 37 ملفًا قديمًا ببصمات مثبتة.
+ملفات المصدر لا تتغير. CSV الناتج يحفظ الوحدات الأصلية والمجهول كخانة فارغة، دون تحجيم أو تعويض.
 
 ```text
-DATA_SET/                  40 original XPORT files, unchanged
-src/nhanes_ai/
-  schema.py                Eight-input / eleven-feature contract and thresholds
-  data.py                  Validated joins, family history, original cohort and targets
-  features.py              Shared derivation, fixed family dummies, imputation and scaling
-  train.py                 Four algorithms, calibration, selection and versioned export
-  inference.py             Eight-input validation, model integrity and raw-input SHAP
-app/
-  main.py                  Bilingual Streamlit dashboard
-  i18n.py                  English/Arabic copy and measurement definitions
-  ui.py / style.css        Escaped cards, clickable help and responsive visual design
-scripts/run_windows.ps1   Environment/model checks and Windows startup
-START_WINDOWS.bat         Double-click launcher
-models/                   Generated models and atomic current pointer (ignored by Git)
-reports/                  Actual metrics, model card, audits and previous-version reports
-tests/                    Clinical-label, input, SHAP, integrity and bilingual UI checks
-docs/                     Technical methodology, data dictionary and operation guides
-notebooks/                Reproducible exploration walkthrough
+app/                  الواجهة والنصوص والتنسيق
+src/nhanes_ai/        قراءة البيانات، الخصائص، التدريب، التنبؤ
+scripts/              التنزيل والتصدير وتشغيل Windows
+DATA_SET/             ملفات NHANES الأصلية، دورة لكل مجلد
+data/processed/      البيانات المدمجة ووصفها
+models/               النماذج الحالية وبيان الإصدار
+reports/              التصفية والمقارنات ونتائج الاختبار
+notebooks/            مثال تحليل مختصر
+docs/                قاموس البيانات والمنهجية والتشغيل
+tests/               اختبارات البيانات والنماذج والواجهة
 ```
 
-## Verification and deployment
+## الاستضافة
 
-```bash
-ruff check src app tests
-ruff format --check src app tests
-pytest -q
-docker build -t mizan-ai:2.0 .
-docker run --rm -p 8501:8501 --memory=2g --cpus=2 mizan-ai:2.0
-```
+Streamlit Cloud: Python **3.12**، ملف البداية **streamlit_app.py**؛ `packages.txt` يوفر OpenMP.
+استخدم الفرع الذي يحتوي على إصدار النماذج الجديد كاملًا.
+[الخطوات بالعربية](docs/STREAMLIT_CLOUD_AR.md) · [التشغيل بالحاويات](docs/DEPLOYMENT.md).
 
-Train before testing/building a source-only checkout. Integration tests require a real
-compatible release. The schema version prevents silently loading old ten-input models.
-Artifacts are SHA256-checked and restricted to expected paths and exact runtime versions;
-only load trusted joblib files. Model releases activate atomically after successful training.
-See [methodology](docs/METHODOLOGY.md), [data dictionary](docs/DATA_DICTIONARY.md),
-[deployment](docs/DEPLOYMENT.md) and [validation evidence](reports/VALIDATION.md).
+## English quick reference
+
+MIZAN v3 is a bilingual experimental Streamlit app for non-pregnant adults aged 20–79.
+It uses eight entered inputs and three derived features, with eight separately calibrated classifiers.
+The merged complete-observed-DXA cohort has 21,117 participants; older adults come only from 1999–2006.
+No prospective-risk, clinical-readiness, national-representativeness or device-transfer claim is made.
+See the methodology and generated model card for the fixed splits and actual performance.

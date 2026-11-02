@@ -1,4 +1,4 @@
-"""Bilingual copy; family-history help follows the actual NHANES questions."""
+"""Short bilingual copy and definitions for the eight-input app."""
 
 DISEASE_AR = {
     "high_cholesterol": "ارتفاع الكوليسترول",
@@ -18,11 +18,11 @@ TEXT = {
         "research": "مشروع تجريبي · غير معتمد طبيًا",
         "eyebrow": "تركيب الجسم × التعلّم الآلي",
         "title": "قياسات بسيطة. رؤية أوضح.",
-        "subtitle": "استكشف ارتباط قياسات جسمك وتاريخ عائلتك بثماني حالات صحية، وتعرّف على ما أثّر في كل تقدير.",
-        "scope": "لغير الحوامل من عمر 20 إلى 59 سنة",
-        "notice": "هذه تجربة بحثية، وليست تشخيصًا أو توقعًا للإصابة مستقبلًا. لم تُعتمد النماذج للاستخدام الطبي.",
+        "subtitle": "استكشف تقديرات ثماني حالات صحية من قياسات جسمك وتاريخ عائلتك.",
+        "scope": "لغير الحوامل من عمر 20 إلى 79 سنة",
+        "notice": "هذه تجربة بحثية، وليست تشخيصًا أو توقعًا للإصابة مستقبلًا. لم تُعتمد النماذج "
+        "للاستخدام الطبي.",
         "assessment": "مساحة التقييم",
-        "evidence": "المنهجية والأداء",
         "guide": "دليل القياسات",
         "input_count": "٨ مدخلات فقط",
         "derived_count": "٣ حسابات تلقائية",
@@ -43,8 +43,8 @@ TEXT = {
         "female": "أنثى",
         "yes": "نعم",
         "no": "لا",
-        "choose": "اختر إجابتك",
-        "family_required": "اختر نعم أو لا للسؤالين العائليين للمتابعة. لا تعتبر عدم المعرفة إجابة «لا».",
+        "family_required": "اختر نعم أو لا للسؤالين العائليين للمتابعة. لا تعتبر عدم المعرفة إجابة "
+        "«لا».",
         "family_diabetes_error": "اختر إجابة صحيحة للتاريخ العائلي للسكري.",
         "family_heart_early_error": "اختر إجابة صحيحة للتاريخ العائلي القلبي المبكر.",
         "bmi": "مؤشر كتلة الجسم",
@@ -54,7 +54,7 @@ TEXT = {
         "kg": "كغ",
         "submit": "اعرض تقديراتي",
         "running": "جارٍ حساب التقديرات…",
-        "invalid": "راجع القيم ووحداتها؛ العمر المدعوم 20–59 سنة.",
+        "invalid": "راجع القيم ووحداتها؛ العمر المدعوم 20–79 سنة.",
         "results": "ملفك الاستكشافي",
         "results_subtitle": "تقديرات وجود حالات الدراسة، وليست مخاطر مستقبلية.",
         "empty": "ستظهر تقديراتك هنا",
@@ -64,56 +64,55 @@ TEXT = {
         "above": "تجاوز عتبة الدراسة",
         "below": "دون عتبة الدراسة",
         "threshold": "عتبة الدراسة",
-        "legend": "تتدرج الألوان بالنسبة لعتبة كل نموذج: تركوازي دون العتبة، وكهرماني قربها، ومرجاني عند تجاوزها. لا تعني الألوان تشخيصًا أو سلامة طبية.",
-        "limited_evidence": "أداء بحثي محدود",
+        "legend": "الألوان بحسب عتبة كل نموذج: تركوازي دونها، كهرماني قربها، ومرجاني عند تجاوزها. "
+        "ليست تصنيفًا طبيًا.",
         "outside_training": "بعض القياسات خارج نطاق التدريب المشاهد: ",
-        "explain": "وراء الأرقام",
-        "explain_subtitle": "كيف استخدم النموذج بياناتك؟",
-        "select": "اختر الحالة",
-        "explain_button": "اعرض تفسير هذا التقدير",
-        "explaining": "جارٍ حساب تفسير SHAP…",
-        "explain_empty": "اختر حالة ثم اعرض التفسير لاستكشاف العوامل المؤثرة.",
-        "baseline": "خط الأساس",
-        "estimate": "تقديرك",
-        "impact": "المساهمة بالنقاط المئوية",
-        "explain_note": "التفسير يشرح حساب النموذج، ولا يثبت السببية. قد تتشارك القياسات المحسوبة من بعضها في المساهمة.",
-        "explain_error": "تعذّر حساب التفسير. يمكنك إعادة المحاولة؛ لا تُعرض مساهمات بديلة مصطنعة.",
         "download": "تنزيل نتائج الجلسة",
         "no_models": "لم تُجهّز نماذج المدخلات الثمانية بعد. شغّل أمر التدريب أدناه.",
-        "evidence_title": "أداء يمكن مراجعته",
-        "evidence_note": "نتائج فعلية على دورة 2017–2018 بعد اختيار الخوارزمية والعتبة من 2015–2016. دورة الاختبار سبق فحصها في الإصدار السابق؛ يلزم تحقق خارجي مستقل.",
-        "disease": "الحالة",
-        "algorithm": "الخوارزمية",
-        "recall": "الاستدعاء",
-        "precision": "دقة التنبؤ الموجب",
-        "f1": "F1",
-        "roc_auc": "ROC-AUC",
-        "pr_auc": "متوسط الدقة",
-        "brier": "Brier",
-        "positive": "الحالات الموجبة",
-        "n": "عدد الاختبار",
-        "cohort": "مشاركًا بعد الفلترة",
-        "release": "إصدار النماذج",
-        "training_text": "قورنت خوارزميات الانحدار اللوجستي والغابات العشوائية وXGBoost وLightGBM لكل مرض. التدريب والمعايرة على 2011–2014، والاختيار على 2015–2016 بمتوسط الدقة، وعتبة القرار بأعلى F2. تستخدم أوزان الفئات لمعالجة عدم التوازن. هذه الإجراءات لا تثبت الصلاحية السريرية.",
-        "feature_text": "ثمانية مدخلات و3 قياسات مشتقة. لا يدخل العرق أو المعرّف أو تحاليل الأمراض أو تشخيص المشارك ضمن الخصائص. التاريخ العائلي يخص الأقارب. لا تُحوّل إجابات «لا أعرف» أو الرفض في التدريب إلى «لا».",
-        "labels_text": "الكوليسترول: إبلاغ ذاتي أو non-HDL (الإجمالي ناقص HDL) ≥{non_hdl_mg_dl:g} ملغ/دل. الضغط: إبلاغ ذاتي أو متوسط انقباضي ≥{systolic_mm_hg:g} أو انبساطي ≥{diastolic_mm_hg:g}. السكري: إبلاغ ذاتي أو HbA1c ≥{hba1c_pct:g}%. بقية الأهداف تشخيصات سابقة أبلغ عنها المشاركون. المجهول لا يُسجّل كسليم.",
-        "measurement_note": "نسبة الدهون في التدريب مقاسة بـDXA. إدخال تقدير ميزان BIA الذكي يغيّر أداة القياس؛ توافق التعريف لا يثبت دقة النقل. لم يُتحقق من الأداء على الموازين المنزلية أو السكان السعوديين.",
         "guide_title": "قياس صحيح، إدخال أوضح",
-        "guide_note": "التعاريف العائلية تطابق أسئلة NHANES المستخدمة في التدريب، بما فيها حد 50 سنة للقلب لدى كلا الجنسين.",
+        "guide_note": "التعاريف العائلية تطابق أسئلة NHANES المستخدمة في التدريب، بما فيها حد 50 "
+        "سنة للقلب لدى كلا الجنسين.",
         "formulas": "الحسابات التلقائية",
-        "formula_note": "الكتلة الخالية من الدهون تشمل الماء والعضلات والأعضاء والمعادن؛ ليست كتلة العضلات وحدها.",
-        "privacy": "مدخلاتك تبقى في ذاكرة الجلسة؛ لا تُحفظ في قاعدة بيانات ولا تُرسل إلى خدمة ذكاء اصطناعي خارجية.",
-        "footer": "ميزان · NHANES 2011–2018 · تجربة بحثية بشفافية",
+        "formula_note": "الكتلة الخالية من الدهون تشمل الماء والعضلات والأعضاء والمعادن؛ ليست كتلة "
+        "العضلات وحدها.",
+        "privacy": "مدخلاتك تبقى في ذاكرة الجلسة؛ لا تُحفظ في قاعدة بيانات ولا تُرسل إلى خدمة ذكاء "
+        "اصطناعي خارجية.",
+        "footer": "ميزان · بيانات NHANES · مشروع بحثي تجريبي",
         "help": {
-            "age": "العمر بالسنوات المكتملة، من 20 إلى 59 سنة فقط. هذا نطاق عينة التدريب: أسئلة القلب للبالغين وبيانات DXA المتاحة. التطبيق غير مخصص للحوامل أو للأعمار خارج هذا النطاق.",
-            "gender": "الجنس المسجل في بيانات الدراسة: ذكر أو أنثى. يُستخدم لأن توزيع تركيب الجسم والارتباطات الصحية قد يختلف بينهما.",
-            "height_cm": "الطول بالسنتيمتر. قف حافيًا مستقيمًا، والكعبان على الأرض، وانظر للأمام. أدخل 175 مثلًا، وليس 1.75.",
-            "weight_kg": "وزن الجسم بالكيلوغرام. استخدم ميزانًا على سطح صلب ومستوي، دون أحذية وبملابس خفيفة، ويفضل القياس في ظروف متقاربة كل مرة.",
-            "waist_cm": "محيط الخصر بالسنتيمتر. وفق طريقة NHANES: مرّر شريطًا أفقيًا حول البطن عند مستوى أعلى العظم الحرقفي الأيمن، بعد زفير طبيعي، دون ضغط الجلد. ليس مقاس البنطال ولا القياس عند السرة بالضرورة.",
-            "body_fat_pct": "نسبة الدهون من وزن الجسم، مثل 25 وليس 0.25. انسخ Body Fat % من تقرير الميزان. تتأثر تقديرات BIA بالترطيب والطعام والتمرين؛ اتبع تعليمات الجهاز. بيانات التدريب الأصلية تستخدم DXA.",
-            "family_diabetes": "هل سبق أن أخبر مختص صحي أحد أقاربك البيولوجيين: الأب أو الأم أو الإخوة أو الأخوات، الأحياء أو المتوفين، بأنه مصاب بالسكري؟ لا يوجد شرط عمر لهذا السؤال. لا يشمل الزوج أو الزوجة، ولا يقصد إصابتك أنت.",
-            "family_heart_early": "هل سبق أن أخبر مختص صحي الأب أو الأم أو أحد الإخوة أو الأخوات البيولوجيين، الأحياء أو المتوفين، بإصابته بنوبة قلبية أو ذبحة صدرية قبل بلوغ 50 سنة؟ هذا تعريف NHANES المستخدم هنا، ولا يشمل كل أمراض القلب أو السكتة أو ضغط الدم.",
+            "age": "العمر بالسنوات المكتملة، من 20 إلى 79 سنة. أضيفت دورات NHANES القديمة "
+            "لتغطية الأعمار 60–79. التطبيق تجريبي وغير مخصص للحوامل أو لمن هم خارج هذا "
+            "النطاق.",
+            "gender": "الجنس المسجل في بيانات الدراسة: ذكر أو أنثى. يُستخدم لأن توزيع تركيب "
+            "الجسم والارتباطات الصحية قد يختلف بينهما.",
+            "height_cm": "الطول بالسنتيمتر. قف حافيًا مستقيمًا، والكعبان على الأرض، وانظر "
+            "للأمام. أدخل 175 مثلًا، وليس 1.75.",
+            "weight_kg": "وزن الجسم بالكيلوغرام. استخدم ميزانًا على سطح صلب ومستوي، دون أحذية "
+            "وبملابس خفيفة، ويفضل القياس في ظروف متقاربة كل مرة.",
+            "waist_cm": "محيط الخصر بالسنتيمتر. وفق طريقة NHANES: مرّر شريطًا أفقيًا حول "
+            "البطن عند مستوى أعلى العظم الحرقفي الأيمن، بعد زفير طبيعي، دون ضغط "
+            "الجلد. ليس مقاس البنطال ولا القياس عند السرة بالضرورة.",
+            "body_fat_pct": "نسبة الدهون من وزن الجسم، مثل 25 وليس 0.25. انسخ Body Fat % من "
+            "تقرير جهازك واتبع تعليماته للقياس. نسبة الدهون في بيانات التدريب "
+            "مقاسة بـDXA؛ الأداء على جهازك غير متحقق منه.",
+            "family_diabetes": "هل سبق أن أخبر مختص صحي أحد أقاربك البيولوجيين: الأب أو الأم "
+            "أو الإخوة أو الأخوات، الأحياء أو المتوفين، بأنه مصاب بالسكري؟ "
+            "لا يوجد شرط عمر لهذا السؤال. لا يشمل الزوج أو الزوجة، ولا "
+            "يقصد إصابتك أنت.",
+            "family_heart_early": "هل سبق أن أخبر مختص صحي الأب أو الأم أو أحد الإخوة أو "
+            "الأخوات البيولوجيين، الأحياء أو المتوفين، بإصابته بنوبة "
+            "قلبية أو ذبحة صدرية قبل بلوغ 50 سنة؟ هذا تعريف NHANES "
+            "المستخدم هنا، ولا يشمل كل أمراض القلب أو السكتة أو ضغط "
+            "الدم.",
         },
+        "attention_title": "خطوة صحية تبدأ اليوم",
+        "attention_message": "تجاوز أحد التقديرات عتبة النموذج. احرص على النشاط البدني المنتظم "
+        "والغذاء المتوازن، واستشر مختصًا لتحديد الفحوصات المناسبة. هذه "
+        "النتيجة ليست تشخيصًا.",
+        "maintain_title": "واصل عاداتك الصحية",
+        "maintain_message": "لم تتجاوز التقديرات عتبات النماذج. واصل النشاط البدني والغذاء "
+        "المتوازن والفحوصات الدورية؛ انخفاض التقدير لا يؤكد الخلو من المرض.",
+        "older_note": "تستند بيانات الأعمار 60–79 إلى دورات 1999–2006؛ لم يُتحقق من الأداء على "
+        "عينة حديثة لهذه الفئة.",
     },
     "en": {
         "brand": "MIZAN",
@@ -121,17 +120,19 @@ TEXT = {
         "research": "EXPERIMENTAL · NOT MEDICALLY VALIDATED",
         "eyebrow": "BODY COMPOSITION × MACHINE LEARNING",
         "title": "Simple measurements. Clearer perspective.",
-        "subtitle": "Explore how your body measurements and family history relate to eight study conditions, with an explanation behind every estimate.",
-        "scope": "Non-pregnant adults aged 20–59",
-        "notice": "A research experiment, not a diagnosis or a forecast of future disease. These models are not validated for medical use.",
+        "subtitle": "Explore estimates for eight study conditions using your measurements and "
+        "family history.",
+        "scope": "Non-pregnant adults aged 20–79",
+        "notice": "A research experiment, not a diagnosis or a forecast of future disease. These "
+        "models are not validated for medical use.",
         "assessment": "Your assessment",
-        "evidence": "Methods & performance",
         "guide": "Measurement guide",
         "input_count": "8 simple inputs",
         "derived_count": "3 automatic calculations",
         "disease_count": "8 study conditions",
         "form_title": "Start with your measurements",
-        "form_note": "Click any field name or hover over it for a definition and measuring instructions.",
+        "form_note": "Click any field name or hover over it for a definition and measuring "
+        "instructions.",
         "measurements": "01 / BODY MEASUREMENTS",
         "family": "02 / FAMILY HISTORY",
         "age": "Age (years)",
@@ -146,8 +147,8 @@ TEXT = {
         "female": "Female",
         "yes": "Yes",
         "no": "No",
-        "choose": "Choose your answer",
-        "family_required": "Answer both family-history questions to continue. An unknown history should not be entered as No.",
+        "family_required": "Answer both family-history questions to continue. An unknown history "
+        "should not be entered as No.",
         "family_diabetes_error": "Choose a valid diabetes family-history answer.",
         "family_heart_early_error": "Choose a valid early cardiac family-history answer.",
         "bmi": "Body mass index",
@@ -157,65 +158,68 @@ TEXT = {
         "kg": "kg",
         "submit": "Explore my estimates",
         "running": "Calculating estimates…",
-        "invalid": "Check measurements and units. Supported ages: 20–59.",
+        "invalid": "Check measurements and units. Supported ages: 20–79.",
         "results": "Your research profile",
         "results_subtitle": "Estimates of existing study labels, not future disease risks.",
         "empty": "Your estimates will appear here",
-        "empty_note": "Complete your measurements and family history, then select Explore my estimates.",
+        "empty_note": "Complete your measurements and family history, then select Explore my "
+        "estimates.",
         "waiting": "Awaiting assessment",
         "probability": "Estimated probability",
         "above": "Above study threshold",
         "below": "Below study threshold",
         "threshold": "Study threshold",
-        "legend": "Colors follow each model's threshold: teal below it, amber nearby, coral above it. Colors do not establish a diagnosis or medical safety.",
-        "limited_evidence": "Limited research performance",
+        "legend": "Colors follow each model threshold: teal below, amber nearby, coral above. "
+        "These are not clinical categories.",
         "outside_training": "Some measurements are outside the observed training range: ",
-        "explain": "Behind the numbers",
-        "explain_subtitle": "How did the model use your inputs?",
-        "select": "Choose a condition",
-        "explain_button": "Explain this estimate",
-        "explaining": "Calculating SHAP explanation…",
-        "explain_empty": "Choose a condition and request its explanation to explore the contributing factors.",
-        "baseline": "Reference baseline",
-        "estimate": "Your estimate",
-        "impact": "Contribution in percentage points",
-        "explain_note": "SHAP explains the model calculation, not causation. Correlated measurements and derived values can share attribution.",
-        "explain_error": "The explanation could not be calculated. Retry; synthetic contributions are never substituted.",
         "download": "Download session results",
         "no_models": "The eight-input models are not ready. Run the training command below.",
-        "evidence_title": "Performance you can inspect",
-        "evidence_note": "Actual 2017–2018 temporal results after 2015–2016 model and threshold selection. This test cycle was examined in the previous version; new independent external validation is required.",
-        "disease": "Condition",
-        "algorithm": "Algorithm",
-        "recall": "Recall",
-        "precision": "Precision",
-        "f1": "F1",
-        "roc_auc": "ROC-AUC",
-        "pr_auc": "Average precision",
-        "brier": "Brier",
-        "positive": "Positive cases",
-        "n": "Test participants",
-        "cohort": "participants after filtering",
-        "release": "Model release",
-        "training_text": "Logistic Regression, Random Forest, XGBoost and LightGBM are compared per disease. Fit/calibration: 2011–2014; selection by average precision and threshold by maximum F2: 2015–2016. Class weights address imbalance. These procedures do not establish clinical validity.",
-        "feature_text": "Eight entered inputs and three derived measurements. Ethnicity, ID, diagnostic labs and the participant's own diagnoses are excluded from predictors. Family questions concern relatives. Refused/unknown answers remain explicitly unknown during training.",
-        "labels_text": "Cholesterol: self-report OR non-HDL (total minus HDL) ≥{non_hdl_mg_dl:g} mg/dL. Blood pressure: self-report OR mean systolic ≥{systolic_mm_hg:g} OR mean diastolic ≥{diastolic_mm_hg:g}. Diabetes: self-report OR HbA1c ≥{hba1c_pct:g}%. Other outcomes use self-reported diagnoses. Unknown outcomes are never treated as healthy.",
-        "measurement_note": "Training body-fat percentage comes from DXA. A BIA smart scale changes the measurement instrument. Matching definitions does not prove interchangeability; home-scale and Saudi-population performance have not been validated.",
         "guide_title": "Better measurements, clearer inputs",
-        "guide_note": "Family definitions match the source NHANES questions, including its under-50 cardiac definition for either sex.",
+        "guide_note": "Family definitions match the source NHANES questions, including its "
+        "under-50 cardiac definition for either sex.",
         "formulas": "Automatic calculations",
-        "formula_note": "Fat-free mass includes water, muscle, organs and minerals. It is not muscle mass alone.",
-        "privacy": "Inputs stay in session memory. They are not stored in a database or sent to an external AI service.",
-        "footer": "MIZAN · NHANES 2011–2018 · Transparent research",
+        "formula_note": "Fat-free mass includes water, muscle, organs and minerals. It is not "
+        "muscle mass alone.",
+        "privacy": "Inputs stay in session memory. They are not stored in a database or sent to an "
+        "external AI service.",
+        "footer": "MIZAN · NHANES data · Experimental research",
         "help": {
-            "age": "Completed years, from 20 to 59 only. This matches adult cardiac questions and the available DXA cohort. Not intended for pregnancy or ages outside this range.",
-            "gender": "Recorded sex in the source survey: male or female. Body-composition distributions and health associations may differ by sex.",
-            "height_cm": "Standing height in centimeters. Stand barefoot and upright with heels down and eyes forward. Enter 175 rather than 1.75.",
-            "weight_kg": "Weight in kilograms. Place the scale on a hard, level surface; remove shoes and use light clothing. Measure under similar conditions over time.",
-            "waist_cm": "NHANES method: a horizontal tape around the abdomen at the upper border of the right iliac bone, after a normal exhalation, without compressing skin. Not trouser size or necessarily navel level.",
-            "body_fat_pct": "Fat as a percentage of body weight: enter 25, not 0.25. Copy Body Fat % from the scale. BIA estimates vary with hydration, meals and exercise; follow device instructions. Training measurements use DXA.",
-            "family_diabetes": "Has a health professional ever told a biological father, mother, sister or brother, living or deceased, that they had diabetes? No age restriction applies. This excludes a spouse and does not ask about your own diagnosis.",
-            "family_heart_early": "Has a health professional ever told a biological father, mother, sister or brother, living or deceased, that they had a heart attack or angina before age 50? This is the NHANES definition, not all cardiac disease, stroke or high blood pressure.",
+            "age": "Completed years, from 20 to 79. Older NHANES cycles supply ages 60–79. "
+            "Experimental use only; not intended for pregnancy or ages outside this "
+            "range.",
+            "gender": "Recorded sex in the source survey: male or female. Body-composition "
+            "distributions and health associations may differ by sex.",
+            "height_cm": "Standing height in centimeters. Stand barefoot and upright with "
+            "heels down and eyes forward. Enter 175 rather than 1.75.",
+            "weight_kg": "Weight in kilograms. Place the scale on a hard, level surface; "
+            "remove shoes and use light clothing. Measure under similar "
+            "conditions over time.",
+            "waist_cm": "NHANES method: a horizontal tape around the abdomen at the upper "
+            "border of the right iliac bone, after a normal exhalation, without "
+            "compressing skin. Not trouser size or necessarily navel level.",
+            "body_fat_pct": "Body fat as a percentage of weight: enter 25, not 0.25. Copy "
+            "Body Fat % from your device and follow its measuring "
+            "instructions. Training uses DXA; performance on your device is "
+            "unvalidated.",
+            "family_diabetes": "Has a health professional ever told a biological father, "
+            "mother, sister or brother, living or deceased, that they had "
+            "diabetes? No age restriction applies. This excludes a spouse "
+            "and does not ask about your own diagnosis.",
+            "family_heart_early": "Has a health professional ever told a biological father, "
+            "mother, sister or brother, living or deceased, that they "
+            "had a heart attack or angina before age 50? This is the "
+            "NHANES definition, not all cardiac disease, stroke or high "
+            "blood pressure.",
         },
+        "attention_title": "A healthy step starts today",
+        "attention_message": "At least one estimate exceeded its model threshold. Keep physically "
+        "active, eat a balanced diet, and consult a health professional about "
+        "appropriate checks. This result is not a diagnosis.",
+        "maintain_title": "Keep your healthy habits",
+        "maintain_message": "No estimate exceeded its model threshold. Keep physically active, eat "
+        "a balanced diet, and continue routine health checks. A lower estimate "
+        "does not confirm absence of disease.",
+        "older_note": "Ages 60–79 are supported by 1999–2006 data only; performance has not been "
+        "validated in a contemporary older-adult sample.",
     },
 }

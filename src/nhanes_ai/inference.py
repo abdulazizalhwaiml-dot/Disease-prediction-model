@@ -1,4 +1,4 @@
-"""Validated inputs, integrity-checked model releases, and calibrated probability SHAP.
+"""Validated inputs, integrity-checked model releases, and calibrated probabilities.
 
 Only load artifacts produced by a trusted training process. SHA256 detects corruption;
 it is not a signature and does not make untrusted pickle files safe to deserialize.
@@ -15,14 +15,21 @@ from importlib.metadata import version
 from pathlib import Path
 
 import joblib
-import numpy as np
 import pandas as pd
 
 from nhanes_ai.features import derive_features
-from nhanes_ai.schema import DISEASES, FAMILY_FIELDS, FEATURES, SCHEMA_VERSION, USER_FIELDS
+from nhanes_ai.schema import (
+    AGE_MAX,
+    AGE_MIN,
+    DISEASES,
+    FAMILY_FIELDS,
+    FEATURES,
+    SCHEMA_VERSION,
+    USER_FIELDS,
+)
 
 LIMITS = {
-    "age": (20, 59),
+    "age": (AGE_MIN, AGE_MAX),
     "waist_cm": (40, 200),
     "weight_kg": (25, 205),
     "height_cm": (120, 220),
@@ -87,6 +94,8 @@ class ModelRegistry:
             or self.manifest.get("features") != FEATURES
         ):
             raise ValueError("Model input contract does not match the eight-input app")
+        if self.manifest.get("age_limits") != [AGE_MIN, AGE_MAX]:
+            raise ValueError("Model age scope does not match the application")
         if platform.python_version_tuple()[:2] != tuple(self.manifest["python"].split(".")[:2]):
             raise ValueError("Python major/minor differs from the training runtime")
         for package, expected in self.manifest["versions"].items():
@@ -141,45 +150,4 @@ class ModelRegistry:
             "predictions": predictions,
             "run_id": self.manifest["run_id"],
             "outside_training_range": outside_training,
-        }
-
-    def explain(self, record: dict, disease: str):
-        """Permutation SHAP on the actual calibrated probability, with additive validation.
-
-        Mask the original eight inputs, then recompute all derived measurements for
-        every perturbed row. This preserves mass/BMI identities and valid family
-        categories rather than independently perturbing derived/dummy columns.
-        """
-        import shap
-
-        if disease not in self.bundles:
-            raise ValueError("Unknown disease")
-        frame = validate_record(record)
-        bundle = self.bundles[disease]
-        pipeline = bundle["pipeline"]
-        inputs = frame[USER_FIELDS].to_numpy(dtype=float)
-
-        def predict_rows(rows):
-            return pipeline.predict_proba(derive_features(pd.DataFrame(rows, columns=USER_FIELDS)))[
-                :, 1
-            ]
-
-        explainer = shap.PermutationExplainer(
-            predict_rows,
-            shap.maskers.Independent(bundle["background"], max_samples=32),
-            feature_names=bundle["feature_names"],
-            seed=bundle["seed"],
-        )
-        explanation = explainer(inputs, max_evals=3 * (2 * len(USER_FIELDS) + 1), silent=True)
-        values = explanation.values[0]
-        baseline = float(np.asarray(explanation.base_values).ravel()[0])
-        probability = float(pipeline.predict_proba(frame)[0, 1])
-        if not np.isclose(baseline + values.sum(), probability, atol=1e-6):
-            raise ValueError("SHAP explanation does not reconstruct the predicted probability")
-        grouped = dict(zip(bundle["feature_names"], map(float, values)))
-        return {
-            "baseline": baseline,
-            "probability": probability,
-            "contributions": grouped,
-            "method": "permutation SHAP, calibrated probability",
         }
