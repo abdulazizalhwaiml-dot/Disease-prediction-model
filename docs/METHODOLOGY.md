@@ -89,3 +89,12 @@ Schema3 records age limits20–79. Loading checks schema, input contract, Python
 paths and SHA256 hashes before trusted joblib deserialization. The active pointer changes atomically
 only when all eight pipelines and reports are written. Hashes detect corruption, not malicious
 replacement of both manifest and model. Inputs remain session-local; changes clear old results.
+
+## Cross-platform export
+
+The original XGBoost pickle memory snapshot failed in the native Windows library.
+`PortableBooster` serializes the official UBJSON model plus JSON configuration instead.
+The active export preserves all trees, calibration and thresholds. Before activation,
+`upgrade_model_format.py` round-tripped both selected XGBoost pipelines on all21,117
+exported feature rows, with maximum probability difference0. No models were refit.
+Training now uses the same portable export for future selected XGBoost models.

@@ -50,6 +50,7 @@ from nhanes_ai.schema import (
     USER_FIELDS,
     LabelConfig,
 )
+from nhanes_ai.serialization import make_portable
 
 
 def classifiers(y, seed, jobs):
@@ -342,7 +343,7 @@ def train(data_root: Path, output: Path, reports: Path, config=LabelConfig(), se
             "schema_version": SCHEMA_VERSION,
             "disease": disease,
             "algorithm": algorithm,
-            "pipeline": pipeline,
+            "pipeline": make_portable(pipeline),
             "threshold": threshold,
             "encoded_feature_names": pipeline.named_steps["preprocess"]
             .get_feature_names_out()

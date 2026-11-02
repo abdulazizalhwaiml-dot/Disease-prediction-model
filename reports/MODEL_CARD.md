@@ -1,6 +1,6 @@
 # MIZAN — trained models
 
-Release: `20261102T140111Z-4ba2271e`; seed 42; schema 3.
+Release: `20261102T183845Z-1cec410a`; seed 42; schema 3.
 
 Research only: cross-sectional NHANES disease labels, not future risk or diagnosis.
 Non-pregnant adults aged 20–79; ages 60–79 come only from 1999–2006.
