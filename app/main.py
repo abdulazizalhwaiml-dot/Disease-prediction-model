@@ -25,7 +25,8 @@ st.set_page_config(
 )
 
 # Language belongs in the page header; no sidebar can leave a phantom reserved column.
-brand_column, language_column = st.columns([0.72, 0.28], vertical_alignment="center", wrap=False)
+with st.container(key="topbar", height="content"):
+    brand_column, language_column = st.columns([0.72, 0.28], vertical_alignment="top")
 with language_column:
     language = st.selectbox(
         "Language / اللغة",
@@ -44,9 +45,9 @@ st.html(
     + "</style>"
 )
 with brand_column:
-    st.markdown(
-        f'<div class="brand" dir="{direction}">{logo_html()}<div><div class="brand-name">{t["brand"]}</div><div class="brand-tagline">{t["tagline"]}</div></div></div>',
-        unsafe_allow_html=True,
+    # Native HTML measures the logo's actual content height, without Markdown line-box sizing.
+    st.html(
+        f'<div class="brand" dir="{direction}">{logo_html()}<div><div class="brand-name">{t["brand"]}</div><div class="brand-tagline">{t["tagline"]}</div></div></div>'
     )
 
 st.markdown(
@@ -85,7 +86,11 @@ def render_field(field):
                 width="content",
             )
             with st.popover(
-                t["help_button"], icon=":material/help:", key=f"help_{field}", width="content"
+                f"{t['help_button']}: {t[field]}",
+                icon=":material/help:",
+                help=t[field],
+                key=f"help_{field}",
+                width="content",
             ):
                 st.markdown(f"**{t[field]}**")
                 if field in ["height_cm", "waist_cm"]:
@@ -158,6 +163,17 @@ with st.container(key="input_panel"):
     run_id = models.manifest["run_id"] if models else None
     if st.session_state.get("record") != record or st.session_state.get("run_id") != run_id:
         st.session_state.pop("result", None)
+    derived = derive_features(pd.DataFrame([record])).iloc[0]
+    st.markdown(
+        f'<div class="derived-heading">{escape(t["automatic"])}</div><div class="derived-grid">'
+        + "".join(
+            f'<div class="derived-metric" data-derived="{field}"><span>{escape(t[field])}</span>'
+            f'<strong dir="ltr">{derived[field]:.1f}<small>{"kg/m²" if field == "bmi" else escape(t["kg"])}</small></strong></div>'
+            for field in ["bmi", "fat_mass_kg", "fat_free_mass_kg"]
+        )
+        + "</div>",
+        unsafe_allow_html=True,
+    )
     if st.button(
         t["submit"],
         type="primary",
@@ -199,13 +215,6 @@ with st.container(key="report"):
         st.caption(t["legend"])
         if record["age"] >= 60:
             st.caption(t["older_note"])
-        with st.expander(t["automatic"], icon=":material/calculate:"):
-            derived = derive_features(pd.DataFrame([record])).iloc[0]
-            for column, field in zip(st.columns(3), ["bmi", "fat_mass_kg", "fat_free_mass_kg"]):
-                column.metric(
-                    t[field], f"{derived[field]:.1f}", help="kg/m²" if field == "bmi" else t["kg"]
-                )
-            st.caption(t["formula_note"])
         st.download_button(
             t["download"],
             json.dumps(result, ensure_ascii=False, indent=2),

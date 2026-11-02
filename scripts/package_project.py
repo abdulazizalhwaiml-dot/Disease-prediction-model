@@ -15,7 +15,7 @@ from pathlib import Path
 def main():
     root = Path(__file__).resolve().parents[1]
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--output", type=Path, default=root.parent / "MIZANAK_v4.zip")
+    parser.add_argument("--output", type=Path, default=root.parent / "MIZANAK_v4_1.zip")
     args = parser.parse_args()
     tracked = subprocess.check_output(["git", "ls-files", "-z"], cwd=root).decode().split("\0")
     sources = json.loads((root / "data/older_sources.json").read_text(encoding="utf-8"))
@@ -29,7 +29,7 @@ def main():
             raise ValueError(f"Source checksum mismatch: {relative}")
     with zipfile.ZipFile(args.output, "w", zipfile.ZIP_DEFLATED, compresslevel=6) as archive:
         for path in sorted(files):
-            archive.write(path, f"MIZANAK_v4/{path.relative_to(root).as_posix()}")
+            archive.write(path, f"{args.output.stem}/{path.relative_to(root).as_posix()}")
     with zipfile.ZipFile(args.output) as archive:
         if archive.testzip() is not None:
             raise ValueError("ZIP CRC verification failed")

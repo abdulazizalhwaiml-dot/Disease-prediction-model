@@ -1,3 +1,27 @@
+# Mizanak v4.1 — interface maintenance
+
+- Corrected the top-row internal scrollbar. The previous wrap=False Streamlit columns
+  became a scrolling flex container; a Markdown-measured49px child contained a65px brand.
+  With RTL layout, the internal vertical scrollbar appeared on the left beside Language.
+- Header now uses a content-sized keyed container, normally flowing columns, scoped
+  overflow:visible and a native HTML brand block. No global scrollbar hiding was added.
+- Chromium regression:40 combinations of viewport320/390/768/1285/1440, Arabic/English,
+  and CSS scaling1/1.25/1.5/2. No internal header scroller or clipped brand; normal page
+  scrolling remained enabled. Eight icon-only help controls retain accessible names and
+  keyboard operation.
+- BMI, fat mass and FFM are read-only under the inputs, before submit. Actual editing of
+  height175→180 updates displayed BMI26.1→24.7 without submitting; still only eight inputs.
+- Disease cards use short condition definitions plus one common medical limitation.
+  User-facing “model threshold” is now “alert level” / «حد التنبيه», defined as a research
+  calculation. Comparison operators and all model operating points are unchanged.
+- The original waist illustration is retained at the user's request. The alternative
+  numbered-logo image is a preview only and is not part of the application or archive.
+- Existing43-test suite passed locally. Real Chromium desktop/mobile report and help
+  interactions, both languages and first/repeated auto-scroll passed.
+- Same trusted portable model release20261102T184611Z-ebdefc95; no refit or data changes.
+
+Earlier v4 validation and native Windows portability evidence follows.
+
 # Mizanak v4 — validation, 2026-11-02
 
 ## Scope of this update

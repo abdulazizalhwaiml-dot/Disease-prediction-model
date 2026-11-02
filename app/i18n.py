@@ -23,7 +23,7 @@ TEXT = {
         "notice": "هذه تجربة بحثية، وليست تشخيصًا أو توقعًا للإصابة مستقبلًا. لم تُعتمد النماذج "
         "للاستخدام الطبي.",
         "form_title": "لنبدأ بقياساتك",
-        "form_note": "ثمانية مدخلات فقط. زر «توضيح» بجانب كل خانة يساعدك في القياس.",
+        "form_note": "ثمانية مدخلات فقط. اضغط علامة الاستفهام بجانب أي خانة لمعرفة طريقة القياس.",
         "family": "وماذا عن تاريخ العائلة؟",
         "age": "العمر (سنة)",
         "gender": "الجنس",
@@ -53,9 +53,10 @@ TEXT = {
         "results_subtitle": "اضغط أي بطاقة للتعرّف على الحالة. هذه تقديرات بحثية وليست تشخيصًا.",
         "empty": "تقريرك يبدأ من قياساتك",
         "empty_note": "أكمل المدخلات بالأعلى، ثم اضغط «اعرض تقريري».",
-        "above": "إشارة أعلى من عتبة النموذج",
-        "below": "إشارة أقل من عتبة النموذج",
-        "legend": "لون البطاقة يتبع عتبة النموذج البحثية؛ لا يعني تشخيصًا أو تأكيدًا للسلامة.",
+        "above": "بلغ حد التنبيه",
+        "below": "أقل من حد التنبيه",
+        "legend": "حد التنبيه قيمة حسابية خاصة بكل حالة لإظهار تنبيه بحثي؛ بلوغه لا يعني تشخيص "
+        "المرض، وانخفاض التقدير لا يؤكد الخلو منه.",
         "outside_training": "بعض القياسات خارج نطاق التدريب المشاهد: ",
         "download": "احفظ تقريري",
         "no_models": "لم تُجهّز نماذج المدخلات الثمانية بعد. شغّل أمر التدريب أدناه.",
@@ -91,16 +92,16 @@ TEXT = {
             "الدم.",
         },
         "attention_title": "خطوة صحية تبدأ اليوم",
-        "attention_message": "تجاوز أحد التقديرات عتبة النموذج. احرص على النشاط البدني المنتظم "
-        "والغذاء المتوازن، واستشر مختصًا لتحديد الفحوصات المناسبة. هذه "
-        "النتيجة ليست تشخيصًا.",
+        "attention_message": "بلغ أحد التقديرات حد التنبيه. احرص على النشاط البدني المنتظم والغذاء "
+        "المتوازن، واستشر مختصًا لتحديد الفحوصات المناسبة. هذه النتيجة ليست "
+        "تشخيصًا.",
         "maintain_title": "واصل عاداتك الصحية",
-        "maintain_message": "لم تتجاوز التقديرات عتبات النماذج. واصل النشاط البدني والغذاء "
-        "المتوازن والفحوصات الدورية؛ انخفاض التقدير لا يؤكد الخلو من المرض.",
+        "maintain_message": "التقديرات أقل من حدود التنبيه. واصل النشاط البدني والغذاء المتوازن "
+        "والفحوصات الدورية؛ انخفاض التقدير لا يؤكد الخلو من المرض.",
         "older_note": "تستند بيانات الأعمار 60–79 إلى دورات 1999–2006؛ لم يُتحقق من الأداء على "
         "عينة حديثة لهذه الفئة.",
         "help_button": "توضيح",
-        "near": "قريب من عتبة النموذج",
+        "near": "قريب من حد التنبيه",
         "image_alt": {
             "height_cm": "شخص حافي القدمين يقف مستقيمًا أمام مقياس الطول، والرأس ينظر للأمام.",
             "waist_cm": "شريط أفقي عند مستوى أعلى عظم الحوض الأيمن، مع رسم يوضح موضع "
@@ -112,20 +113,20 @@ TEXT = {
             "ضغط الجلد، بعد زفير طبيعي.",
         },
         "conditions": {
-            "high_cholesterol": "ارتفاع الكوليسترول وفق الإبلاغ السابق أو نتيجة non-HDL "
-            "في الدراسة. لا يمكن تأكيده من قياسات الجسم وحدها.",
-            "high_blood_pressure": "ارتفاع ضغط الدم وفق الإبلاغ السابق أو قراءات الفحص. "
-            "قياس الضغط الفعلي ضروري للتقييم.",
-            "diabetes": "السكري وفق الإبلاغ السابق أو تحليل HbA1c في الدراسة. هذا "
-            "التقدير لا يغني عن التحليل.",
-            "coronary_artery_disease": "مرض الشرايين التي تغذي القلب، وفق تشخيص سابق "
-            "أبلغ عنه المشاركون في الدراسة.",
-            "heart_attack": "نوبة قلبية سابقة أبلغ عنها المشارك؛ ليس توقعًا لموعد نوبة "
-            "قلبية مستقبلية.",
-            "angina": "ذبحة صدرية سابقة أبلغ عنها المشارك في الدراسة، وليست تقييمًا لألم صدر حالي.",
-            "heart_failure": "قصور القلب الاحتقاني وفق تشخيص سابق أبلغ عنه المشارك في الدراسة.",
-            "stroke": "سكتة دماغية سابقة أبلغ عنها المشارك؛ ليس توقعًا لحدوث سكتة مستقبلًا.",
+            "high_cholesterol": "ارتفاع الكوليسترول في الدم، وقد يسهم في تراكم الترسبات "
+            "داخل الشرايين.",
+            "high_blood_pressure": "ارتفاع مستمر في ضغط الدم داخل الشرايين، مما يزيد "
+            "العبء على القلب والأوعية الدموية.",
+            "diabetes": "اضطراب يرفع سكر الدم بسبب نقص الإنسولين أو ضعف استجابة الجسم له.",
+            "coronary_artery_disease": "تضيّق أو انسداد الشرايين التي تغذّي القلب، "
+            "غالبًا بسبب تراكم الترسبات.",
+            "heart_attack": "تلف جزء من عضلة القلب نتيجة نقص حاد في ترويته بالدم.",
+            "angina": "ألم أو ضغط في الصدر ناتج عن نقص مؤقت في تروية عضلة القلب.",
+            "heart_failure": "حالة لا يضخ فيها القلب الدم بالكفاءة المطلوبة لتلبية "
+            "احتياجات الجسم، وقد يصاحبها احتباس السوائل.",
+            "stroke": "تضرّر جزء من الدماغ بسبب انسداد وعاء دموي أو حدوث نزيف.",
         },
+        "condition_disclaimer": "هذا تقدير بحثي، وليس تشخيصًا طبيًا، ولا يغني عن تقييم الطبيب.",
     },
     "en": {
         "brand": "Mizanak",
@@ -139,7 +140,8 @@ TEXT = {
         "notice": "A research experiment, not a diagnosis or a forecast of future disease. These "
         "models are not validated for medical use.",
         "form_title": "Start with your measurements",
-        "form_note": "Just eight inputs. Select Help beside any field for measuring guidance.",
+        "form_note": "Just eight inputs. Select the question mark beside any field for measuring "
+        "guidance.",
         "family": "A little about your family",
         "age": "Age (years)",
         "gender": "Sex",
@@ -170,10 +172,10 @@ TEXT = {
         "diagnosis.",
         "empty": "Your report starts with your measurements",
         "empty_note": "Complete the inputs above, then select Show my report.",
-        "above": "Above the model threshold",
-        "below": "Below the model threshold",
-        "legend": "Card colors follow research model thresholds; they do not establish a diagnosis "
-        "or medical safety.",
+        "above": "Reached the alert level",
+        "below": "Below the alert level",
+        "legend": "Each condition has a calculated research alert level. Reaching it does not "
+        "diagnose disease; a lower estimate does not confirm its absence.",
         "outside_training": "Some measurements are outside the observed training range: ",
         "download": "Save my report",
         "no_models": "The eight-input models are not ready. Run the training command below.",
@@ -211,17 +213,18 @@ TEXT = {
             "blood pressure.",
         },
         "attention_title": "A healthy step starts today",
-        "attention_message": "At least one estimate exceeded its model threshold. Keep physically "
-        "active, eat a balanced diet, and consult a health professional about "
-        "appropriate checks. This result is not a diagnosis.",
+        "attention_message": "At least one estimate reached its research alert level. Keep "
+        "physically active, eat a balanced diet, and consult a health "
+        "professional about appropriate checks. This result is not a "
+        "diagnosis.",
         "maintain_title": "Keep your healthy habits",
-        "maintain_message": "No estimate exceeded its model threshold. Keep physically active, eat "
-        "a balanced diet, and continue routine health checks. A lower estimate "
-        "does not confirm absence of disease.",
+        "maintain_message": "The estimates are below their alert levels. Keep physically active, "
+        "eat a balanced diet, and continue routine health checks. A lower "
+        "estimate does not confirm absence of disease.",
         "older_note": "Ages 60–79 are supported by 1999–2006 data only; performance has not been "
         "validated in a contemporary older-adult sample.",
         "help_button": "Help",
-        "near": "Near the model threshold",
+        "near": "Near the alert level",
         "image_alt": {
             "height_cm": "A barefoot person stands straight at a stadiometer, looking "
             "horizontally ahead.",
@@ -235,24 +238,23 @@ TEXT = {
             "level, without compressing skin, after a normal exhalation.",
         },
         "conditions": {
-            "high_cholesterol": "The study combines a reported cholesterol diagnosis "
-            "with non-HDL laboratory results. Body measurements "
-            "alone cannot confirm it.",
-            "high_blood_pressure": "The study combines reported hypertension with "
-            "examination readings. Actual blood-pressure "
-            "measurements are needed for assessment.",
-            "diabetes": "The study combines reported diabetes with HbA1c results. This "
-            "estimate cannot replace laboratory testing.",
-            "coronary_artery_disease": "Disease affecting the arteries supplying the "
-            "heart, based on a prior diagnosis reported by "
-            "study participants.",
-            "heart_attack": "A previously reported heart attack, not a forecast of when "
-            "a future heart attack might occur.",
-            "angina": "Previously reported angina in the survey; this does not assess "
-            "current chest pain.",
-            "heart_failure": "Congestive heart failure based on a prior diagnosis "
-            "reported by study participants.",
-            "stroke": "A previously reported stroke, not a forecast of a future stroke.",
+            "high_cholesterol": "Elevated blood cholesterol, which can contribute to "
+            "plaque buildup in arteries.",
+            "high_blood_pressure": "Persistently elevated pressure in the arteries, "
+            "increasing strain on the heart and blood vessels.",
+            "diabetes": "A condition that raises blood glucose because insulin is "
+            "insufficient or the body responds poorly to it.",
+            "coronary_artery_disease": "Narrowing or blockage of the arteries supplying "
+            "the heart, usually caused by plaque buildup.",
+            "heart_attack": "Damage to part of the heart muscle caused by a severe "
+            "reduction in its blood supply.",
+            "angina": "Chest discomfort or pressure caused by a temporary reduction in "
+            "blood flow to the heart muscle.",
+            "heart_failure": "The heart cannot pump blood efficiently enough to meet "
+            "the body’s needs; fluid may build up.",
+            "stroke": "Damage to part of the brain caused by a blocked blood vessel or bleeding.",
         },
+        "condition_disclaimer": "A research estimate, not a medical diagnosis or a substitute for "
+        "a clinician’s assessment.",
     },
 }

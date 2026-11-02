@@ -17,11 +17,11 @@
 ملفات البيانات القديمة من CDC، ويتحقق من بصماتها ثم يعيد التدريب. يلزم اتصال إنترنت للتثبيت والتنزيل فقط.
 [شرح Windows وحلول الأخطاء](docs/WINDOWS.md).
 
-## الواجهة الجديدة — الإصدار 4
+## الواجهة الجديدة — الإصدار 4.1
 
 المدخلات أعلى الصفحة والتقرير أسفلها، مع انتقال تلقائي بعد الإرسال. اللغة في أعلى الصفحة دون قائمة جانبية.
-زر «توضيح» بجانب كل خانة يفتح شرحًا، ومع الطول والخصر رسمًا توضيحيًا. بطاقات التقرير بسيطة وقابلة للفتح
-لتعريف الحالة، والحسابات الثلاثة داخل قسم قابل للطي. الشعار وأيقونة المتصفح مستوحيان من مرجع المستخدم.
+أيقونة الاستفهام والسهم بجانب كل خانة تفتح شرحًا، ومع الطول والخصر الرسم التوضيحي السابق. بطاقات التقرير بسيطة وقابلة للفتح
+لتعريف الحالة، والحسابات الثلاثة أسفل المدخلات وتتحدث تلقائيًا قبل الإرسال. الشعار وأيقونة المتصفح مستوحيان من مرجع المستخدم.
 
 تعتمد هذه الواجهة على نماذج الإصدار 3 المدربة نفسها. لم تتغير البيانات أو تعريفات الأمراض أو احتمالاتها.
 أعيد تصدير XGBoost بصيغة قابلة للنقل بين Windows وLinux، دون إعادة تدريب أو تغيير النتائج.
@@ -126,9 +126,12 @@ Streamlit Cloud: Python **3.12**، ملف البداية **streamlit_app.py**؛ 
 
 ## English quick reference
 
-Mizanak v4 is a bilingual experimental Streamlit app for non-pregnant adults aged 20–79.
+Mizanak v4.1 is a bilingual experimental Streamlit app for non-pregnant adults aged 20–79.
 It uses eight entered inputs and three derived features, with eight separately calibrated classifiers.
 The merged complete-observed-DXA cohort has 21,117 participants; older adults come only from 1999–2006.
 Version4 updates the interface and Windows text I/O while retaining the schema3 model release.
 No prospective-risk, clinical-readiness, national-representativeness or device-transfer claim is made.
 See the methodology and generated model card for the fixed splits and actual performance.
+
+تحديث4.1: إصلاح التمرير الداخلي لصف الشعار واللغة، وتعريف مختصر لكل مرض مع ملاحظة طبية،
+واستخدام «حد التنبيه» لشرح التنبيهات البحثية. لم تتغير النماذج أو حدود القرار أو صورة الخصر السابقة.

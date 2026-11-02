@@ -58,7 +58,8 @@ def disease_grid(predictions, names, text):
             f'<div class="probability" dir="ltr">{probability * 100:.1f}<small>%</small></div>'
             f'<div class="probability-track"><span style="width:{probability * 100:.4f}%"></span></div>'
             f'<div class="card-status"><i></i>{escape(status)}</div></summary>'
-            f'<div class="card-definition">{escape(text["conditions"][disease])}</div></details>'
+            f'<div class="card-definition"><p>{escape(text["conditions"][disease])}</p>'
+            f'<small class="condition-disclaimer">{escape(text["condition_disclaimer"])}</small></div></details>'
         )
     return '<div class="disease-grid">' + "".join(cards) + "</div>"
 

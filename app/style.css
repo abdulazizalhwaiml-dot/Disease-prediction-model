@@ -4,6 +4,12 @@
 [data-testid="stHeader"] { background:transparent; }
 [data-testid="stToolbar"] { display:none; }
 [data-testid="stVerticalBlock"] { gap:1rem; }
+/* Keep the header in normal document flow. Streamlit's wrap=False would create
+   an internal scroll container when the brand exceeds the row's measured height. */
+.st-key-topbar [data-testid="stHorizontalBlock"] { flex-wrap:nowrap; overflow:visible; height:auto; min-height:65px; align-items:center; }
+.st-key-topbar [data-testid="stColumn"] { min-width:0; width:auto; }
+.st-key-topbar [data-testid="stColumn"]:nth-child(1) { flex:0.72 1 0; }
+.st-key-topbar [data-testid="stColumn"]:nth-child(2) { flex:0.28 1 0; }
 .brand { display:flex; align-items:center; gap:11px; min-height:65px; }
 .brand-logo { display:block; width:58px; height:58px; object-fit:contain; }
 .brand-name { font-size:30px; font-weight:750; line-height:1.4; letter-spacing:-.7px; color:#174654; }
@@ -106,3 +112,18 @@ footer span:last-child { max-width:530px; }
  footer { flex-direction:column; gap:6px; } .research-badge { font-size:10px; }
 }
 @media(prefers-reduced-motion:reduce) { *,*::before,*::after { scroll-behavior:auto!important; transition:none!important; animation:none!important; } }
+
+/* Icon-only help keeps a real accessible name; text is visually hidden, not removed. */
+.st-key-input_panel [data-testid="stPopoverButton"] { min-width:56px; width:56px; padding:5px 7px; }
+.st-key-input_panel [data-testid="stPopoverButton"] [data-testid="stMarkdownContainer"] { position:absolute; width:1px; height:1px; padding:0; border:0; overflow:hidden; clip-path:inset(50%); white-space:nowrap; }
+
+.card-definition p { margin:0 0 8px; font-size:12px; line-height:1.9; }
+.condition-disclaimer { display:block; color:#91a0a7; font-size:10px; line-height:1.8; }
+
+.derived-heading { font-size:11px; color:#78949d; margin:7px 0 8px; text-align:start; }
+.derived-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; margin-bottom:8px; }
+.derived-metric { display:flex; flex-direction:column; gap:6px; padding:12px; background:#f3f9fa; border:1px solid #e1eef0; border-radius:13px; text-align:start; }
+.derived-metric > span { color:#78939c; font-size:11px; line-height:1.8; }
+.derived-metric strong { font-size:21px; color:#3a7883; font-weight:650; }
+.derived-metric small { font-size:10px; font-weight:400; margin-inline-start:4px; color:#7b9ba3; }
+@media(max-width:480px) { .derived-grid { gap:6px; } .derived-metric { padding:9px 7px; } .derived-metric > span { font-size:9px; min-height:32px; } .derived-metric strong { font-size:19px; } }

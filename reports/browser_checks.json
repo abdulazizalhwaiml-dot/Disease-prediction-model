@@ -1,24 +1,24 @@
 [
   {
     "mobile": false,
-    "repeatAutoScrollY": 110.296875,
+    "repeatAutoScrollY": 139.046875,
     "inputs": 8,
     "helpPopovers": 8,
     "images": true,
     "cards": 8,
-    "autoScrollY": 197.296875,
+    "autoScrollY": 254.046875,
     "reportBelowInputs": true,
     "overflow": false,
     "errors": []
   },
   {
     "mobile": true,
-    "repeatAutoScrollY": 27.984375,
+    "repeatAutoScrollY": 28.09375,
     "inputs": 8,
     "helpPopovers": 8,
     "images": true,
     "cards": 8,
-    "autoScrollY": 27.984375,
+    "autoScrollY": 28.09375,
     "reportBelowInputs": true,
     "overflow": false,
     "errors": []
