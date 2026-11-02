@@ -30,12 +30,13 @@ reported failure; actual Windows execution is unavailable in the Linux environme
 ## Data and model provenance
 
 Training origin: **20261102T140111Z-4ba2271e**. Active portable export:
-**20261102T183845Z-1cec410a**, schema3, ages20–79.
+**20261102T184611Z-ebdefc95**, schema3, ages20–79.
 The trained model parameters, thresholds and21,117-row cohort are unchanged.
 The native Windows check also rejected XGBoost pickle memory snapshots with input-stream
 corruption despite correct artifact hashes. The two XGBoost pipelines now use official
-UBJSON model serialization plus JSON configuration. Linux round-trip checks on all21,117
-rows gave maximum probability difference0 for both. The other six artifact bytes are unchanged. No retraining or tuning is
+UBJSON model serialization only, with a CPU/two-thread runtime setting. Linux round-trip checks on all21,117
+rows gave maximum probability difference0 for both. Platform-specific training
+configuration is intentionally not restored; it also failed to load on Windows. The other six artifact bytes are unchanged. No retraining or tuning is
 needed for this interface/text-I/O update. The manifest code fingerprints describe the
 code used to generate that model release, rather than the later UI/encoding maintenance.
 Original model and data integrity checks remain active. No manifest is edited to pretend

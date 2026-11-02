@@ -93,7 +93,7 @@ replacement of both manifest and model. Inputs remain session-local; changes cle
 ## Cross-platform export
 
 The original XGBoost pickle memory snapshot failed in the native Windows library.
-`PortableBooster` serializes the official UBJSON model plus JSON configuration instead.
+`PortableBooster` serializes the official UBJSON model only, with a CPU/two-thread runtime setting instead.
 The active export preserves all trees, calibration and thresholds. Before activation,
 `upgrade_model_format.py` round-tripped both selected XGBoost pipelines on all21,117
 exported feature rows, with maximum probability difference0. No models were refit.

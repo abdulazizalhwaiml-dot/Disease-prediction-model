@@ -28,7 +28,7 @@
     "fat_mass_kg": "weight_kg * body_fat_pct / 100",
     "fat_free_mass_kg": "weight_kg - fat_mass_kg"
   },
-  "run_id": "20261102T183845Z-1cec410a",
+  "run_id": "20261102T184611Z-ebdefc95",
   "python": "3.12.14",
   "versions": {
     "numpy": "2.5.4",
@@ -297,7 +297,7 @@
   "models": {
     "high_cholesterol": {
       "filename": "high_cholesterol.joblib",
-      "sha256": "4549cea49cc0e0fc9a97048eb57c8c79f0cc38a60912250e08312365a81ae821",
+      "sha256": "e45b7a81ea285649aa803b7a31c023ff650af11a096e931b51a4d763c8edcc75",
       "algorithm": "xgboost",
       "threshold": 0.11892308431367271,
       "test": {
@@ -1727,7 +1727,7 @@
     },
     "heart_attack": {
       "filename": "heart_attack.joblib",
-      "sha256": "ac69c2c760f890e5481525e1273c9aacd0b3e6250a857626212f7af10d02853a",
+      "sha256": "108424ea00201a9de088f80fed144117f945923c96f88aaff9881e45a3cd5b22",
       "algorithm": "xgboost",
       "threshold": 0.056505909530538224,
       "test": {
@@ -3165,9 +3165,9 @@
     }
   },
   "format_conversion": {
-    "source_release": "20261102T140111Z-4ba2271e",
+    "source_release": "20261102T183845Z-1cec410a",
     "retrained": false,
-    "xgboost_format": "UBJSON model plus JSON configuration",
+    "xgboost_format": "UBJSON model; runtime CPU/two-thread setting",
     "verified_rows": 21117,
     "prediction_tolerance": 1e-12
   },
@@ -3178,6 +3178,6 @@
     "inference.py": "8b203e441d088d89675e9039cce61879dbb1dfb782c93627d831de9b70e1387e",
     "schema.py": "d064891d5eb5a5305e1385753ba294605dcf1c44901eecbf21cfa8427e88184b",
     "train.py": "8940be9137482a2c0661f8c003324634b44a9c6725ba0cf0341051b5ea59f85c",
-    "serialization.py": "6705d866c6c39735109c442358641c71093ac9e553cf1a08901ce668128382d4"
+    "serialization.py": "07753979b8cee6e637a0602ea8fc2ccad1b59e03371b38ef499f8889c7edf43c"
   }
 }

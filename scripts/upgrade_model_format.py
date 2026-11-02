@@ -53,7 +53,7 @@ def main():
     manifest["format_conversion"] = {
         "source_release": source_id,
         "retrained": False,
-        "xgboost_format": "UBJSON model plus JSON configuration",
+        "xgboost_format": "UBJSON model; runtime CPU/two-thread setting",
         "verified_rows": len(frame),
         "prediction_tolerance": 1e-12,
     }

@@ -13,14 +13,12 @@ class PortableBooster(Booster):
     """
 
     def __getstate__(self):
-        return {
-            "model_ubj": bytes(self.save_raw(raw_format="ubj")),
-            "config_json": self.save_config(),
-        }
+        return {"model_ubj": bytes(self.save_raw(raw_format="ubj"))}
 
     def __setstate__(self, state):
         Booster.__init__(self, model_file=bytearray(state["model_ubj"]))
-        self.load_config(state["config_json"])
+        # Training configuration is platform-specific; model parameters are in UBJSON.
+        self.set_param({"nthread": 2, "device": "cpu"})
 
 
 def make_portable(pipeline):
@@ -34,6 +32,6 @@ def make_portable(pipeline):
         ):
             original = estimator.get_booster()
             portable = PortableBooster(model_file=bytearray(original.save_raw(raw_format="ubj")))
-            portable.load_config(original.save_config())
+            portable.set_param({"nthread": 2, "device": "cpu"})
             estimator._Booster = portable
     return pipeline
