@@ -21,6 +21,31 @@ jobs:
       - run: python -m pip install --require-hashes -r requirements-dev.lock
       - run: python -m pip install --no-deps -e .
       - run: ruff check src app tests scripts && ruff format --check src app tests scripts
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install browser regression tooling
+        run: |
+          npm install --no-save --package-lock=false playwright@1.62.1
+          npx playwright install --with-deps chromium
+      - name: Check all field headings and native help in Chromium
+        env:
+          MIZANAK_UI_OUTPUT: ${{ runner.temp }}/mizanak-ui
+        run: |
+          python -m streamlit run streamlit_app.py --server.headless true > "$RUNNER_TEMP/mizanak-streamlit.log" 2>&1 &
+          mizanak_app_pid=$!
+          trap 'kill "$mizanak_app_pid" 2>/dev/null || true' EXIT
+          for mizanak_attempt in {1..30}; do
+            if curl --fail --silent http://localhost:8501/_stcore/health; then break; fi
+            sleep 1
+          done
+          curl --fail --silent http://localhost:8501/_stcore/health
+          node scripts/check_ui_layout.cjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: browser-layout-evidence
+          path: ${{ runner.temp }}/mizanak-ui/
       - run: python scripts/download_data.py
       # Real merged data, all four algorithms and all eight diseases.
       - run: python -m nhanes_ai.train --data DATA_SET --output models --reports reports --jobs 2

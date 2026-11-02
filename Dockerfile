@@ -24,7 +24,7 @@ RUN --mount=type=secret,id=build_ca,required=false,mode=0444 \
 COPY src ./src
 COPY app ./app
 COPY .streamlit ./.streamlit
-# Train first. Artifacts are intentionally ignored by Git, then baked into a release image.
+# Bake in the trusted current release shipped on main; no startup training is needed.
 COPY models ./models
 # Repository files can be private (0600) in cloud checkouts. Make runtime assets
 # readable by the unprivileged process, and remove write access to code/artifacts.

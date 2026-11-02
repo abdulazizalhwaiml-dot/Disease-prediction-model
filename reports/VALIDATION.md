@@ -1,3 +1,25 @@
+# Mizanak v4.1.1 — field-heading scrollbar fix, 2026-11-03
+
+- Reproduced the reported scrollbar in all eight field-heading/help rows on the previous
+  commit5e79387. At320px the row clientHeight was37px while scrollHeight was48px;
+  the nowrap Streamlit row had automatic internal scrolling. The earlier fix covered
+  only the topbar, not these field-heading rows.
+- Field rows now use keyed content-height wrapping containers and native HTML labels.
+  Scoped styles keep content visible and allow long labels to wrap, including long
+  English words at2x CSS scaling. Normal main-page scrolling remains enabled.
+- The browser regression fails on the previous release with eight internal scrollers.
+  It passes48 combinations of viewport320/390/768/1100/1285/1440, Arabic/English and
+  CSS scale1/1.25/1.5/2. All eight help dialogs support Enter/Escape in both languages.
+  Evidence: ui_layout_checks.json and updated docs/previews screenshots.
+- The existing43 Python tests passed with no skips; Ruff lint/format checks passed.
+- Gender help is exactly «ذكر أو أنثى.» / “Male or female.”; simplified family-history
+  wording keeps the parent/sibling scope. Model artifacts, data and decision limits are unchanged.
+- Main is the canonical source/deployment branch. A ready ZIP and checksum accompany
+  the GitHub release; historical download branches remain available.
+- scripts/check_ui_layout.cjs is also part of the Linux CI workflow.
+
+Earlier validation follows; linked native CI runs below refer to their respective versions.
+
 # Mizanak v4.1 — interface maintenance
 
 - Corrected the top-row internal scrollbar. The previous wrap=False Streamlit columns

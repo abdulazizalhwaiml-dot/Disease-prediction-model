@@ -69,8 +69,7 @@ TEXT = {
             "age": "العمر بالسنوات المكتملة، من 20 إلى 79 سنة. أضيفت دورات NHANES القديمة "
             "لتغطية الأعمار 60–79. التطبيق تجريبي وغير مخصص للحوامل أو لمن هم خارج هذا "
             "النطاق.",
-            "gender": "الجنس المسجل في بيانات الدراسة: ذكر أو أنثى. يُستخدم لأن توزيع تركيب "
-            "الجسم والارتباطات الصحية قد يختلف بينهما.",
+            "gender": "ذكر أو أنثى.",
             "height_cm": "الطول بالسنتيمتر. قف حافيًا مستقيمًا، والكعبان على الأرض، وانظر "
             "للأمام. أدخل 175 مثلًا، وليس 1.75.",
             "weight_kg": "وزن الجسم بالكيلوغرام. استخدم ميزانًا على سطح صلب ومستوي، دون أحذية "
@@ -81,12 +80,12 @@ TEXT = {
             "body_fat_pct": "نسبة الدهون من وزن الجسم، مثل 25 وليس 0.25. انسخ Body Fat % من "
             "تقرير جهازك واتبع تعليماته للقياس. نسبة الدهون في بيانات التدريب "
             "مقاسة بـDXA؛ الأداء على جهازك غير متحقق منه.",
-            "family_diabetes": "هل سبق أن أخبر مختص صحي أحد أقاربك البيولوجيين: الأب أو الأم "
+            "family_diabetes": "هل سبق أن أخبر مختص صحي أحد أقاربك: الأب أو الأم "
             "أو الإخوة أو الأخوات، الأحياء أو المتوفين، بأنه مصاب بالسكري؟ "
             "لا يوجد شرط عمر لهذا السؤال. لا يشمل الزوج أو الزوجة، ولا "
             "يقصد إصابتك أنت.",
             "family_heart_early": "هل سبق أن أخبر مختص صحي الأب أو الأم أو أحد الإخوة أو "
-            "الأخوات البيولوجيين، الأحياء أو المتوفين، بإصابته بنوبة "
+            "الأخوات، الأحياء أو المتوفين، بإصابته بنوبة "
             "قلبية أو ذبحة صدرية قبل بلوغ 50 سنة؟ هذا تعريف NHANES "
             "المستخدم هنا، ولا يشمل كل أمراض القلب أو السكتة أو ضغط "
             "الدم.",
@@ -188,8 +187,7 @@ TEXT = {
             "age": "Completed years, from 20 to 79. Older NHANES cycles supply ages 60–79. "
             "Experimental use only; not intended for pregnancy or ages outside this "
             "range.",
-            "gender": "Recorded sex in the source survey: male or female. Body-composition "
-            "distributions and health associations may differ by sex.",
+            "gender": "Male or female.",
             "height_cm": "Standing height in centimeters. Stand barefoot and upright with "
             "heels down and eyes forward. Enter 175 rather than 1.75.",
             "weight_kg": "Weight in kilograms. Place the scale on a hard, level surface; "
@@ -202,11 +200,11 @@ TEXT = {
             "Body Fat % from your device and follow its measuring "
             "instructions. Training uses DXA; performance on your device is "
             "unvalidated.",
-            "family_diabetes": "Has a health professional ever told a biological father, "
+            "family_diabetes": "Has a health professional ever told a father, "
             "mother, sister or brother, living or deceased, that they had "
             "diabetes? No age restriction applies. This excludes a spouse "
             "and does not ask about your own diagnosis.",
-            "family_heart_early": "Has a health professional ever told a biological father, "
+            "family_heart_early": "Has a health professional ever told a father, "
             "mother, sister or brother, living or deceased, that they "
             "had a heart attack or angina before age 50? This is the "
             "NHANES definition, not all cardiac disease, stroke or high "

@@ -85,10 +85,17 @@ record = {}
 def render_field(field):
     """Accessible native popover keeps a visible help button next to every label."""
     with st.container(key=f"field_{field}"):
-        with st.container(horizontal=True, wrap=False, vertical_alignment="center", gap="small"):
-            st.markdown(
+        # A non-wrapping Streamlit row becomes an internal scroll container.
+        # Let the row grow with its real HTML label and native help button instead.
+        with st.container(
+            key=f"label_{field}",
+            horizontal=True,
+            height="content",
+            vertical_alignment="center",
+            gap="small",
+        ):
+            st.html(
                 f'<span class="field-title">{escape(t[field])}</span>',
-                unsafe_allow_html=True,
                 width="content",
             )
             with st.popover(

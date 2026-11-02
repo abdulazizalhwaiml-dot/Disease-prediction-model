@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "nhanes-disease-ai"
-version = "4.1.0"
+version = "4.1.1"
 description = "Reproducible NHANES disease association modelling with a bilingual research app"
 requires-python = ">=3.12,<3.13"
 dynamic = ["dependencies"]

@@ -30,8 +30,8 @@ clear session results. Keep models/code read-only. Do not accept uploaded pickle
 Train first or use the prepared trusted model release:
 
 ```bash
-docker build -t mizan-ai:3.0 .
-docker run --rm -p 8501:8501 --memory=2g --cpus=2 mizan-ai:3.0
+docker build -t mizanak:4.1.1 .
+docker run --rm -p 8501:8501 --memory=2g --cpus=2 mizanak:4.1.1
 ```
 
 The container excludes raw data and runs as UID10001. For an HTTPS inspection proxy,
@@ -40,7 +40,7 @@ pass the administrator's trusted CA as a temporary BuildKit secret:
 ```bash
 docker build --build-arg HTTP_PROXY --build-arg HTTPS_PROXY \
   --secret id=build_ca,src=/etc/ssl/certs/ca-certificates.crt \
-  -t mizan-ai:3.0 .
+  -t mizanak:4.1.1 .
 ```
 
 No certificate/hash verification is disabled. A reverse proxy must support WebSockets;

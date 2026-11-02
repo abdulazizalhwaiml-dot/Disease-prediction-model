@@ -15,7 +15,7 @@ from pathlib import Path
 def main():
     root = Path(__file__).resolve().parents[1]
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--output", type=Path, default=root.parent / "MIZANAK_v4_1.zip")
+    parser.add_argument("--output", type=Path, default=root.parent / "MIZANAK_v4_1_1.zip")
     args = parser.parse_args()
     tracked = subprocess.check_output(["git", "ls-files", "-z"], cwd=root).decode().split("\0")
     sources = json.loads((root / "data/older_sources.json").read_text(encoding="utf-8"))

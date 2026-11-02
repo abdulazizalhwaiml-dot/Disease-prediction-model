@@ -32,7 +32,11 @@
 .section-heading h2 { font-size:21px; line-height:1.7; padding:0; margin:0; font-weight:700; color:#204653; }
 .section-heading p { margin:0; color:#80969e; font-size:12px; line-height:1.8; }
 [class*="st-key-field_"] { margin:5px 0 7px; }
-.field-title { font-size:13px; font-weight:650; color:#456572; line-height:1.7; }
+/* Size all eight field headings from their contents, including long bilingual
+   labels and keyboard focus rings. No internal viewport or scrollbar is needed. */
+.st-key-input_panel [class*="st-key-label_"] { height:auto; min-height:42px; overflow:visible; align-items:center; }
+.st-key-input_panel [class*="st-key-label_"] [data-testid="stElementContainer"]:has(.field-title) { flex-shrink:1; min-width:0; max-width:100%; }
+.field-title { font-size:13px; font-weight:650; color:#456572; line-height:1.7; overflow-wrap:anywhere; }
 [data-testid="stPopover"] button { border:0; border-radius:20px; background:#edf8f9; color:#198a97; min-height:31px; padding:4px 9px; font-size:11px; white-space:nowrap; }
 [data-testid="stPopover"] button:hover { background:#d9f1f3; border-color:#b9e3e7; color:#117883; }
 [data-testid="stPopover"] button:focus-visible { outline:2px solid #159eac; outline-offset:3px; }
