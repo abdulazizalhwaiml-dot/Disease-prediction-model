@@ -167,7 +167,9 @@ def subgroup_metrics(frame, y, probabilities, threshold):
 
 
 def save_json(path, value):
-    path.write_text(json.dumps(value, indent=2, ensure_ascii=False, allow_nan=False) + "\n")
+    path.write_text(
+        json.dumps(value, indent=2, ensure_ascii=False, allow_nan=False) + "\n", encoding="utf-8"
+    )
 
 
 def write_model_card(path, manifest):
@@ -232,7 +234,7 @@ def write_model_card(path, manifest):
         "Sources, hashes, runtime versions and selected pipeline checksums are in manifest.json.",
         "Historical assay/device changes, complete-case selection and population transfer limit use.",
     ]
-    path.write_text("\n".join(lines) + "\n")
+    path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
 def train(data_root: Path, output: Path, reports: Path, config=LabelConfig(), seed=42, jobs=2):

@@ -59,12 +59,16 @@ CI downloads original older files, trains, tests and builds a container. Model-d
 tests skip if no release exists; delivery verification requires no such skips.
 Actual executed checks are recorded in reports/VALIDATION.md.
 
-After intentional dependency changes, regenerate all three locks using verified `uv`:
+After intentional dependency changes, regenerate all four locks using verified `uv`:
 
 ```bash
 uv pip compile requirements.txt --python-version 3.12 --generate-hashes -o requirements.lock
 uv pip compile requirements-dev.txt --python-version 3.12 --generate-hashes -o requirements-dev.lock
 uv pip compile requirements.txt --python-version 3.12 --python-platform windows --generate-hashes -o requirements-windows.lock
+uv pip compile requirements-dev.txt --python-version 3.12 --python-platform windows --generate-hashes -o requirements-windows-dev.lock
 ```
 
 Use a clean environment and retrain before distributing new runtime versions.
+
+The Windows CI job loads the committed release, tests the bilingual app and cp1256 regression,
+and parses the launcher using Windows PowerShell. It uses requirements-windows-dev.lock.

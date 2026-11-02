@@ -36,7 +36,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--data", type=Path, default=root / "DATA_SET")
     args = parser.parse_args()
-    sources = json.loads((root / "data/older_sources.json").read_text())
+    sources = json.loads((root / "data/older_sources.json").read_text(encoding="utf-8"))
     with ThreadPoolExecutor(max_workers=4) as pool:
         for result in pool.map(lambda source: fetch(source, args.data), sources):
             print(result, flush=True)

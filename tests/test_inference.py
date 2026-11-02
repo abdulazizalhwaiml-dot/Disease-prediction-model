@@ -106,7 +106,7 @@ def test_real_release_predicts_eight_targets_and_expanded_ages(model_root, recor
 
 
 def test_corruption_fails_before_unpickling(model_root, tmp_path):
-    pointer = json.loads((model_root / "current.json").read_text())
+    pointer = json.loads((model_root / "current.json").read_text(encoding="utf-8"))
     release = tmp_path / pointer["run_id"]
     shutil.copytree(model_root / pointer["run_id"], release)
     shutil.copy(model_root / "current.json", tmp_path / "current.json")
@@ -123,7 +123,7 @@ def test_development_range_extrapolation_is_explicit(model_root, record):
 
 
 def test_path_traversal_is_rejected(tmp_path):
-    (tmp_path / "current.json").write_text(json.dumps({"run_id": "../escape"}))
+    (tmp_path / "current.json").write_text(json.dumps({"run_id": "../escape"}), encoding="utf-8")
     with pytest.raises(ValueError, match="release ID"):
         ModelRegistry(tmp_path)
 
@@ -131,14 +131,16 @@ def test_path_traversal_is_rejected(tmp_path):
 def test_old_input_schema_is_rejected_before_artifact_loading(model_root, tmp_path):
     import hashlib
 
-    pointer = json.loads((model_root / "current.json").read_text())
-    manifest = json.loads((model_root / pointer["run_id"] / "manifest.json").read_text())
+    pointer = json.loads((model_root / "current.json").read_text(encoding="utf-8"))
+    manifest = json.loads(
+        (model_root / pointer["run_id"] / "manifest.json").read_text(encoding="utf-8")
+    )
     manifest["schema_version"] = 1
     release = tmp_path / pointer["run_id"]
     release.mkdir()
     manifest_bytes = json.dumps(manifest).encode()
     (release / "manifest.json").write_bytes(manifest_bytes)
     pointer["manifest_sha256"] = hashlib.sha256(manifest_bytes).hexdigest()
-    (tmp_path / "current.json").write_text(json.dumps(pointer))
+    (tmp_path / "current.json").write_text(json.dumps(pointer), encoding="utf-8")
     with pytest.raises(ValueError, match="Unsupported model schema"):
         ModelRegistry(tmp_path)

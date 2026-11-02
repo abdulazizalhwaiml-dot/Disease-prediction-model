@@ -22,7 +22,8 @@ def test_bilingual_eight_input_app_and_clickable_help(model_root, entrypoint):
     markup = "\n".join(element.value for element in app.markdown)
     for field in USER_FIELDS:
         assert TEXT["ar"]["help"][field] in markup
-    assert markup.count('<details class="field-help">') == 8
+    assert len(app.get("popover")) == 8
+    assert len(app.sidebar) == 0
     app.radio(key="family_diabetes").set_value(1)
     app.radio(key="family_heart_early").set_value(0).run()
     assert not app.button(key="predict").disabled
@@ -45,7 +46,7 @@ def test_bilingual_eight_input_app_and_clickable_help(model_root, entrypoint):
     assert len(app.session_state["result"]["predictions"]) == 8
     app.selectbox(key="language").set_value("en").run()
     assert not app.exception
-    assert app.button(key="predict").label == "Explore my estimates"
+    assert app.button(key="predict").label == "Show my report"
     assert len(app.session_state["result"]["predictions"]) == 8
     app.number_input(key="height_cm").set_value(180.0).run()
     assert "result" not in app.session_state

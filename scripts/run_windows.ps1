@@ -1,5 +1,9 @@
 # A project-local setup/start path for Windows PowerShell 5.1 and PowerShell 7.
 $ErrorActionPreference = 'Stop'
+$env:PYTHONUTF8 = '1'
+$env:PYTHONIOENCODING = 'utf-8'
+[Console]::OutputEncoding = New-Object System.Text.UTF8Encoding($false)
+$OutputEncoding = [Console]::OutputEncoding
 Set-Location -LiteralPath (Split-Path -Parent $PSScriptRoot)
 
 function Invoke-Checked {
@@ -28,7 +32,8 @@ import sys
 try:
     from nhanes_ai.inference import ModelRegistry
     ModelRegistry(Path('models'))
-except Exception:
+except Exception as error:
+    print(f'Model compatibility check: {error}', file=sys.stderr)
     sys.exit(1)
 '@
     & $MizanPython -c $CheckModels
@@ -39,7 +44,7 @@ except Exception:
         Invoke-Checked { & $MizanPython -m nhanes_ai.train --jobs 2 }
     }
     Write-Host 'Open http://localhost:8501 . Keep this window open; Ctrl+C stops the app.'
-    Invoke-Checked { & $MizanPython -m streamlit run app/main.py }
+    Invoke-Checked { & $MizanPython -m streamlit run streamlit_app.py }
 } catch {
     Write-Host $_ -ForegroundColor Red
     exit 1

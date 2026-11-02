@@ -1,4 +1,4 @@
-# استضافة ميزان من GitHub على Streamlit Community Cloud
+# استضافة ميزانك من GitHub على Streamlit Community Cloud
 
 GitHub يحفظ المصدر والملفات، وStreamlit Cloud يشغّل Python والتطبيق ويمنحك رابطًا للموقع.
 GitHub Pages مخصص للمواقع الثابتة، ولا يشغّل تطبيق Streamlit الحالي.

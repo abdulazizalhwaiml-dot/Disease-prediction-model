@@ -1,4 +1,4 @@
-"""Short bilingual copy and definitions for the eight-input app."""
+"""Bilingual Mizanak copy and measurement definitions."""
 
 DISEASE_AR = {
     "high_cholesterol": "ارتفاع الكوليسترول",
@@ -13,24 +13,18 @@ DISEASE_AR = {
 
 TEXT = {
     "ar": {
-        "brand": "ميزان",
-        "tagline": "قياساتك، بمنظور أوضح",
+        "brand": "ميزانك",
+        "tagline": "قياساتك، ببساطة",
         "research": "مشروع تجريبي · غير معتمد طبيًا",
-        "eyebrow": "تركيب الجسم × التعلّم الآلي",
-        "title": "قياسات بسيطة. رؤية أوضح.",
-        "subtitle": "استكشف تقديرات ثماني حالات صحية من قياسات جسمك وتاريخ عائلتك.",
+        "eyebrow": "مساحة صغيرة للاهتمام بنفسك",
+        "title": "خطوة بسيطة. اهتمام أكبر.",
+        "subtitle": "أدخل قياساتك، واستكشف تقريرًا خفيفًا يساعدك على الاهتمام بعاداتك الصحية.",
         "scope": "لغير الحوامل من عمر 20 إلى 79 سنة",
         "notice": "هذه تجربة بحثية، وليست تشخيصًا أو توقعًا للإصابة مستقبلًا. لم تُعتمد النماذج "
         "للاستخدام الطبي.",
-        "assessment": "مساحة التقييم",
-        "guide": "دليل القياسات",
-        "input_count": "٨ مدخلات فقط",
-        "derived_count": "٣ حسابات تلقائية",
-        "disease_count": "٨ حالات صحية",
-        "form_title": "لنبدأ ببياناتك",
-        "form_note": "اضغط اسم أي خانة أو مرّر المؤشر فوقها لقراءة التوضيح.",
-        "measurements": "01 / قياسات الجسم",
-        "family": "02 / تاريخ العائلة",
+        "form_title": "لنبدأ بقياساتك",
+        "form_note": "ثمانية مدخلات فقط. زر «توضيح» بجانب كل خانة يساعدك في القياس.",
+        "family": "وماذا عن تاريخ العائلة؟",
         "age": "العمر (سنة)",
         "gender": "الجنس",
         "height_cm": "الطول (سم)",
@@ -50,34 +44,26 @@ TEXT = {
         "bmi": "مؤشر كتلة الجسم",
         "fat_mass_kg": "كتلة الدهون",
         "fat_free_mass_kg": "الكتلة الخالية من الدهون",
-        "automatic": "تُحسب لك تلقائيًا",
+        "automatic": "قيم حسبناها لك تلقائيًا",
         "kg": "كغ",
-        "submit": "اعرض تقديراتي",
+        "submit": "اعرض تقريري",
         "running": "جارٍ حساب التقديرات…",
         "invalid": "راجع القيم ووحداتها؛ العمر المدعوم 20–79 سنة.",
-        "results": "ملفك الاستكشافي",
-        "results_subtitle": "تقديرات وجود حالات الدراسة، وليست مخاطر مستقبلية.",
-        "empty": "ستظهر تقديراتك هنا",
-        "empty_note": "أكمل قياساتك وتاريخ عائلتك، ثم اضغط «اعرض تقديراتي».",
-        "waiting": "بانتظار التقييم",
-        "probability": "الاحتمال المقدّر",
-        "above": "تجاوز عتبة الدراسة",
-        "below": "دون عتبة الدراسة",
-        "threshold": "عتبة الدراسة",
-        "legend": "الألوان بحسب عتبة كل نموذج: تركوازي دونها، كهرماني قربها، ومرجاني عند تجاوزها. "
-        "ليست تصنيفًا طبيًا.",
+        "results": "تقريرك",
+        "results_subtitle": "اضغط أي بطاقة للتعرّف على الحالة. هذه تقديرات بحثية وليست تشخيصًا.",
+        "empty": "تقريرك يبدأ من قياساتك",
+        "empty_note": "أكمل المدخلات بالأعلى، ثم اضغط «اعرض تقريري».",
+        "above": "إشارة أعلى من عتبة النموذج",
+        "below": "إشارة أقل من عتبة النموذج",
+        "legend": "لون البطاقة يتبع عتبة النموذج البحثية؛ لا يعني تشخيصًا أو تأكيدًا للسلامة.",
         "outside_training": "بعض القياسات خارج نطاق التدريب المشاهد: ",
-        "download": "تنزيل نتائج الجلسة",
+        "download": "احفظ تقريري",
         "no_models": "لم تُجهّز نماذج المدخلات الثمانية بعد. شغّل أمر التدريب أدناه.",
-        "guide_title": "قياس صحيح، إدخال أوضح",
-        "guide_note": "التعاريف العائلية تطابق أسئلة NHANES المستخدمة في التدريب، بما فيها حد 50 "
-        "سنة للقلب لدى كلا الجنسين.",
-        "formulas": "الحسابات التلقائية",
         "formula_note": "الكتلة الخالية من الدهون تشمل الماء والعضلات والأعضاء والمعادن؛ ليست كتلة "
         "العضلات وحدها.",
         "privacy": "مدخلاتك تبقى في ذاكرة الجلسة؛ لا تُحفظ في قاعدة بيانات ولا تُرسل إلى خدمة ذكاء "
         "اصطناعي خارجية.",
-        "footer": "ميزان · بيانات NHANES · مشروع بحثي تجريبي",
+        "footer": "ميزانك · مشروع بحثي تجريبي",
         "help": {
             "age": "العمر بالسنوات المكتملة، من 20 إلى 79 سنة. أضيفت دورات NHANES القديمة "
             "لتغطية الأعمار 60–79. التطبيق تجريبي وغير مخصص للحوامل أو لمن هم خارج هذا "
@@ -113,28 +99,48 @@ TEXT = {
         "المتوازن والفحوصات الدورية؛ انخفاض التقدير لا يؤكد الخلو من المرض.",
         "older_note": "تستند بيانات الأعمار 60–79 إلى دورات 1999–2006؛ لم يُتحقق من الأداء على "
         "عينة حديثة لهذه الفئة.",
+        "help_button": "توضيح",
+        "near": "قريب من عتبة النموذج",
+        "image_alt": {
+            "height_cm": "شخص حافي القدمين يقف مستقيمًا أمام مقياس الطول، والرأس ينظر للأمام.",
+            "waist_cm": "شريط أفقي عند مستوى أعلى عظم الحوض الأيمن، مع رسم يوضح موضع "
+            "العظم والزفير الطبيعي.",
+        },
+        "image_note": {
+            "height_cm": "حافيًا، بوضع مستقيم، مع النظر للأمام. استخدم أداة أفقية فوق الرأس.",
+            "waist_cm": "النقطة في الرسم تحدد أعلى عظم الحوض الأيمن؛ الشريط أفقي دون "
+            "ضغط الجلد، بعد زفير طبيعي.",
+        },
+        "conditions": {
+            "high_cholesterol": "ارتفاع الكوليسترول وفق الإبلاغ السابق أو نتيجة non-HDL "
+            "في الدراسة. لا يمكن تأكيده من قياسات الجسم وحدها.",
+            "high_blood_pressure": "ارتفاع ضغط الدم وفق الإبلاغ السابق أو قراءات الفحص. "
+            "قياس الضغط الفعلي ضروري للتقييم.",
+            "diabetes": "السكري وفق الإبلاغ السابق أو تحليل HbA1c في الدراسة. هذا "
+            "التقدير لا يغني عن التحليل.",
+            "coronary_artery_disease": "مرض الشرايين التي تغذي القلب، وفق تشخيص سابق "
+            "أبلغ عنه المشاركون في الدراسة.",
+            "heart_attack": "نوبة قلبية سابقة أبلغ عنها المشارك؛ ليس توقعًا لموعد نوبة "
+            "قلبية مستقبلية.",
+            "angina": "ذبحة صدرية سابقة أبلغ عنها المشارك في الدراسة، وليست تقييمًا لألم صدر حالي.",
+            "heart_failure": "قصور القلب الاحتقاني وفق تشخيص سابق أبلغ عنه المشارك في الدراسة.",
+            "stroke": "سكتة دماغية سابقة أبلغ عنها المشارك؛ ليس توقعًا لحدوث سكتة مستقبلًا.",
+        },
     },
     "en": {
-        "brand": "MIZAN",
-        "tagline": "A clearer view of your measurements",
+        "brand": "Mizanak",
+        "tagline": "Your measurements, made simple",
         "research": "EXPERIMENTAL · NOT MEDICALLY VALIDATED",
-        "eyebrow": "BODY COMPOSITION × MACHINE LEARNING",
-        "title": "Simple measurements. Clearer perspective.",
-        "subtitle": "Explore estimates for eight study conditions using your measurements and "
-        "family history.",
+        "eyebrow": "A little space to care for yourself",
+        "title": "A small step. A little more care.",
+        "subtitle": "Enter your measurements and explore a simple report to support healthier "
+        "habits.",
         "scope": "Non-pregnant adults aged 20–79",
         "notice": "A research experiment, not a diagnosis or a forecast of future disease. These "
         "models are not validated for medical use.",
-        "assessment": "Your assessment",
-        "guide": "Measurement guide",
-        "input_count": "8 simple inputs",
-        "derived_count": "3 automatic calculations",
-        "disease_count": "8 study conditions",
         "form_title": "Start with your measurements",
-        "form_note": "Click any field name or hover over it for a definition and measuring "
-        "instructions.",
-        "measurements": "01 / BODY MEASUREMENTS",
-        "family": "02 / FAMILY HISTORY",
+        "form_note": "Just eight inputs. Select Help beside any field for measuring guidance.",
+        "family": "A little about your family",
         "age": "Age (years)",
         "gender": "Sex",
         "height_cm": "Height (cm)",
@@ -154,35 +160,28 @@ TEXT = {
         "bmi": "Body mass index",
         "fat_mass_kg": "Fat mass",
         "fat_free_mass_kg": "Fat-free mass",
-        "automatic": "Calculated automatically",
+        "automatic": "Calculated for you automatically",
         "kg": "kg",
-        "submit": "Explore my estimates",
+        "submit": "Show my report",
         "running": "Calculating estimates…",
         "invalid": "Check measurements and units. Supported ages: 20–79.",
-        "results": "Your research profile",
-        "results_subtitle": "Estimates of existing study labels, not future disease risks.",
-        "empty": "Your estimates will appear here",
-        "empty_note": "Complete your measurements and family history, then select Explore my "
-        "estimates.",
-        "waiting": "Awaiting assessment",
-        "probability": "Estimated probability",
-        "above": "Above study threshold",
-        "below": "Below study threshold",
-        "threshold": "Study threshold",
-        "legend": "Colors follow each model threshold: teal below, amber nearby, coral above. "
-        "These are not clinical categories.",
+        "results": "Your report",
+        "results_subtitle": "Tap a card to learn about the condition. Research estimates, not a "
+        "diagnosis.",
+        "empty": "Your report starts with your measurements",
+        "empty_note": "Complete the inputs above, then select Show my report.",
+        "above": "Above the model threshold",
+        "below": "Below the model threshold",
+        "legend": "Card colors follow research model thresholds; they do not establish a diagnosis "
+        "or medical safety.",
         "outside_training": "Some measurements are outside the observed training range: ",
-        "download": "Download session results",
+        "download": "Save my report",
         "no_models": "The eight-input models are not ready. Run the training command below.",
-        "guide_title": "Better measurements, clearer inputs",
-        "guide_note": "Family definitions match the source NHANES questions, including its "
-        "under-50 cardiac definition for either sex.",
-        "formulas": "Automatic calculations",
         "formula_note": "Fat-free mass includes water, muscle, organs and minerals. It is not "
         "muscle mass alone.",
         "privacy": "Inputs stay in session memory. They are not stored in a database or sent to an "
         "external AI service.",
-        "footer": "MIZAN · NHANES data · Experimental research",
+        "footer": "Mizanak · Experimental research",
         "help": {
             "age": "Completed years, from 20 to 79. Older NHANES cycles supply ages 60–79. "
             "Experimental use only; not intended for pregnancy or ages outside this "
@@ -221,5 +220,39 @@ TEXT = {
         "does not confirm absence of disease.",
         "older_note": "Ages 60–79 are supported by 1999–2006 data only; performance has not been "
         "validated in a contemporary older-adult sample.",
+        "help_button": "Help",
+        "near": "Near the model threshold",
+        "image_alt": {
+            "height_cm": "A barefoot person stands straight at a stadiometer, looking "
+            "horizontally ahead.",
+            "waist_cm": "Horizontal tape at the upper border of the right iliac crest, "
+            "with a pelvic landmark inset and normal exhalation.",
+        },
+        "image_note": {
+            "height_cm": "Stand barefoot and upright, looking forward. Use a level "
+            "headpiece touching the crown.",
+            "waist_cm": "The dot marks the top of the right iliac crest. Keep the tape "
+            "level, without compressing skin, after a normal exhalation.",
+        },
+        "conditions": {
+            "high_cholesterol": "The study combines a reported cholesterol diagnosis "
+            "with non-HDL laboratory results. Body measurements "
+            "alone cannot confirm it.",
+            "high_blood_pressure": "The study combines reported hypertension with "
+            "examination readings. Actual blood-pressure "
+            "measurements are needed for assessment.",
+            "diabetes": "The study combines reported diabetes with HbA1c results. This "
+            "estimate cannot replace laboratory testing.",
+            "coronary_artery_disease": "Disease affecting the arteries supplying the "
+            "heart, based on a prior diagnosis reported by "
+            "study participants.",
+            "heart_attack": "A previously reported heart attack, not a forecast of when "
+            "a future heart attack might occur.",
+            "angina": "Previously reported angina in the survey; this does not assess "
+            "current chest pain.",
+            "heart_failure": "Congestive heart failure based on a prior diagnosis "
+            "reported by study participants.",
+            "stroke": "A previously reported stroke, not a forecast of a future stroke.",
+        },
     },
 }

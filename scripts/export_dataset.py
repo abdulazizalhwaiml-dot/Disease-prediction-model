@@ -58,7 +58,9 @@ def main():
         "imputed": False,
         "pooled_survey_weight": None,
     }
-    (args.output / "dataset_metadata.json").write_text(json.dumps(metadata, indent=2) + "\n")
+    (args.output / "dataset_metadata.json").write_text(
+        json.dumps(metadata, indent=2) + "\n", encoding="utf-8"
+    )
     print(f"Exported and verified {len(frame):,} rows / {len(frame.columns)} columns: {path}")
 
 

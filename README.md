@@ -1,7 +1,7 @@
-# ميزان | MIZAN
+# ميزانك | Mizanak
 
 تطبيق بحثي بالعربية والإنجليزية يعرض تقديرات ثماني حالات صحية من **ثمانية مدخلات**.
-الإصدار 3 يدمج NHANES **1999–2006 و2011–2018**: **21,117 مشاركًا** بعمر **20–79**، منهم **2,789 بعمر 60–79**.
+البيانات المدمجة من NHANES **1999–2006 و2011–2018**: **21,117 مشاركًا** بعمر **20–79**، منهم **2,789 بعمر 60–79**.
 
 **مشروع تجريبي غير معتمد طبيًا.** النتائج ارتباطات بحالات الدراسة، وليست تشخيصًا أو توقعًا للإصابة مستقبلًا.
 انخفاض التقدير لا يثبت الخلو من المرض. بيانات كبار السن تاريخية، وتحتاج تحققًا على عينة حديثة.
@@ -16,6 +16,15 @@
 الحزمة الجاهزة تتضمن النماذج المدربة. إذا كانت النماذج ناقصة أو غير متوافقة، يجلب المشغّل
 ملفات البيانات القديمة من CDC، ويتحقق من بصماتها ثم يعيد التدريب. يلزم اتصال إنترنت للتثبيت والتنزيل فقط.
 [شرح Windows وحلول الأخطاء](docs/WINDOWS.md).
+
+## الواجهة الجديدة — الإصدار 4
+
+المدخلات أعلى الصفحة والتقرير أسفلها، مع انتقال تلقائي بعد الإرسال. اللغة في أعلى الصفحة دون قائمة جانبية.
+زر «توضيح» بجانب كل خانة يفتح شرحًا، ومع الطول والخصر رسمًا توضيحيًا. بطاقات التقرير بسيطة وقابلة للفتح
+لتعريف الحالة، والحسابات الثلاثة داخل قسم قابل للطي. الشعار وأيقونة المتصفح مستوحيان من مرجع المستخدم.
+
+تعتمد هذه الواجهة على نماذج الإصدار 3 المدربة نفسها. لم تتغير البيانات أو تعريفات الأمراض أو احتمالاتها.
+أُصلح خطأ Windows عند حفظ التقارير بتحديد UTF-8 صراحة؛ المشغّل يطبع سبب عدم توافق النماذج إذا احتاج إعادة تدريب.
 
 ## ما يدخله المستخدم
 
@@ -34,7 +43,7 @@ Fat-free mass = weight_kg − fat_mass_kg
 لا يدخل العرق أو معادن العظام أو المعرّف ضمن النموذج. FFM ليست كتلة العضلات وحدها.
 نسبة الدهون في الدراسة مقاسة بـDXA؛ لم يُتحقق من الأداء على جهاز المستخدم أو السكان السعوديين.
 
-[معاينة الواجهة](docs/previews/desktop-ar.png) · [معاينة الهاتف](docs/previews/mobile-ar.png)
+[معاينة الواجهة](docs/previews/desktop-ar.png) · [معاينة الهاتف](docs/previews/mobile-ar.png) · [بطاقات التقرير](docs/previews/report-ar.png)
 
 ## النتائج
 
@@ -116,8 +125,9 @@ Streamlit Cloud: Python **3.12**، ملف البداية **streamlit_app.py**؛ 
 
 ## English quick reference
 
-MIZAN v3 is a bilingual experimental Streamlit app for non-pregnant adults aged 20–79.
+Mizanak v4 is a bilingual experimental Streamlit app for non-pregnant adults aged 20–79.
 It uses eight entered inputs and three derived features, with eight separately calibrated classifiers.
 The merged complete-observed-DXA cohort has 21,117 participants; older adults come only from 1999–2006.
+Version4 updates the interface and Windows text I/O while retaining the schema3 model release.
 No prospective-risk, clinical-readiness, national-representativeness or device-transfer claim is made.
 See the methodology and generated model card for the fixed splits and actual performance.

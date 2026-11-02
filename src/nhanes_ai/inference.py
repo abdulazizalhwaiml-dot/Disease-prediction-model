@@ -75,7 +75,7 @@ class ModelRegistry:
     """Read-only registry; construction fails closed on missing or corrupt artifacts."""
 
     def __init__(self, root: Path):
-        pointer = json.loads((root / "current.json").read_text())
+        pointer = json.loads((root / "current.json").read_text(encoding="utf-8"))
         run_id = pointer["run_id"]
         if not isinstance(run_id, str) or not re.fullmatch(r"\d{8}T\d{6}Z-[0-9a-f]{8}", run_id):
             raise ValueError("Invalid model release ID")
