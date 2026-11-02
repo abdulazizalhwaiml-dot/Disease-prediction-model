@@ -18,6 +18,11 @@ U+2192 under cp1256. Python text file operations now specify UTF-8 explicitly. T
 launcher sets PYTHONUTF8/PYTHONIOENCODING and the console encoding, and prints a model
 compatibility failure before any fallback training. No model checksums are bypassed.
 
+The first native Windows CI run additionally exposed Git CRLF conversion of manifest.json,
+causing checksum rejection and disabled prediction. .gitattributes now preserves all model
+bytes and original XPORT/PNG bytes; Python source uses LF. The fix does not normalize or
+accept a changed manifest after the integrity check.
+
 Two regression tests emulate cp1256 as the default Path text encoding, then exercise
 real model-card generation and Arabic/symbol JSON output. Both pass. This addresses the
 reported failure; actual Windows execution is unavailable in the Linux environment.

@@ -1,0 +1,8 @@
+# Preserve the exact bytes used by release SHA256 checks on every operating system.
+models/** -text
+*.joblib binary
+*.xpt binary
+*.png binary
+
+# Keep source fingerprints stable across Git checkouts.
+*.py text eol=lf
