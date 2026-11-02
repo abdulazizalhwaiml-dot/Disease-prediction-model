@@ -25,7 +25,7 @@ accept a changed manifest after the integrity check.
 
 Two regression tests emulate cp1256 as the default Path text encoding, then exercise
 real model-card generation and Arabic/symbol JSON output. Both pass. This addresses the
-reported failure; actual Windows execution is unavailable in the Linux environment.
+reported failure; the native Windows CI job subsequently passed the complete suite and PowerShell syntax check (see below).
 
 ## Data and model provenance
 
@@ -57,9 +57,22 @@ contemporary, Saudi-population, home-device or clinical validity.
   no horizontal overflow and no browser JavaScript errors. English also verified.
 - Artwork bundled locally; model/runtime remains offline-capable.
 - Container mizanak-ai:4.0 built successfully, image:
-  sha256:e6e48646828c39a2c9a25a74166d4d19aa62fef121676bbfd6bb01f062afd05a.
+  sha256:bc68c957b4e84eba1990b2f6e718698efb3b73e4f2c54d30bb3be338492d4df5.
 - Offline container smoke: UID10001, all3 artwork files, original active release,8 predictions
   at age79. Server health=ok, HTTP200. Smoke container removed after checking.
 
 The repository deployment branch and ready ZIP are distribution artifacts. Local validation
 does not establish the status of a running Streamlit Cloud site.
+
+## Native Windows confirmation
+
+On source commit5f4dd4673fe4c1be7ef0c351287fca78746f8412, the windows-app CI job completed
+successfully: the full43-test suite, loading the Linux-trained portable models on Windows,
+and Windows PowerShell launcher parsing. This includes the cp1256 regression, actual8-target
+inference and both bilingual entrypoints. Interactive double-click use on a physical Windows
+device was not performed; browser layout checks used Chromium in the cloud.
+
+CI evidence: https://github.com/abdulazizalhwaiml-dot/Disease-prediction-model/actions/runs/41503936273
+
+The final portable image was rebuilt and passed offline8-target inference with release
+20261102T184611Z-ebdefc95. Original data hashes remain unchanged.
