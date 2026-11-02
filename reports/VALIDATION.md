@@ -16,9 +16,11 @@
   calculation. Comparison operators and all model operating points are unchanged.
 - The original waist illustration is retained at the user's request. The alternative
   numbered-logo image is a preview only and is not part of the application or archive.
-- Existing43-test suite passed locally. Real Chromium desktop/mobile report and help
+- Existing43-test suite passed locally and in both native Windows/Linux CI jobs. Real Chromium desktop/mobile report and help
   interactions, both languages and first/repeated auto-scroll passed.
 - Same trusted portable model release20261102T184611Z-ebdefc95; no refit or data changes.
+
+v4.1 CI evidence: https://github.com/abdulazizalhwaiml-dot/Disease-prediction-model/actions/runs/41512837483
 
 Earlier v4 validation and native Windows portability evidence follows.
 
