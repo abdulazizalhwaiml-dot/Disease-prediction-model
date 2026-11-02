@@ -18,6 +18,11 @@
   the GitHub release; historical download branches remain available.
 - scripts/check_ui_layout.cjs is also part of the Linux CI workflow.
 
+Native Windows/Linux CI, browser regression, full training check and Docker build:
+https://github.com/abdulazizalhwaiml-dot/Disease-prediction-model/actions/runs/41526302085 (success).
+Verified ready-archive packaging and publication:
+https://github.com/abdulazizalhwaiml-dot/Disease-prediction-model/actions/runs/41526754721 (success).
+
 Earlier validation follows; linked native CI runs below refer to their respective versions.
 
 # Mizanak v4.1 — interface maintenance
