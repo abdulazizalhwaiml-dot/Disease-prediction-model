@@ -58,12 +58,11 @@ with brand_column:
         f'<div class="brand" dir="{direction}">{logo_html()}<div><div class="brand-name">{t["brand"]}</div><div class="brand-tagline">{t["tagline"]}</div></div></div>'
     )
 
-st.markdown(
+st.html(
     f'<div class="research-badge"><i></i>{t["research"]}</div>'
     f'<div class="hero"><div class="hero-copy"><span class="eyebrow">{t["eyebrow"]}</span><h1>{t["title"]}</h1>'
     f'<p>{t["subtitle"]}</p><span class="scope-pill">{t["scope"]}</span></div>'
     f'<div class="hero-art" aria-hidden="true">{hero_art_html()}</div></div>',
-    unsafe_allow_html=True,
 )
 
 
