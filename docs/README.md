@@ -1,19 +1,18 @@
-# دليل المستودع
+# Repository guide
 
-**النسخة المعتمدة في `main`.** يحتوي الفرع المصدر والنماذج اللازمة للتشغيل والنشر.
-التنزيلات الجاهزة في [GitHub Releases](https://github.com/abdulazizalhwaiml-dot/Disease-prediction-model/releases/latest).
-الفروع القديمة محفوظة للرجوع إليها، ولا تحتاجها لتشغيل النسخة الحالية.
+**The canonical release is on `main`.** This branch contains the source and models needed to run and deploy the application.
+The live website is hosted on **Streamlit Community Cloud**: **[https://mizanak.streamlit.app/](https://mizanak.streamlit.app/)**.
+Ready packages are available in [GitHub Releases](https://github.com/abdulazizalhwaiml-dot/Disease-prediction-model/releases/latest). Historical branches remain available for reference and are not needed to run the current version.
 
-| المطلوب | الدليل |
+| Task | Guide |
 |---|---|
-| تشغيل Windows | [WINDOWS.md](WINDOWS.md) |
-| استضافة مجانية أو رخيصة | [STREAMLIT_CLOUD_AR.md](STREAMLIT_CLOUD_AR.md) |
-| Docker وإعادة التدريب | [DEPLOYMENT.md](DEPLOYMENT.md) |
-| التطوير وفحص الواجهة | [DEVELOPMENT.md](DEVELOPMENT.md) |
-| تعريف البيانات والأمراض | [DATA_DICTIONARY.md](DATA_DICTIONARY.md) |
-| المنهجية والقيود | [METHODOLOGY.md](METHODOLOGY.md) |
-| الاختبارات المنفذة | [VALIDATION.md](../reports/VALIDATION.md) |
-| نتائج النماذج الحالية | [MODEL_CARD.md](../reports/MODEL_CARD.md) |
+| Windows setup | [WINDOWS.md](WINDOWS.md) |
+| Streamlit hosting and alternatives | [STREAMLIT_CLOUD.md](STREAMLIT_CLOUD.md) |
+| Docker and retraining | [DEPLOYMENT.md](DEPLOYMENT.md) |
+| Development and interface checks | [DEVELOPMENT.md](DEVELOPMENT.md) |
+| Data and condition definitions | [DATA_DICTIONARY.md](DATA_DICTIONARY.md) |
+| Methodology and limitations | [METHODOLOGY.md](METHODOLOGY.md) |
+| Completed validation | [VALIDATION.md](../reports/VALIDATION.md) |
+| Current model performance | [MODEL_CARD.md](../reports/MODEL_CARD.md) |
 
-`app/` للواجهة، و`src/nhanes_ai/` للبيانات والنماذج، و`scripts/` لأوامر التشغيل والتجهيز.
-تبقى ملفات NHANES الأصلية وتقارير التدريب منفصلة عن الواجهة للحفاظ على إمكانية التحقق من النتائج.
+`app/` contains the interface, `src/nhanes_ai/` contains data and model code, and `scripts/` contains setup and launch commands. Original NHANES files and training reports remain separate from the interface so results can be verified.

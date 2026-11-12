@@ -1,80 +1,69 @@
-# قاموس بيانات ميزانك
+# Mizanak data dictionary
 
-## مدخلات النموذج
+## Model inputs
 
-| العمود | المعنى | مصدر NHANES |
+| Column | Meaning | NHANES source |
 |---|---|---|
-| age | العمر المكتمل 20–79 | RIDAGEYR |
-| gender | 1 ذكر، 2 أنثى | RIAGENDR |
-| height_cm | الطول بالسم | BMXHT |
-| weight_kg | الوزن بالكغ | BMXWT |
-| waist_cm | محيط الخصر بالسم | BMXWAIST |
-| body_fat_pct | نسبة الدهون، مثل 25 وليس 0.25 | DXDTOPF |
-| family_diabetes | السكري لدى الأب/الأم/الإخوة/الأخوات | مواءمة أسئلة MCQ |
-| family_heart_early | نوبة قلبية أو ذبحة لدى الأقارب أنفسهم قبل 50 سنة | مواءمة أسئلة MCQ |
-| bmi | الوزن ÷ مربع الطول بالمتر | يحسب تلقائيًا |
-| fat_mass_kg | الوزن × نسبة الدهون ÷100 | يحسب تلقائيًا |
-| fat_free_mass_kg | الوزن − كتلة الدهون | يحسب تلقائيًا |
+| age | Completed age, 20–79 | RIDAGEYR |
+| gender | 1 male, 2 female | RIAGENDR |
+| height_cm | Height in cm | BMXHT |
+| weight_kg | Weight in kg | BMXWT |
+| waist_cm | Waist circumference in cm | BMXWAIST |
+| body_fat_pct | Body-fat percentage, e.g. 25 rather than 0.25 | DXDTOPF |
+| family_diabetes | Diabetes in parents or siblings | Harmonized MCQ questions |
+| family_heart_early | Heart attack or angina before age 50 in the same relatives | Harmonized MCQ questions |
+| bmi | Weight divided by squared height in meters | Calculated |
+| fat_mass_kg | Weight × body-fat percentage / 100 | Calculated |
+| fat_free_mass_kg | Weight − fat mass | Calculated |
 
-ثمانية مدخلات و3 مشتقات؛ المشتقات لا تمثل قياسات مستقلة إضافية. FFM تشمل الماء والأعضاء والعضلات والمعادن.
-التاريخ العائلي في التصدير: **1 نعم، 0 لا، فارغ مجهول**. الأصل 1 نعم و2 لا و7 رفض و9 لا أعرف.
-لا يُستدل على تاريخ الفرد العائلي من عمره أو جنسه أو مرضه الشخصي.
+There are eight entered inputs and three derived features; the derived features are not additional independent measurements. FFM includes water, organs, muscle, and minerals.
+Exported family history uses **1 yes, 0 no, empty unknown**. Original responses use 1 yes, 2 no, 7 refused, and 9 unknown. An individual's family history is not inferred from age, sex, or personal disease status.
 
-في 2005–2006 و2011–2018 استخدمنا MCQ300C للسكري وMCQ300A للقلب.
-في 1999–2004 السؤالان MCQ250A/G يشملان الأجداد أيضًا؛ استخرجنا الأب والأم والإخوة فقط من
-MCQ260AA/AB/AG/AH وMCQ260GA/GB/GG/GH. أكواد الأقارب 1 أم، 2 أب، 7 أخ، 8 أخت.
-إذا كانت الإجابة العامة «نعم» وتفاصيل القرابة مجهولة، تبقى مجهولة. الأجداد وحدهم لا يحققون تعريفنا.
+For 2005–2006 and 2011–2018, MCQ300C supplies diabetes history and MCQ300A supplies heart history. In 1999–2004, MCQ250A/G also include grandparents; only parents and siblings were extracted from MCQ260AA/AB/AG/AH and MCQ260GA/GB/GG/GH. Relative codes are 1 mother, 2 father, 7 brother, and 8 sister. A general “Yes” with unknown relative details remains unknown. Grandparents alone do not meet this definition.
 
-## الأهداف الثمانية
+## Eight targets
 
-| العمود | التصنيف الموجب |
+| Column | Positive label |
 |---|---|
-| high_cholesterol | BPQ080=1 أو LBXTC−HDL ≥190 mg/dL |
-| high_blood_pressure | BPQ020=1 أو متوسط BPXSY1–4 ≥140 أو BPXDI1–4 ≥90 |
-| diabetes | DIQ010=1 أو LBXGH ≥6.5% |
-| coronary_artery_disease | MCQ160C=1؛ إبلاغ عن مرض تاجي سابق |
+| high_cholesterol | BPQ080=1 or LBXTC−HDL ≥190 mg/dL |
+| high_blood_pressure | BPQ020=1 or mean BPXSY1–4 ≥140 or BPXDI1–4 ≥90 |
+| diabetes | DIQ010=1 or LBXGH ≥6.5% |
+| coronary_artery_disease | MCQ160C=1; self-reported prior coronary disease |
 | heart_attack | MCQ160E=1 |
 | angina | MCQ160D=1 |
 | heart_failure | MCQ160B=1 |
 | stroke | MCQ160F=1 |
 
-التصدير: **1 موجب، 0 سالب معروف، فارغ مجهول**. أي مصدر موجب يجعل الهدف موجبًا؛
-السالب يتطلب سلبية كل المصادر. لا يُحوّل الرفض أو الغياب أو السكري الحدّي إلى سالب.
-تستبعد قراءة الضغط الصفرية عند حساب المتوسط. non-HDL ليس LDL؛ حد 190 تعريف اختاره صاحب المشروع.
-قياس ضغط بزيارة واحدة أو HbA1c منفرد لا يثبت تشخيصًا سريريًا.
+Exports use **1 positive, 0 known negative, empty unknown**. Any positive source makes the target positive; a negative label requires all sources to be negative. Refusal, missing values, and borderline diabetes are not converted to negative labels. Zero blood-pressure readings are excluded from means. Non-HDL is not LDL; the 190 cutoff is a project-owner-selected definition. A single-visit blood-pressure measurement or isolated HbA1c result does not establish a clinical diagnosis.
 
-HDL: استخدمنا LBDHDL في 1999–2002، وLBXHDD في 2003–2004، وLBDHDD في الدورات التالية.
-تلك قيم الإصدارات العامة المنشورة؛ لم نطبق تصحيحات إضافية غير موثقة. ملفات المختبر القديمة LAB13/L13 وLAB10/L10 تقابل ملفات الدهون وHbA1c الأحدث.
+HDL uses LBDHDL in 1999–2002, LBXHDD in 2003–2004, and LBDHDD in later cycles. These are published public-release values; no additional undocumented corrections were applied. Historical LAB13/L13 and LAB10/L10 laboratory files correspond to newer lipid and HbA1c files.
 
-## أعمدة التعريف وتصميم المسح — ليست مدخلات
+## Identifiers and survey design — not model inputs
 
-| العمود | الغرض |
+| Column | Purpose |
 |---|---|
-| SEQN | ربط سجلات المشارك، لا يستخدم للتنبؤ |
-| cycle | دورة جمع البيانات |
-| source_era | 1999–2006 أو 2011–2018 للتقييم المنفصل |
-| age_group | 20–39 أو40–59 أو60–79 للمراجعة فقط |
-| partition | development أوvalidation أوtest بحسب الدورة |
-| WTMEC2YR | وزن فحص المسح الأصلي لسنتين |
-| WTMEC4YR | الوزن الأصلي لأربع سنوات، متاح في 1999–2002 فقط |
-| SDMVSTRA | طبقة المعاينة |
-| SDMVPSU | وحدة المعاينة الأولية |
+| SEQN | Participant record linkage; excluded from prediction |
+| cycle | Data-collection cycle |
+| source_era | 1999–2006 or 2011–2018, for separate evaluation |
+| age_group | 20–39, 40–59, or 60–79, for auditing only |
+| partition | development, validation, or test, assigned by cycle |
+| WTMEC2YR | Original two-year examination survey weight |
+| WTMEC4YR | Original four-year weight, available only for 1999–2002 |
+| SDMVSTRA | Sampling stratum |
+| SDMVPSU | Primary sampling unit |
 
-لا نستخدم أوزان المسح لتدريب النموذج ولا نزعم تمثيل انتشار وطني. لم ننشئ وزنًا موحدًا بقسمة
-جميع الأوزان على عدد الدورات؛ الدورات القديمة لها متطلبات وزن مختلفة. لا يوجد عرق أو معادن عظام في التصدير.
+Survey weights are not used for model training, and no national-prevalence representativeness is claimed. No pooled weight was created by simply dividing all weights by the number of cycles; historical cycles have different weighting requirements. Race and bone mineral measurements are absent from the export.
 
-## التصفية
+## Filtering
 
-من **80,630** شخصًا في الدورات الثماني بقي **21,117**:
+Of **80,630** participants across eight cycles, **21,117** remain:
 
-- العمر 20–79؛ لا ندعم الأصغر من20 أو العمر80 فأكثر.
-- استبعاد الحمل الموثق، وللنساء20–44 يلزم إثبات عدم الحمل.
-- فحص MEC وDXA مكتملان؛ BMDSTATS=1 عندما يتوافر. في 1999–2002 لا يوجد هذا المتغير، فاشترطنا القياسات الجسمية الفعلية المكتملة.
-- قياسات موجبة مكتملة للخصر والوزن والطول ونسبة الدهون، مع شرط اكتمال DXA الأصلي للمعادن والدهون والكتلة اللينة. المعادن ليست خاصية للنموذج.
-- في DXA القديم نتحقق من علامات عدم التعويض، صلاحية المناطق، وثبات القيم بين النسخ الخمس. نحتفظ بسجل واحد فقط.
-- التاريخ العائلي المجهول لا يستبعد الشخص؛ الهدف المجهول يستبعد سجله لذلك المرض فقط.
+- Ages 20–79; younger participants and ages 80 or above are unsupported.
+- Documented pregnancy is excluded; women aged 20–44 require evidence of non-pregnancy.
+- Complete MEC and DXA examinations, with BMDSTATS=1 when available. That variable is absent in 1999–2002, so complete observed body-composition measurements are required instead.
+- Complete positive waist, weight, height, and body-fat measurements, together with original DXA completeness for minerals, fat, and lean mass. Minerals are not model features.
+- Historical DXA checks require non-imputation flags, valid regions, and consistent values across all five copies. Only one record per participant is retained.
+- Unknown family history does not exclude a participant; an unknown target excludes that record only for that condition.
 
-الفحص التفصيلي كشف80 مشاركًا في ملف2003–2004 تشير علامة الاكتمال العامة لديهم إلى عدم التعويض رغم تعارض القياسات/صلاحية المناطق.
-من هؤلاء34 كانوا سيدخلون عينة20–79 حسب العد الأولي؛ استُبعدوا الآن. لذلك عدد القديم النهائي **10,494** بدل10,528، والحالي **10,623** دون تغيير.
-تصحيح قراءة الصفر في SAS جعل3 أهداف ضغط من الدورات الحديثة مجهولة بدل سلبية؛ عدد الموجبين2944 لم يتغير.
-التوزيع الدقيق والاستبعادات في [cohort.json](../reports/cohort.json).
+Detailed checks found 80 participants in the 2003–2004 file whose overall completeness flag suggested non-imputation despite inconsistent measurements or regional validity. Of these, 34 would have entered the initial age-20–79 cohort and are now excluded. The final historical cohort is therefore **10,494**, rather than 10,528; the modern cohort remains **10,623**.
+Correcting SAS zero-value parsing changed three modern-cycle blood-pressure targets from negative to unknown; the positive count remains 2,944. See [cohort.json](../reports/cohort.json) for exact counts and exclusions.

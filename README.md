@@ -1,43 +1,37 @@
-# ميزانك | Mizanak
+# Mizanak
 
-[التنزيل الجاهز](https://github.com/abdulazizalhwaiml-dot/Disease-prediction-model/releases/latest) · [الاستضافة المجانية](docs/STREAMLIT_CLOUD_AR.md) · [دليل الملفات](docs/README.md) · [الاختبارات](https://github.com/abdulazizalhwaiml-dot/Disease-prediction-model/actions)
+**Live website: [https://mizanak.streamlit.app/](https://mizanak.streamlit.app/)** — hosted on Streamlit Community Cloud.
 
-تطبيق بحثي بالعربية والإنجليزية يعرض تقديرات ثماني حالات صحية من **ثمانية مدخلات**.
-البيانات المدمجة من NHANES **1999–2006 و2011–2018**: **21,117 مشاركًا** بعمر **20–79**، منهم **2,789 بعمر 60–79**.
+[Ready-to-run download](https://github.com/abdulazizalhwaiml-dot/Disease-prediction-model/releases/latest) · [Hosting guide](docs/STREAMLIT_CLOUD.md) · [Repository guide](docs/README.md) · [CI checks](https://github.com/abdulazizalhwaiml-dot/Disease-prediction-model/actions)
 
-**مشروع تجريبي غير معتمد طبيًا.** النتائج ارتباطات بحالات الدراسة، وليست تشخيصًا أو توقعًا للإصابة مستقبلًا.
-انخفاض التقدير لا يثبت الخلو من المرض. بيانات كبار السن تاريخية، وتحتاج تحققًا على عينة حديثة.
+Mizanak is an experimental Arabic/English research application that estimates eight health conditions from **eight entered inputs**.
+The merged NHANES **1999–2006 and 2011–2018** dataset contains **21,117 participants aged 20–79**, including **2,789 aged 60–79**.
 
-## التشغيل على Windows
+**Experimental project; not clinically validated.** Results reflect associations with study conditions, not diagnoses or predictions of future disease. A low estimate does not establish absence of disease. Older-adult data are historical and require validation in a contemporary cohort.
 
-1. ثبّت **Python 3.12 بنسخة 64-bit** مع Python Launcher.
-2. فك ضغط المشروع وافتح المجلد الذي يحتوي على هذا الملف.
-3. انقر **START_WINDOWS.bat** مرتين.
-4. افتح **http://localhost:8501** وأبقِ نافذة التشغيل مفتوحة.
+## Run on Windows
 
-الحزمة الجاهزة تتضمن النماذج المدربة. إذا كانت النماذج ناقصة أو غير متوافقة، يجلب المشغّل
-ملفات البيانات القديمة من CDC، ويتحقق من بصماتها ثم يعيد التدريب. يلزم اتصال إنترنت للتثبيت والتنزيل فقط.
-[شرح Windows وحلول الأخطاء](docs/WINDOWS.md).
+1. Install **64-bit Python 3.12** with the Python Launcher.
+2. Extract the project and open the folder containing this file.
+3. Double-click **START_WINDOWS.bat**.
+4. Open **http://localhost:8501** and keep the launcher window open.
 
-## الواجهة — الإصدار 4.1.1
+The ready package includes trained models. If models are missing or incompatible, the launcher downloads historical CDC data, verifies their hashes, and retrains. Internet access is needed for installation and downloads. See [Windows setup and troubleshooting](docs/WINDOWS.md).
 
-المدخلات أعلى الصفحة والتقرير أسفلها، مع انتقال تلقائي بعد الإرسال. اللغة في أعلى الصفحة دون قائمة جانبية.
-أيقونة الاستفهام والسهم بجانب كل خانة تفتح شرحًا، ومع الطول والخصر الرسم التوضيحي السابق. بطاقات التقرير بسيطة وقابلة للفتح
-لتعريف الحالة، والحسابات الثلاثة أسفل المدخلات وتتحدث تلقائيًا قبل الإرسال. الشعار المعتمد وأيقونة المتصفح بشاشة مستطيلة منحنية الأطراف ومفرّغة، وخلفية شفافة.
-الرسم الترحيبي مستقل عن الشعار، ويجمع بطاقة قياسات وشريط قياس وقلبًا صغيرًا بألوان الموقع.
-أُصلح التمرير الداخلي في صفوف أسماء الحقول الثمانية وأزرار المساعدة، بالإضافة إلى الترويسة.
+## Interface — version 4.1.1
 
-تعتمد هذه الواجهة على نماذج الإصدار 3 المدربة نفسها. لم تتغير البيانات أو تعريفات الأمراض أو احتمالاتها.
-أعيد تصدير XGBoost بصيغة قابلة للنقل بين Windows وLinux، دون إعادة تدريب أو تغيير النتائج.
-أُصلح خطأ Windows عند حفظ التقارير بتحديد UTF-8 صراحة؛ المشغّل يطبع سبب عدم توافق النماذج إذا احتاج إعادة تدريب.
+Inputs appear above the report, with automatic scrolling after submission. The language selector is at the top, without a sidebar. Help controls beside each field open explanations; height and waist help include illustrations. Expandable report cards provide condition definitions. Three calculated values appear below the inputs and update before submission.
 
-## ما يدخله المستخدم
+The approved logo and favicon use a hollow rounded rectangular display on a transparent background. A separate welcome illustration combines a measurement card, measuring tape, and small heart in the site's colors. Internal scrolling in the header and all eight field-heading/help rows has been fixed.
 
-العمر، الجنس، الطول بالسم، الوزن بالكغ، الخصر بالسم، نسبة الدهون، التاريخ العائلي للسكري، والتاريخ العائلي القلبي المبكر.
-لكل خانة شرح بالضغط أو تمرير المؤشر. السؤالان العائليان يخصان **الأب والأم والإخوة والأخوات**؛
-القلب يعني نوبة قلبية أو ذبحة **قبل 50 سنة** لأي من الجنسين. عدم المعرفة ليس «لا».
+The interface retains the version 3 trained models, data, disease definitions, and probabilities. XGBoost models were exported in a format portable between Windows and Linux without retraining or changing results. Explicit UTF-8 fixes Windows report-writing errors; the launcher explains model incompatibility before fallback training.
 
-تحسب الواجهة والتدريب بالطريقة نفسها:
+## User inputs
+
+Age, sex, height in cm, weight in kg, waist in cm, body-fat percentage, family history of diabetes, and family history of early heart disease.
+Help is available for every field. Family history refers to **parents and siblings**. Early heart disease means a heart attack or angina **before age 50**, for either sex. An unknown answer is not treated as “No.”
+
+The interface and training use the same calculations:
 
 ```text
 BMI = weight_kg / (height_cm / 100)²
@@ -45,55 +39,48 @@ Fat mass = weight_kg × body_fat_pct / 100
 Fat-free mass = weight_kg − fat_mass_kg
 ```
 
-لا يدخل العرق أو معادن العظام أو المعرّف ضمن النموذج. FFM ليست كتلة العضلات وحدها.
-نسبة الدهون في الدراسة مقاسة بـDXA؛ لم يُتحقق من الأداء على جهاز المستخدم أو السكان السعوديين.
+Race, bone mineral measurements, and participant identifiers are not model inputs. Fat-free mass is not muscle mass alone. Study body-fat measurements use DXA; performance on users' devices or the Saudi population has not been validated.
 
-[معاينة الواجهة](docs/previews/desktop-ar.png) · [معاينة الهاتف](docs/previews/mobile-ar.png) · [بطاقات التقرير](docs/previews/report-ar.png)
+[Desktop preview](docs/previews/desktop-ar.png) · [Mobile preview](docs/previews/mobile-ar.png) · [Report cards](docs/previews/report-ar.png)
 
-## النتائج
+## Results
 
-ثماني بطاقات: الكوليسترول، الضغط، السكري، مرض الشرايين التاجية، النوبة القلبية، الذبحة، قصور القلب، والسكتة الدماغية.
-الألوان تتبع حدود التنبيه البحثية وليست درجات خطر طبية.
+Eight cards cover high cholesterol, high blood pressure, diabetes, coronary artery disease, heart attack, angina, heart failure, and stroke. Colors follow research alert levels, not clinical risk categories.
 
-- إذا بلغ أي تقدير حد التنبيه أو تجاوزه: رسالة موحدة تشجع النشاط والغذاء المتوازن ومراجعة مختص للفحوصات المناسبة.
-- إذا بقيت جميع التقديرات دون حد التنبيه: رسالة موحدة تشجع استمرار العادات الصحية والفحوصات، دون تأكيد السلامة.
+- If any estimate reaches its alert level, a common message encourages activity, a balanced diet, and appropriate tests with a healthcare professional.
+- If all estimates remain below their alert levels, a common message encourages continued healthy habits and screening without certifying health.
 
-مدخلات الجلسة لا تحفظ في قاعدة بيانات. يمكن تنزيل نتائجها؛ وتُمسح النتائج عند تغيير المدخلات.
+Session inputs are not saved to a database. Results can be downloaded and are cleared when inputs change.
 
-## البيانات والتدريب
+## Data and training
 
-| الحالة | شرط التصنيف الموجب |
+| Condition | Positive-label definition |
 |---|---|
-| الكوليسترول | إبلاغ ذاتي **أو** non-HDL = الإجمالي − HDL ≥ **190 mg/dL** |
-| الضغط | إبلاغ ذاتي **أو** متوسط الانقباضي ≥140 أو الانبساطي ≥90 |
-| السكري | إبلاغ ذاتي **أو** HbA1c ≥6.5% |
-| الأهداف الخمسة الأخرى | أسئلة التشخيص السابق المناسبة لكل حالة؛ راجع قاموس البيانات |
+| High cholesterol | Self-report **or** non-HDL = total cholesterol − HDL ≥ **190 mg/dL** |
+| High blood pressure | Self-report **or** mean systolic ≥140 or diastolic ≥90 |
+| Diabetes | Self-report **or** HbA1c ≥6.5% |
+| Other five targets | Condition-specific prior-diagnosis questions; see the data dictionary |
 
-الموجب يتغلب على المصدر المفقود. السالب يتطلب سلبية جميع المصادر؛ غير ذلك يبقى مجهولًا.
-يستبعد الحمل والفحص الناقص، وتقبل قياسات DXA الفعلية دون التعويض. كل شخص سجل واحد.
-أعيد بناء التاريخ العائلي القديم لاستبعاد الأجداد وتوحيد التعريف.
+Any positive source overrides a missing source. A negative label requires every source to be negative; otherwise the label remains unknown. Pregnancy and incomplete examinations are excluded. Only observed, non-imputed DXA measurements are accepted, with one record per participant. Historical family-history responses were reconstructed to exclude grandparents and harmonize definitions.
 
-قورنت أربع خوارزميات لكل مرض: Logistic Regression وRandom Forest وXGBoost وLightGBM.
-تستخدم أوزان الفئات ومعايرة مستقلة. تختار الخوارزمية بمتوسط AP للفئات 20–39 و40–59 و60–79؛
-وتختار عتبة القرار بأعلى F2 من بيانات الاختيار فقط. بيانات الاختبار لا تدخل التدريب أو ضبط العتبات.
+Four algorithms were compared for each target: Logistic Regression, Random Forest, XGBoost, and LightGBM, using class weights and separate calibration. Algorithm selection uses mean AP across ages 20–39, 40–59, and 60–79. Decision thresholds maximize F2 on selection data only. Test data are excluded from training and threshold tuning.
 
-| الغرض | الدورات |
+| Purpose | Cycles |
 |---|---|
-| التدريب والمعايرة | 1999–2000 و2011–2014؛ تقسيم 80% و20% لكل مرض |
-| اختيار النموذج والعتبة | 2001–2002 و2015–2016 |
-| الاختبار | 2003–2006 و2017–2018 |
+| Training and calibration | 1999–2000 and 2011–2014; 80%/20% split per target |
+| Model and threshold selection | 2001–2002 and 2015–2016 |
+| Testing | 2003–2006 and 2017–2018 |
 
-نتائج Recall وPrecision وF1 وROC-AUC وAP وBrier منشورة كما هي، بما فيها ضعف بعض أمراض القلب النادرة.
-الدورة 2017–2018 فُحصت في إصدارات سابقة؛ هذه ليست دراسة تحقق خارجي جديدة.
+Recall, Precision, F1, ROC-AUC, AP, and Brier results are published as measured, including weak performance on some rare cardiac outcomes. The 2017–2018 cycle was examined in earlier releases; this is not a new external validation study.
 
-- [النتائج الفعلية](reports/MODEL_CARD.md) · [الاختبار حسب العمر](reports/age_validation.csv)
-- [البيانات المدمجة CSV](data/processed/NHANES_MIZAN.csv) · [وصف التصفية والأعمدة](data/processed/dataset_metadata.json)
-- [قاموس البيانات](docs/DATA_DICTIONARY.md) · [المواءمة والمنهجية](docs/METHODOLOGY.md)
-- [ما جرى اختباره](reports/VALIDATION.md)
+- [Actual performance](reports/MODEL_CARD.md) · [Evaluation by age](reports/age_validation.csv)
+- [Merged CSV](data/processed/NHANES_MIZAN.csv) · [Filtering and column metadata](data/processed/dataset_metadata.json)
+- [Data dictionary](docs/DATA_DICTIONARY.md) · [Harmonization and methodology](docs/METHODOLOGY.md)
+- [Validation record](reports/VALIDATION.md)
 
-## للمطور: التثبيت وإعادة التدريب
+## Developer setup and retraining
 
-Python 3.12؛ من داخل مجلد المشروع:
+Use Python 3.12 from the project directory:
 
 ```bash
 python -m pip install --require-hashes -r requirements-dev.lock
@@ -105,38 +92,25 @@ pytest -q
 python -m streamlit run streamlit_app.py
 ```
 
-على Windows استخدم `requirements-windows.lock` للتشغيل، ثم أوامر Python الخاصة بالبيئة في [الدليل](docs/WINDOWS.md).
-ملفات 2011–2018 الأصلية محفوظة في المستودع؛ يجلب سكربت التنزيل 37 ملفًا قديمًا ببصمات مثبتة.
-ملفات المصدر لا تتغير. CSV الناتج يحفظ الوحدات الأصلية والمجهول كخانة فارغة، دون تحجيم أو تعويض.
+On Windows, use `requirements-windows.lock` for runtime dependencies and the environment-specific commands in the [Windows guide](docs/WINDOWS.md). Original 2011–2018 files are included; the download script retrieves 37 historical files with pinned hashes. Source data remain unchanged. The exported CSV preserves original units and represents unknown values as empty cells, without scaling or imputation.
 
 ```text
-app/                  الواجهة والنصوص والتنسيق
-src/nhanes_ai/        قراءة البيانات، الخصائص، التدريب، التنبؤ
-scripts/              التنزيل والتصدير وتشغيل Windows
-DATA_SET/             ملفات NHANES الأصلية، دورة لكل مجلد
-data/processed/      البيانات المدمجة ووصفها
-models/               النماذج الحالية وبيان الإصدار
-reports/              التصفية والمقارنات ونتائج الاختبار
-notebooks/            مثال تحليل مختصر
-docs/                قاموس البيانات والمنهجية والتشغيل
-tests/               اختبارات البيانات والنماذج والواجهة
+app/                 Interface, translations, and styling
+src/nhanes_ai/       Data loading, features, training, and inference
+scripts/             Downloads, exports, and Windows launchers
+DATA_SET/            Original NHANES files, grouped by cycle
+data/processed/      Merged dataset and metadata
+models/              Active models and release manifest
+reports/             Filtering, comparisons, and test results
+notebooks/           Short analysis example
+docs/                Data dictionary, methodology, and setup
+tests/               Data, model, and interface tests
 ```
 
-## الاستضافة
+## Hosting
 
-Streamlit Cloud: Python **3.12**، ملف البداية **streamlit_app.py**؛ `packages.txt` يوفر OpenMP.
-الفرع المعتمد للتشغيل والنشر هو **`main`** ويحتوي المصدر والنماذج الحالية معًا.
-[الخطوات بالعربية](docs/STREAMLIT_CLOUD_AR.md) · [التشغيل بالحاويات](docs/DEPLOYMENT.md).
+The website is hosted on **Streamlit Community Cloud** at **[https://mizanak.streamlit.app/](https://mizanak.streamlit.app/)**.
+GitHub stores the source and model files. The canonical development and deployment branch is **`main`**, containing both the source and active models. Deployment uses Python **3.12** and **`streamlit_app.py`**; `packages.txt` supplies OpenMP.
+See the [Streamlit hosting guide](docs/STREAMLIT_CLOUD.md) or [container deployment guide](docs/DEPLOYMENT.md).
 
-## English quick reference
-
-Mizanak v4.1.1 is a bilingual experimental Streamlit app for non-pregnant adults aged 20–79.
-It uses eight entered inputs and three derived features, with eight separately calibrated classifiers.
-The merged complete-observed-DXA cohort has 21,117 participants; older adults come only from 1999–2006.
-Version4 updates the interface and Windows text I/O while retaining the schema3 model release.
-No prospective-risk, clinical-readiness, national-representativeness or device-transfer claim is made.
-See the methodology and generated model card for the fixed splits and actual performance.
-
-تحديث4.1.1: إصلاح التمرير الداخلي في صفوف الحقول الثمانية مع الحفاظ على التمرير الطبيعي للصفحة.
-تحديث4.1: إصلاح التمرير الداخلي لصف الشعار واللغة، وتعريف مختصر لكل مرض مع ملاحظة طبية،
-واستخدام «حد التنبيه» لشرح التنبيهات البحثية. لم تتغير النماذج أو حدود القرار أو صورة الخصر السابقة.
+No prospective-risk, clinical-readiness, national-representativeness, or device-transfer claim is made. See the methodology and generated model card for fixed splits and actual performance.

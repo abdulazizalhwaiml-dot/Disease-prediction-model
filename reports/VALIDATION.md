@@ -12,7 +12,7 @@
   CSS scale1/1.25/1.5/2. All eight help dialogs support Enter/Escape in both languages.
   Evidence: ui_layout_checks.json and updated docs/previews screenshots.
 - The existing43 Python tests passed with no skips; Ruff lint/format checks passed.
-- Gender help is exactly «ذكر أو أنثى.» / “Male or female.”; simplified family-history
+- Gender help is exactly “Male or female.” in both interface languages; simplified family-history
   wording keeps the parent/sibling scope. Model artifacts, data and decision limits are unchanged.
 - Main is the canonical source/deployment branch. A ready ZIP and checksum accompany
   the GitHub release; historical download branches remain available.
@@ -39,7 +39,7 @@ Earlier validation follows; linked native CI runs below refer to their respectiv
 - BMI, fat mass and FFM are read-only under the inputs, before submit. Actual editing of
   height175→180 updates displayed BMI26.1→24.7 without submitting; still only eight inputs.
 - Disease cards use short condition definitions plus one common medical limitation.
-  User-facing “model threshold” is now “alert level” / «حد التنبيه», defined as a research
+  User-facing “model threshold” is now “alert level” in both interface languages, defined as a research
   calculation. Comparison operators and all model operating points are unchanged.
 - The original waist illustration is retained at the user's request. The user-approved
   hollow-display logo replaces the shared header and browser-icon asset. The hero uses
@@ -60,7 +60,7 @@ Earlier v4 validation and native Windows portability evidence follows.
 
 ## Scope of this update
 
-- New bilingual interface and brand: ميزانك / Mizanak, square scale/pulse logo and matching favicon.
+- New bilingual interface and brand: Mizanak (Arabic and English), square scale/pulse logo and matching favicon.
 - Input panel precedes the report in both DOM and visual order; no sidebar or reserved sidebar width.
 - Eight accessible native help popovers; local height and corrected NHANES waist illustrations.
 - Four report columns on desktop, two on mobile; one visible percentage per card.

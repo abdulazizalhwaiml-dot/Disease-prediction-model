@@ -1,15 +1,20 @@
-# سجل الإصدارات
+# Changelog
 
-## 4.1.1 — 3 نوفمبر 2026
+## Unreleased
 
-- إصلاح التمرير الداخلي في صفوف عناوين الحقول الثمانية وأزرار المساعدة؛ أصبح الارتفاع يتكيف مع المحتوى ويلتف النص عند ضيق المساحة.
-- فحص متصفح يغطي الترويسة وجميع الحقول: العربية والإنجليزية، ستة مقاسات للشاشة وأربع درجات تكبير، مع فتح التوضيحات بلوحة المفاتيح. أُضيف الفحص إلى GitHub Actions.
-- نص توضيح الجنس: «ذكر أو أنثى.»؛ حذف كلمة «البيولوجيين» من توضيحي التاريخ العائلي للقلب والسكري.
-- اعتماد `main` للمصدر والتشغيل والنشر، وإضافة دليل للملفات وخطوات الاستضافة المجانية وحزمة في GitHub Releases.
-- لم تتغير النماذج أو البيانات أو الحسابات أو حدود التنبيه.
+- Translate repository documentation into English.
+- Document the live website at https://mizanak.streamlit.app/, hosted on Streamlit Community Cloud.
 
-## 4.1 — 2 نوفمبر 2026
+## 4.1.1 — November 3, 2026
 
-- إصلاح تمرير صف الشعار واللغة، وإظهار أزرار مساعدة بأيقونتي الاستفهام والسهم فقط.
-- الحسابات التلقائية أسفل المدخلات، ووصف قصير للأمراض مع ملاحظة طبية، وعبارة «حد التنبيه» الأوضح للمستخدم.
-- الشعار المعتمد بشاشة مفرغة، ورسم ترحيبي مستقل يجمع بطاقة قياسات وشريط قياس وقلبًا صغيرًا.
+- Fix internal scrolling in all eight field-heading/help rows; container height follows content and labels wrap on narrow screens.
+- Add browser checks covering the header and all fields in Arabic and English, six viewport sizes, four zoom levels, and keyboard-operated help dialogs. Include the checks in GitHub Actions.
+- Use “Male or female.” for sex help; remove “biological” from both family-history explanations.
+- Use `main` for source, runtime, and deployment; add a repository guide, free-hosting instructions, and a GitHub Releases package.
+- Models, data, calculations, and alert levels are unchanged.
+
+## 4.1 — November 2, 2026
+
+- Fix scrolling in the logo/language row and use question-mark/arrow icons for help controls.
+- Place automatic calculations below the inputs; add brief condition definitions, a medical limitation, and clearer “alert level” wording.
+- Use the approved hollow-display logo and a separate welcome illustration with a measurement card, measuring tape, and small heart.
