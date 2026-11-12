@@ -40,6 +40,7 @@ with language_column:
         ["ar", "en"],
         format_func=lambda value: "العربية" if value == "ar" else "English",
         key="language",
+        filter_mode=None,
         label_visibility="collapsed",
     )
 t = TEXT[language]
