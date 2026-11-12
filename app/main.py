@@ -101,7 +101,6 @@ def render_field(field):
             with st.popover(
                 f"{t['help_button']}: {t[field]}",
                 icon=":material/help:",
-                help=t[field],
                 key=f"help_{field}",
                 width="content",
             ):
