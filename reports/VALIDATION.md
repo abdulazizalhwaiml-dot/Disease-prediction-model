@@ -9,7 +9,10 @@
 - Local suite:62 tests passed without skips; Ruff lint/format checks passed. New tests cover sensitivity-guard trade-offs, invalid inputs, tied probabilities, imbalance metrics and rejection of non-validation rows.
 - Real Chromium:48 viewport/language/zoom combinations and all native help dialogs passed; desktop/mobile reports match the current registry probabilities and alert states. Existing layout, translations and user-input contract are retained.
 
-Native CI results will be linked after completion. Earlier validation follows.
+Native Windows/Linux CI, browser regression, full training check and Docker build passed:
+https://github.com/abdulazizalhwaiml-dot/Disease-prediction-model/actions/runs/43798015457
+
+Earlier validation follows.
 
 # Mizanak v4.1.1 — field-heading scrollbar fix, 2026-11-03
 
