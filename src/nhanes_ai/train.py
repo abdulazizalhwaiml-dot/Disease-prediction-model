@@ -28,7 +28,6 @@ from sklearn.metrics import (
     confusion_matrix,
     f1_score,
     fbeta_score,
-    precision_recall_curve,
     precision_score,
     recall_score,
     roc_auc_score,
@@ -51,6 +50,12 @@ from nhanes_ai.schema import (
     LabelConfig,
 )
 from nhanes_ai.serialization import make_portable
+from nhanes_ai.thresholds import (
+    BALANCED_TARGETS,
+    DEFAULT_MAX_RECALL_DROP,
+    choose_threshold,
+    threshold_policy,
+)
 
 
 def classifiers(y, seed, jobs):
@@ -101,14 +106,6 @@ def classifiers(y, seed, jobs):
     }
 
 
-def choose_threshold(y, probabilities):
-    """Maximise validation F2 (recall weighted twice), never the test score."""
-    precision, recall, thresholds = precision_recall_curve(y, probabilities)
-    f2 = 5 * precision[:-1] * recall[:-1] / np.maximum(4 * precision[:-1] + recall[:-1], 1e-12)
-    best = np.flatnonzero(np.isclose(f2, f2.max()))[-1]
-    return float(thresholds[best])
-
-
 def metrics(y, probabilities, threshold):
     prediction = probabilities >= threshold
     tn, fp, fn, tp = confusion_matrix(y, prediction, labels=[0, 1]).ravel()
@@ -116,6 +113,11 @@ def metrics(y, probabilities, threshold):
         "n": len(y),
         "positive": int(np.sum(y)),
         "prevalence": float(np.mean(y)),
+        "accuracy": float((tn + tp) / len(y)),
+        "specificity": float(tn / (tn + fp)),
+        "balanced_accuracy": float((tn / (tn + fp) + tp / (tp + fn)) / 2),
+        "alert_rate": float((tp + fp) / len(y)),
+        "majority_baseline_accuracy": float(max(np.mean(y), 1 - np.mean(y))),
         "recall": float(recall_score(y, prediction, zero_division=0)),
         "precision": float(precision_score(y, prediction, zero_division=0)),
         "f1": float(f1_score(y, prediction, zero_division=0)),
@@ -175,6 +177,15 @@ def save_json(path, value):
 
 def write_model_card(path, manifest):
     """Write a short model card directly from the exported release."""
+    policy = manifest.get("threshold_policy")
+    operating_point = (
+        "Cholesterol, blood pressure and diabetes thresholds maximize validation F1, with recall at most "
+        f"{policy['max_validation_recall_drop'] * 100:g} percentage points below the "
+        "same pipeline's validation-F2 recall. Other targets retain F2 operating points. "
+        "This is a research preference, not a clinical target."
+        if policy
+        else "Threshold maximizes validation F2."
+    )
     lines = [
         "# MIZAN — trained models",
         "",
@@ -191,7 +202,8 @@ def write_model_card(path, manifest):
         "",
         "- Development: 1999–2000 and 2011–2014; 80% fit / 20% sigmoid calibration per target.",
         "- Validation: 2001–2002 and 2015–2016; select the mean AP across age groups",
-        "  20–39, 40–59 and 60–79; ties use overall AP then ROC-AUC. Threshold maximizes F2.",
+        "  20–39, 40–59 and 60–79; ties use overall AP then ROC-AUC.",
+        "- " + operating_point,
         "- Test: 2003–2006 and 2017–2018; no refitting or threshold tuning after evaluation.",
         "",
         "The 2017–2018 cycle was examined in earlier software; it is not a fresh external test.",
@@ -199,13 +211,16 @@ def write_model_card(path, manifest):
         "",
         "## Combined test results",
         "",
-        "| Disease | Algorithm | Positive / N | Recall | Precision | F1 | ROC-AUC | AP | Brier |",
-        "|---|---|---:|---:|---:|---:|---:|---:|---:|",
+        "| Disease | Algorithm | Positive / N | Accuracy | Recall | Precision | F1 | ROC-AUC | AP | Brier |",
+        "|---|---|---:|---:|---:|---:|---:|---:|---:|---:|",
     ]
     for disease, entry in manifest["models"].items():
         score = entry["test"]
+        confusion = score["confusion_matrix"]
+        accuracy = (confusion["tn"] + confusion["tp"]) / score["n"]
         lines.append(
             f"| {DISEASES[disease]} | {entry['algorithm']} | {score['positive']} / {score['n']} | "
+            f"{accuracy:.3f} | "
             + " | ".join(
                 f"{score[key]:.3f}"
                 for key in ["recall", "precision", "f1", "roc_auc", "pr_auc", "brier"]
@@ -220,6 +235,10 @@ def write_model_card(path, manifest):
         "`test_metrics.json` report performance by age, cycle and era, with sparse-cell flags.",
         "The latter includes 300 participant-bootstrap intervals, not survey-design intervals.",
         "Low precision and false negatives remain possible, especially for rare cardiac labels.",
+        "Accuracy is affected by imbalance; compare sensitivity, specificity, F1, AP and the",
+        "majority-class baseline. A high accuracy alone is not evidence of clinical utility.",
+        "For a threshold-only update, see threshold_selection.json and threshold_comparison.csv.",
+        "The original model_comparison.csv retains the historical four-algorithm comparison.",
         "No national prevalence claim: survey weights are metadata, not model-fitting weights.",
         "",
         "## Inputs and use",
@@ -238,7 +257,15 @@ def write_model_card(path, manifest):
     path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
-def train(data_root: Path, output: Path, reports: Path, config=LabelConfig(), seed=42, jobs=2):
+def train(
+    data_root: Path,
+    output: Path,
+    reports: Path,
+    config=LabelConfig(),
+    seed=42,
+    jobs=2,
+    max_recall_drop=DEFAULT_MAX_RECALL_DROP,
+):
     raw = read_cycles(data_root)
     cohort, audit = prepare_cohort(raw, config)
     run_id = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ") + "-" + uuid.uuid4().hex[:8]
@@ -281,7 +308,12 @@ def train(data_root: Path, output: Path, reports: Path, config=LabelConfig(), se
             calibrated.fit(pre.transform(calibration[FEATURES]), y_cal)
             pipeline = Pipeline([("preprocess", pre), ("classifier", calibrated)])
             probability = pipeline.predict_proba(validation[FEATURES])[:, 1]
-            threshold = choose_threshold(y_val, probability)
+            threshold = choose_threshold(
+                y_val,
+                probability,
+                policy="balanced" if disease in BALANCED_TARGETS else "recall",
+                max_recall_drop=max_recall_drop,
+            )
             score = metrics(y_val, probability, threshold)
             age_scores = []
             for group in sorted(validation.age_group.unique()):
@@ -382,7 +414,8 @@ def train(data_root: Path, output: Path, reports: Path, config=LabelConfig(), se
         "selection": "validation mean age-group average precision, then overall AP, then ROC-AUC",
         "partitions": PARTITIONS,
         "age_limits": [AGE_MIN, AGE_MAX],
-        "threshold_selection": "maximum validation F2; no test-set tuning",
+        "threshold_selection": "maximum validation F1 with a validation-F2 recall guard; no test-set tuning",
+        "threshold_policy": threshold_policy(max_recall_drop),
         "scope": "Non-pregnant US NHANES participants aged 20-79 with observed complete DXA exams",
         "clinical_validation": False,
         "cohort": audit,
@@ -445,6 +478,7 @@ def main():
     parser.add_argument("--reports", type=Path, default=Path("reports"))
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--jobs", type=int, default=2)
+    parser.add_argument("--max-recall-drop", type=float, default=DEFAULT_MAX_RECALL_DROP)
     parser.add_argument("--non-hdl", type=float, default=190.0)
     parser.add_argument("--systolic", type=float, default=140.0)
     parser.add_argument("--diastolic", type=float, default=90.0)
@@ -453,7 +487,17 @@ def main():
     thresholds = [args.non_hdl, args.systolic, args.diastolic, args.hba1c]
     if args.jobs < 1 or any(not np.isfinite(value) or value <= 0 for value in thresholds):
         parser.error("Thread count and finite label thresholds must be positive")
-    train(args.data, args.output, args.reports, LabelConfig(*thresholds), args.seed, args.jobs)
+    if not np.isfinite(args.max_recall_drop) or not 0 <= args.max_recall_drop <= 1:
+        parser.error("Recall-drop allowance must be between 0 and 1")
+    train(
+        args.data,
+        args.output,
+        args.reports,
+        LabelConfig(*thresholds),
+        args.seed,
+        args.jobs,
+        args.max_recall_drop,
+    )
 
 
 if __name__ == "__main__":

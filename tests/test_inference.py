@@ -85,7 +85,7 @@ def test_imputation_is_fitted_only_on_training_rows(record):
 def test_threshold_optimizes_validation_f2():
     y = np.array([0, 1, 0, 1, 1])
     p = np.array([0.05, 0.2, 0.3, 0.6, 0.7])
-    threshold = choose_threshold(y, p)
+    threshold = choose_threshold(y, p, policy="recall")
     assert metrics(y, p, threshold)["f2"] == max(metrics(y, p, t)["f2"] for t in p)
 
 

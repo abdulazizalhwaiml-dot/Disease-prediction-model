@@ -64,8 +64,11 @@ own-diagnosis answers never enter predictors. Age is the participant's current m
 1. **Development:** 1999–2000 and2011–2014, stratified80% fitting/20% calibration separately per disease, seed42.
 2. **Validation:** 2001–2002 and2015–2016. Select the highest unweighted mean average precision
    across ages20–39,40–59,60–79, then overall AP and ROC-AUC for ties. Each age band contributes
-   equally so the larger younger cohort does not dominate selection. Choose threshold by maximum
-   validationF2. No model is selected using accuracy alone.
+   equally so the larger younger cohort does not dominate selection. Cholesterol, blood pressure
+   and diabetes thresholds maximize validation F1, subject to validation recall at most 10
+   percentage points below the same pipeline's validation-F2 point. Other targets retain F2.
+   The allowance is a declared research preference, not a clinically justified sensitivity target
+   or a guarantee on future data. No model is selected using accuracy alone.
 3. **Test:** 2003–2006 and2017–2018, after algorithm/threshold selection, without refitting.
 
 Each class-weighted candidate receives independent sigmoid calibration on natural-prevalence
@@ -77,6 +80,13 @@ Age/cycle/era/sex/family subgroup results flag fewer than20 positives or negativ
 The 2017–2018 cycle was already examined in previous versions. Historical elder holdouts are
 useful but do not establish contemporary older-adult or clinical validity. Smart-scale and
 Saudi population performance remain unvalidated. Poor rare-outcome results are reported honestly.
+
+Version4.2 re-selects three numeric thresholds using validation only, with a frozen decision plan
+before historical-test evaluation. Existing fitted pipelines and calibration are not refit.
+The five other operating points remain unchanged. The exploratory eight-target candidate results
+are published separately, including regressions. Historical test results have been repeatedly
+examined; this is a retrospective maintenance comparison, not fresh external validation.
+See [the full threshold review](THRESHOLD_REVIEW.md) and reports/threshold_selection.json.
 
 ## Simple app and trusted artifacts
 
@@ -94,7 +104,8 @@ replacement of both manifest and model. Inputs remain session-local; changes cle
 
 The original XGBoost pickle memory snapshot failed in the native Windows library.
 `PortableBooster` serializes the official UBJSON model only, with a CPU/two-thread runtime setting instead.
-The active export preserves all trees, calibration and thresholds. Before activation,
+The portable conversion preserves all trees and calibration. Version4.2 updates three thresholds
+separately; it does not change probabilities. Before the original portable activation,
 `upgrade_model_format.py` round-tripped both selected XGBoost pipelines on all21,117
 exported feature rows, with maximum probability difference0. No models were refit.
 Training now uses the same portable export for future selected XGBoost models.

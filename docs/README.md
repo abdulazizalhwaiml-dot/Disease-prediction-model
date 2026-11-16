@@ -14,5 +14,6 @@ Ready packages are available in [GitHub Releases](https://github.com/abdulazizal
 | Methodology and limitations | [METHODOLOGY.md](METHODOLOGY.md) |
 | Completed validation | [VALIDATION.md](../reports/VALIDATION.md) |
 | Current model performance | [MODEL_CARD.md](../reports/MODEL_CARD.md) |
+| Alert-level changes and false-alert/missed-case trade-offs | [THRESHOLD_REVIEW.md](THRESHOLD_REVIEW.md) |
 
 `app/` contains the interface, `src/nhanes_ai/` contains data and model code, and `scripts/` contains setup and launch commands. Original NHANES files and training reports remain separate from the interface so results can be verified.

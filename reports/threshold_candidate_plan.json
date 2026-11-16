@@ -1,0 +1,855 @@
+{
+  "policy": {
+    "name": "validation_f1_with_recall_guard",
+    "objective": "maximum validation F1",
+    "baseline": "maximum validation F2",
+    "max_validation_recall_drop": 0.1,
+    "tie_break": "highest threshold within absolute score tolerance 1e-12",
+    "clinical_cutoff": false,
+    "test_used_for_selection": false
+  },
+  "targets": {
+    "high_cholesterol": {
+      "threshold": 0.23672361684596682,
+      "validation_cycles": [
+        "2001-2002",
+        "2015-2016"
+      ],
+      "comparison": {
+        "previous": {
+          "n": 4867,
+          "positive": 1915,
+          "prevalence": 0.39346620094514073,
+          "accuracy": 0.49024039449352785,
+          "specificity": 0.18055555555555555,
+          "balanced_accuracy": 0.574089788221642,
+          "alert_rate": 0.8777480994452435,
+          "majority_baseline_accuracy": 0.6065337990548593,
+          "recall": 0.9676240208877285,
+          "precision": 0.43375468164794007,
+          "f1": 0.5989978988201067,
+          "f2": 0.7764834059671472,
+          "roc_auc": 0.7099652755665937,
+          "pr_auc": 0.5709052475988265,
+          "brier": 0.20966521165520502,
+          "threshold": 0.11892308431367271,
+          "confusion_matrix": {
+            "tn": 533,
+            "fp": 2419,
+            "fn": 62,
+            "tp": 1853
+          }
+        },
+        "recall_f2": {
+          "n": 4867,
+          "positive": 1915,
+          "prevalence": 0.39346620094514073,
+          "accuracy": 0.49024039449352785,
+          "specificity": 0.18055555555555555,
+          "balanced_accuracy": 0.574089788221642,
+          "alert_rate": 0.8777480994452435,
+          "majority_baseline_accuracy": 0.6065337990548593,
+          "recall": 0.9676240208877285,
+          "precision": 0.43375468164794007,
+          "f1": 0.5989978988201067,
+          "f2": 0.7764834059671472,
+          "roc_auc": 0.7099652755665937,
+          "pr_auc": 0.5709052475988265,
+          "brier": 0.20966521165520502,
+          "threshold": 0.11892308431367271,
+          "confusion_matrix": {
+            "tn": 533,
+            "fp": 2419,
+            "fn": 62,
+            "tp": 1853
+          }
+        },
+        "unconstrained_f1": {
+          "n": 4867,
+          "positive": 1915,
+          "prevalence": 0.39346620094514073,
+          "accuracy": 0.6168070680090405,
+          "specificity": 0.4752710027100271,
+          "balanced_accuracy": 0.65512897393987,
+          "alert_rate": 0.6468050133552496,
+          "majority_baseline_accuracy": 0.6065337990548593,
+          "recall": 0.8349869451697128,
+          "precision": 0.5079415501905972,
+          "f1": 0.6316413193758641,
+          "f2": 0.7397298297557365,
+          "roc_auc": 0.7099652755665937,
+          "pr_auc": 0.5709052475988265,
+          "brier": 0.20966521165520502,
+          "threshold": 0.2738707956794274,
+          "confusion_matrix": {
+            "tn": 1403,
+            "fp": 1549,
+            "fn": 316,
+            "tp": 1599
+          }
+        },
+        "balanced": {
+          "n": 4867,
+          "positive": 1915,
+          "prevalence": 0.39346620094514073,
+          "accuracy": 0.594616807068009,
+          "specificity": 0.41700542005420055,
+          "balanced_accuracy": 0.6427063653795807,
+          "alert_rate": 0.695294842818985,
+          "majority_baseline_accuracy": 0.6065337990548593,
+          "recall": 0.8684073107049608,
+          "precision": 0.4914302600472813,
+          "f1": 0.6276655972825061,
+          "f2": 0.752897500905469,
+          "roc_auc": 0.7099652755665937,
+          "pr_auc": 0.5709052475988265,
+          "brier": 0.20966521165520502,
+          "threshold": 0.23672361684596682,
+          "confusion_matrix": {
+            "tn": 1231,
+            "fp": 1721,
+            "fn": 252,
+            "tp": 1663
+          }
+        }
+      }
+    },
+    "high_blood_pressure": {
+      "threshold": 0.26149845655039894,
+      "validation_cycles": [
+        "2001-2002",
+        "2015-2016"
+      ],
+      "comparison": {
+        "previous": {
+          "n": 5908,
+          "positive": 1862,
+          "prevalence": 0.31516587677725116,
+          "accuracy": 0.5653351387948544,
+          "specificity": 0.4003954522985665,
+          "balanced_accuracy": 0.6620666842588429,
+          "alert_rate": 0.7017603249830738,
+          "majority_baseline_accuracy": 0.6848341232227488,
+          "recall": 0.9237379162191193,
+          "precision": 0.41485769416304874,
+          "f1": 0.5725699067909454,
+          "f2": 0.741762980852165,
+          "roc_auc": 0.7902770130608635,
+          "pr_auc": 0.6207669393315591,
+          "brier": 0.1671516678712745,
+          "threshold": 0.15542501830063576,
+          "confusion_matrix": {
+            "tn": 1620,
+            "fp": 2426,
+            "fn": 142,
+            "tp": 1720
+          }
+        },
+        "recall_f2": {
+          "n": 5908,
+          "positive": 1862,
+          "prevalence": 0.31516587677725116,
+          "accuracy": 0.5653351387948544,
+          "specificity": 0.4003954522985665,
+          "balanced_accuracy": 0.6620666842588429,
+          "alert_rate": 0.7017603249830738,
+          "majority_baseline_accuracy": 0.6848341232227488,
+          "recall": 0.9237379162191193,
+          "precision": 0.41485769416304874,
+          "f1": 0.5725699067909454,
+          "f2": 0.741762980852165,
+          "roc_auc": 0.7902770130608635,
+          "pr_auc": 0.6207669393315591,
+          "brier": 0.1671516678712745,
+          "threshold": 0.15542501830063576,
+          "confusion_matrix": {
+            "tn": 1620,
+            "fp": 2426,
+            "fn": 142,
+            "tp": 1720
+          }
+        },
+        "unconstrained_f1": {
+          "n": 5908,
+          "positive": 1862,
+          "prevalence": 0.31516587677725116,
+          "accuracy": 0.7049763033175356,
+          "specificity": 0.6735046959960455,
+          "balanced_accuracy": 0.7234333361827703,
+          "alert_rate": 0.4673324306025728,
+          "majority_baseline_accuracy": 0.6848341232227488,
+          "recall": 0.7733619763694952,
+          "precision": 0.5215501629844259,
+          "f1": 0.6229720960415315,
+          "f2": 0.7052600646488393,
+          "roc_auc": 0.7902770130608635,
+          "pr_auc": 0.6207669393315591,
+          "brier": 0.1671516678712745,
+          "threshold": 0.31268727287682,
+          "confusion_matrix": {
+            "tn": 2725,
+            "fp": 1321,
+            "fn": 422,
+            "tp": 1440
+          }
+        },
+        "balanced": {
+          "n": 5908,
+          "positive": 1862,
+          "prevalence": 0.31516587677725116,
+          "accuracy": 0.6740013540961408,
+          "specificity": 0.6043005437469106,
+          "balanced_accuracy": 0.7148785210678699,
+          "alert_rate": 0.531144211238998,
+          "majority_baseline_accuracy": 0.6848341232227488,
+          "recall": 0.8254564983888292,
+          "precision": 0.48980242192479284,
+          "f1": 0.6148,
+          "f2": 0.7259588135273002,
+          "roc_auc": 0.7902770130608635,
+          "pr_auc": 0.6207669393315591,
+          "brier": 0.1671516678712745,
+          "threshold": 0.26149845655039894,
+          "confusion_matrix": {
+            "tn": 2445,
+            "fp": 1601,
+            "fn": 325,
+            "tp": 1537
+          }
+        }
+      }
+    },
+    "diabetes": {
+      "threshold": 0.1319966072124382,
+      "validation_cycles": [
+        "2001-2002",
+        "2015-2016"
+      ],
+      "comparison": {
+        "previous": {
+          "n": 5769,
+          "positive": 585,
+          "prevalence": 0.10140405616224649,
+          "accuracy": 0.6999479979199168,
+          "specificity": 0.683641975308642,
+          "balanced_accuracy": 0.7640432098765433,
+          "alert_rate": 0.36990812965851966,
+          "majority_baseline_accuracy": 0.8985959438377535,
+          "recall": 0.8444444444444444,
+          "precision": 0.23149015932521086,
+          "f1": 0.36336888561971314,
+          "f2": 0.5520786767992848,
+          "roc_auc": 0.8334963925820408,
+          "pr_auc": 0.36342458913911113,
+          "brier": 0.076361166995416,
+          "threshold": 0.09454792921009322,
+          "confusion_matrix": {
+            "tn": 3544,
+            "fp": 1640,
+            "fn": 91,
+            "tp": 494
+          }
+        },
+        "recall_f2": {
+          "n": 5769,
+          "positive": 585,
+          "prevalence": 0.10140405616224649,
+          "accuracy": 0.6999479979199168,
+          "specificity": 0.683641975308642,
+          "balanced_accuracy": 0.7640432098765433,
+          "alert_rate": 0.36990812965851966,
+          "majority_baseline_accuracy": 0.8985959438377535,
+          "recall": 0.8444444444444444,
+          "precision": 0.23149015932521086,
+          "f1": 0.36336888561971314,
+          "f2": 0.5520786767992848,
+          "roc_auc": 0.8334963925820408,
+          "pr_auc": 0.36342458913911113,
+          "brier": 0.076361166995416,
+          "threshold": 0.09454792921009322,
+          "confusion_matrix": {
+            "tn": 3544,
+            "fp": 1640,
+            "fn": 91,
+            "tp": 494
+          }
+        },
+        "unconstrained_f1": {
+          "n": 5769,
+          "positive": 585,
+          "prevalence": 0.10140405616224649,
+          "accuracy": 0.8563009187034148,
+          "specificity": 0.8964120370370371,
+          "balanced_accuracy": 0.698633368945869,
+          "alert_rate": 0.1438724215635292,
+          "majority_baseline_accuracy": 0.8985959438377535,
+          "recall": 0.5008547008547009,
+          "precision": 0.3530120481927711,
+          "f1": 0.41413427561837457,
+          "f2": 0.46214511041009465,
+          "roc_auc": 0.8334963925820408,
+          "pr_auc": 0.36342458913911113,
+          "brier": 0.076361166995416,
+          "threshold": 0.23364234246695081,
+          "confusion_matrix": {
+            "tn": 4647,
+            "fp": 537,
+            "fn": 292,
+            "tp": 293
+          }
+        },
+        "balanced": {
+          "n": 5769,
+          "positive": 585,
+          "prevalence": 0.10140405616224649,
+          "accuracy": 0.7564569249436645,
+          "specificity": 0.7565586419753086,
+          "balanced_accuracy": 0.756057098765432,
+          "alert_rate": 0.2953718148725949,
+          "majority_baseline_accuracy": 0.8985959438377535,
+          "recall": 0.7555555555555555,
+          "precision": 0.25938967136150237,
+          "f1": 0.38619484491044126,
+          "f2": 0.5464886251236399,
+          "roc_auc": 0.8334963925820408,
+          "pr_auc": 0.36342458913911113,
+          "brier": 0.076361166995416,
+          "threshold": 0.1319966072124382,
+          "confusion_matrix": {
+            "tn": 3922,
+            "fp": 1262,
+            "fn": 143,
+            "tp": 442
+          }
+        }
+      }
+    },
+    "coronary_artery_disease": {
+      "threshold": 0.04428031502048291,
+      "validation_cycles": [
+        "2001-2002",
+        "2015-2016"
+      ],
+      "comparison": {
+        "previous": {
+          "n": 6020,
+          "positive": 125,
+          "prevalence": 0.020764119601328904,
+          "accuracy": 0.8699335548172757,
+          "specificity": 0.8754877014418999,
+          "balanced_accuracy": 0.74174385072095,
+          "alert_rate": 0.1345514950166113,
+          "majority_baseline_accuracy": 0.979235880398671,
+          "recall": 0.608,
+          "precision": 0.09382716049382717,
+          "f1": 0.1625668449197861,
+          "f2": 0.2900763358778626,
+          "roc_auc": 0.8540498727735368,
+          "pr_auc": 0.09888455240710502,
+          "brier": 0.01940844330514984,
+          "threshold": 0.041069452881315756,
+          "confusion_matrix": {
+            "tn": 5161,
+            "fp": 734,
+            "fn": 49,
+            "tp": 76
+          }
+        },
+        "recall_f2": {
+          "n": 6020,
+          "positive": 125,
+          "prevalence": 0.020764119601328904,
+          "accuracy": 0.8699335548172757,
+          "specificity": 0.8754877014418999,
+          "balanced_accuracy": 0.74174385072095,
+          "alert_rate": 0.1345514950166113,
+          "majority_baseline_accuracy": 0.979235880398671,
+          "recall": 0.608,
+          "precision": 0.09382716049382717,
+          "f1": 0.1625668449197861,
+          "f2": 0.2900763358778626,
+          "roc_auc": 0.8540498727735368,
+          "pr_auc": 0.09888455240710502,
+          "brier": 0.01940844330514984,
+          "threshold": 0.041069452881315756,
+          "confusion_matrix": {
+            "tn": 5161,
+            "fp": 734,
+            "fn": 49,
+            "tp": 76
+          }
+        },
+        "unconstrained_f1": {
+          "n": 6020,
+          "positive": 125,
+          "prevalence": 0.020764119601328904,
+          "accuracy": 0.9159468438538206,
+          "specificity": 0.9256997455470738,
+          "balanced_accuracy": 0.6908498727735369,
+          "alert_rate": 0.08222591362126246,
+          "majority_baseline_accuracy": 0.979235880398671,
+          "recall": 0.456,
+          "precision": 0.11515151515151516,
+          "f1": 0.18387096774193548,
+          "f2": 0.2864321608040201,
+          "roc_auc": 0.8540498727735368,
+          "pr_auc": 0.09888455240710502,
+          "brier": 0.01940844330514984,
+          "threshold": 0.056753149824272396,
+          "confusion_matrix": {
+            "tn": 5457,
+            "fp": 438,
+            "fn": 68,
+            "tp": 57
+          }
+        },
+        "balanced": {
+          "n": 6020,
+          "positive": 125,
+          "prevalence": 0.020764119601328904,
+          "accuracy": 0.879734219269103,
+          "specificity": 0.8863443596268024,
+          "balanced_accuracy": 0.7271721798134012,
+          "alert_rate": 0.12308970099667774,
+          "majority_baseline_accuracy": 0.979235880398671,
+          "recall": 0.568,
+          "precision": 0.09581646423751687,
+          "f1": 0.16397228637413394,
+          "f2": 0.2860596293311845,
+          "roc_auc": 0.8540498727735368,
+          "pr_auc": 0.09888455240710502,
+          "brier": 0.01940844330514984,
+          "threshold": 0.04428031502048291,
+          "confusion_matrix": {
+            "tn": 5225,
+            "fp": 670,
+            "fn": 54,
+            "tp": 71
+          }
+        }
+      }
+    },
+    "heart_attack": {
+      "threshold": 0.056505909530538224,
+      "validation_cycles": [
+        "2001-2002",
+        "2015-2016"
+      ],
+      "comparison": {
+        "previous": {
+          "n": 6034,
+          "positive": 131,
+          "prevalence": 0.021710308253231687,
+          "accuracy": 0.8892940006629102,
+          "specificity": 0.8985261731323056,
+          "balanced_accuracy": 0.6859043079401986,
+          "alert_rate": 0.10954590652966523,
+          "majority_baseline_accuracy": 0.9782896917467683,
+          "recall": 0.4732824427480916,
+          "precision": 0.09379727685325265,
+          "f1": 0.15656565656565657,
+          "f2": 0.2616033755274262,
+          "roc_auc": 0.8185364409092026,
+          "pr_auc": 0.08126323675522029,
+          "brier": 0.020501615926437143,
+          "threshold": 0.056505909530538224,
+          "confusion_matrix": {
+            "tn": 5304,
+            "fp": 599,
+            "fn": 69,
+            "tp": 62
+          }
+        },
+        "recall_f2": {
+          "n": 6034,
+          "positive": 131,
+          "prevalence": 0.021710308253231687,
+          "accuracy": 0.8892940006629102,
+          "specificity": 0.8985261731323056,
+          "balanced_accuracy": 0.6859043079401986,
+          "alert_rate": 0.10954590652966523,
+          "majority_baseline_accuracy": 0.9782896917467683,
+          "recall": 0.4732824427480916,
+          "precision": 0.09379727685325265,
+          "f1": 0.15656565656565657,
+          "f2": 0.2616033755274262,
+          "roc_auc": 0.8185364409092026,
+          "pr_auc": 0.08126323675522029,
+          "brier": 0.020501615926437143,
+          "threshold": 0.056505909530538224,
+          "confusion_matrix": {
+            "tn": 5304,
+            "fp": 599,
+            "fn": 69,
+            "tp": 62
+          }
+        },
+        "unconstrained_f1": {
+          "n": 6034,
+          "positive": 131,
+          "prevalence": 0.021710308253231687,
+          "accuracy": 0.8892940006629102,
+          "specificity": 0.8985261731323056,
+          "balanced_accuracy": 0.6859043079401986,
+          "alert_rate": 0.10954590652966523,
+          "majority_baseline_accuracy": 0.9782896917467683,
+          "recall": 0.4732824427480916,
+          "precision": 0.09379727685325265,
+          "f1": 0.15656565656565657,
+          "f2": 0.2616033755274262,
+          "roc_auc": 0.8185364409092026,
+          "pr_auc": 0.08126323675522029,
+          "brier": 0.020501615926437143,
+          "threshold": 0.056505909530538224,
+          "confusion_matrix": {
+            "tn": 5304,
+            "fp": 599,
+            "fn": 69,
+            "tp": 62
+          }
+        },
+        "balanced": {
+          "n": 6034,
+          "positive": 131,
+          "prevalence": 0.021710308253231687,
+          "accuracy": 0.8892940006629102,
+          "specificity": 0.8985261731323056,
+          "balanced_accuracy": 0.6859043079401986,
+          "alert_rate": 0.10954590652966523,
+          "majority_baseline_accuracy": 0.9782896917467683,
+          "recall": 0.4732824427480916,
+          "precision": 0.09379727685325265,
+          "f1": 0.15656565656565657,
+          "f2": 0.2616033755274262,
+          "roc_auc": 0.8185364409092026,
+          "pr_auc": 0.08126323675522029,
+          "brier": 0.020501615926437143,
+          "threshold": 0.056505909530538224,
+          "confusion_matrix": {
+            "tn": 5304,
+            "fp": 599,
+            "fn": 69,
+            "tp": 62
+          }
+        }
+      }
+    },
+    "angina": {
+      "threshold": 0.05343787660695746,
+      "validation_cycles": [
+        "2001-2002",
+        "2015-2016"
+      ],
+      "comparison": {
+        "previous": {
+          "n": 6022,
+          "positive": 103,
+          "prevalence": 0.017103952175357023,
+          "accuracy": 0.8817668548654932,
+          "specificity": 0.8881567832404123,
+          "balanced_accuracy": 0.7013599450182644,
+          "alert_rate": 0.1187313184988376,
+          "majority_baseline_accuracy": 0.982896047824643,
+          "recall": 0.5145631067961165,
+          "precision": 0.07412587412587412,
+          "f1": 0.1295843520782396,
+          "f2": 0.23513753327417924,
+          "roc_auc": 0.7960361317921388,
+          "pr_auc": 0.09314414081625126,
+          "brier": 0.016249450871903163,
+          "threshold": 0.043522693004218405,
+          "confusion_matrix": {
+            "tn": 5257,
+            "fp": 662,
+            "fn": 50,
+            "tp": 53
+          }
+        },
+        "recall_f2": {
+          "n": 6022,
+          "positive": 103,
+          "prevalence": 0.017103952175357023,
+          "accuracy": 0.8817668548654932,
+          "specificity": 0.8881567832404123,
+          "balanced_accuracy": 0.7013599450182644,
+          "alert_rate": 0.1187313184988376,
+          "majority_baseline_accuracy": 0.982896047824643,
+          "recall": 0.5145631067961165,
+          "precision": 0.07412587412587412,
+          "f1": 0.1295843520782396,
+          "f2": 0.23513753327417924,
+          "roc_auc": 0.7960361317921388,
+          "pr_auc": 0.09314414081625126,
+          "brier": 0.016249450871903163,
+          "threshold": 0.043522693004218405,
+          "confusion_matrix": {
+            "tn": 5257,
+            "fp": 662,
+            "fn": 50,
+            "tp": 53
+          }
+        },
+        "unconstrained_f1": {
+          "n": 6022,
+          "positive": 103,
+          "prevalence": 0.017103952175357023,
+          "accuracy": 0.9611424775821986,
+          "specificity": 0.9739820915695219,
+          "balanced_accuracy": 0.5986415312216542,
+          "alert_rate": 0.02939222849551644,
+          "majority_baseline_accuracy": 0.982896047824643,
+          "recall": 0.22330097087378642,
+          "precision": 0.12994350282485875,
+          "f1": 0.16428571428571428,
+          "f2": 0.19524617996604415,
+          "roc_auc": 0.7960361317921388,
+          "pr_auc": 0.09314414081625126,
+          "brier": 0.016249450871903163,
+          "threshold": 0.09303287644611344,
+          "confusion_matrix": {
+            "tn": 5765,
+            "fp": 154,
+            "fn": 80,
+            "tp": 23
+          }
+        },
+        "balanced": {
+          "n": 6022,
+          "positive": 103,
+          "prevalence": 0.017103952175357023,
+          "accuracy": 0.9066755230820326,
+          "specificity": 0.915188376414935,
+          "balanced_accuracy": 0.6663320522851374,
+          "alert_rate": 0.090501494520093,
+          "majority_baseline_accuracy": 0.982896047824643,
+          "recall": 0.4174757281553398,
+          "precision": 0.07889908256880734,
+          "f1": 0.13271604938271606,
+          "f2": 0.22466039707419017,
+          "roc_auc": 0.7960361317921388,
+          "pr_auc": 0.09314414081625126,
+          "brier": 0.016249450871903163,
+          "threshold": 0.05343787660695746,
+          "confusion_matrix": {
+            "tn": 5417,
+            "fp": 502,
+            "fn": 60,
+            "tp": 43
+          }
+        }
+      }
+    },
+    "heart_failure": {
+      "threshold": 0.04604242017838897,
+      "validation_cycles": [
+        "2001-2002",
+        "2015-2016"
+      ],
+      "comparison": {
+        "previous": {
+          "n": 6027,
+          "positive": 82,
+          "prevalence": 0.013605442176870748,
+          "accuracy": 0.9314750290360047,
+          "specificity": 0.9394449116904963,
+          "balanced_accuracy": 0.646551724137931,
+          "alert_rate": 0.06454289032686245,
+          "majority_baseline_accuracy": 0.9863945578231292,
+          "recall": 0.35365853658536583,
+          "precision": 0.07455012853470437,
+          "f1": 0.12314225053078556,
+          "f2": 0.20223152022315202,
+          "roc_auc": 0.8129582145274774,
+          "pr_auc": 0.057959865827720454,
+          "brier": 0.013111015376386623,
+          "threshold": 0.04099682956494254,
+          "confusion_matrix": {
+            "tn": 5585,
+            "fp": 360,
+            "fn": 53,
+            "tp": 29
+          }
+        },
+        "recall_f2": {
+          "n": 6027,
+          "positive": 82,
+          "prevalence": 0.013605442176870748,
+          "accuracy": 0.9314750290360047,
+          "specificity": 0.9394449116904963,
+          "balanced_accuracy": 0.646551724137931,
+          "alert_rate": 0.06454289032686245,
+          "majority_baseline_accuracy": 0.9863945578231292,
+          "recall": 0.35365853658536583,
+          "precision": 0.07455012853470437,
+          "f1": 0.12314225053078556,
+          "f2": 0.20223152022315202,
+          "roc_auc": 0.8129582145274774,
+          "pr_auc": 0.057959865827720454,
+          "brier": 0.013111015376386623,
+          "threshold": 0.04099682956494254,
+          "confusion_matrix": {
+            "tn": 5585,
+            "fp": 360,
+            "fn": 53,
+            "tp": 29
+          }
+        },
+        "unconstrained_f1": {
+          "n": 6027,
+          "positive": 82,
+          "prevalence": 0.013605442176870748,
+          "accuracy": 0.9703003152480505,
+          "specificity": 0.9813288477712363,
+          "balanced_accuracy": 0.5760302775441547,
+          "alert_rate": 0.02074000331840053,
+          "majority_baseline_accuracy": 0.9863945578231292,
+          "recall": 0.17073170731707318,
+          "precision": 0.112,
+          "f1": 0.13526570048309178,
+          "f2": 0.1545253863134658,
+          "roc_auc": 0.8129582145274774,
+          "pr_auc": 0.057959865827720454,
+          "brier": 0.013111015376386623,
+          "threshold": 0.06261241705595981,
+          "confusion_matrix": {
+            "tn": 5834,
+            "fp": 111,
+            "fn": 68,
+            "tp": 14
+          }
+        },
+        "balanced": {
+          "n": 6027,
+          "positive": 82,
+          "prevalence": 0.013605442176870748,
+          "accuracy": 0.9470715115314419,
+          "specificity": 0.9560975609756097,
+          "balanced_accuracy": 0.624390243902439,
+          "alert_rate": 0.04728720756595321,
+          "majority_baseline_accuracy": 0.9863945578231292,
+          "recall": 0.2926829268292683,
+          "precision": 0.08421052631578947,
+          "f1": 0.1307901907356948,
+          "f2": 0.19575856443719414,
+          "roc_auc": 0.8129582145274774,
+          "pr_auc": 0.057959865827720454,
+          "brier": 0.013111015376386623,
+          "threshold": 0.04604242017838897,
+          "confusion_matrix": {
+            "tn": 5684,
+            "fp": 261,
+            "fn": 58,
+            "tp": 24
+          }
+        }
+      }
+    },
+    "stroke": {
+      "threshold": 0.08012668191043176,
+      "validation_cycles": [
+        "2001-2002",
+        "2015-2016"
+      ],
+      "comparison": {
+        "previous": {
+          "n": 6031,
+          "positive": 100,
+          "prevalence": 0.0165809981760902,
+          "accuracy": 0.9328469573868347,
+          "specificity": 0.9430112965773056,
+          "balanced_accuracy": 0.6365056482886529,
+          "alert_rate": 0.06151550323329465,
+          "majority_baseline_accuracy": 0.9834190018239098,
+          "recall": 0.33,
+          "precision": 0.0889487870619946,
+          "f1": 0.14012738853503184,
+          "f2": 0.2140077821011673,
+          "roc_auc": 0.7540785702242455,
+          "pr_auc": 0.05853719821637236,
+          "brier": 0.016294451228348498,
+          "threshold": 0.08012668191043176,
+          "confusion_matrix": {
+            "tn": 5593,
+            "fp": 338,
+            "fn": 67,
+            "tp": 33
+          }
+        },
+        "recall_f2": {
+          "n": 6031,
+          "positive": 100,
+          "prevalence": 0.0165809981760902,
+          "accuracy": 0.9328469573868347,
+          "specificity": 0.9430112965773056,
+          "balanced_accuracy": 0.6365056482886529,
+          "alert_rate": 0.06151550323329465,
+          "majority_baseline_accuracy": 0.9834190018239098,
+          "recall": 0.33,
+          "precision": 0.0889487870619946,
+          "f1": 0.14012738853503184,
+          "f2": 0.2140077821011673,
+          "roc_auc": 0.7540785702242455,
+          "pr_auc": 0.05853719821637236,
+          "brier": 0.016294451228348498,
+          "threshold": 0.08012668191043176,
+          "confusion_matrix": {
+            "tn": 5593,
+            "fp": 338,
+            "fn": 67,
+            "tp": 33
+          }
+        },
+        "unconstrained_f1": {
+          "n": 6031,
+          "positive": 100,
+          "prevalence": 0.0165809981760902,
+          "accuracy": 0.9328469573868347,
+          "specificity": 0.9430112965773056,
+          "balanced_accuracy": 0.6365056482886529,
+          "alert_rate": 0.06151550323329465,
+          "majority_baseline_accuracy": 0.9834190018239098,
+          "recall": 0.33,
+          "precision": 0.0889487870619946,
+          "f1": 0.14012738853503184,
+          "f2": 0.2140077821011673,
+          "roc_auc": 0.7540785702242455,
+          "pr_auc": 0.05853719821637236,
+          "brier": 0.016294451228348498,
+          "threshold": 0.08012668191043176,
+          "confusion_matrix": {
+            "tn": 5593,
+            "fp": 338,
+            "fn": 67,
+            "tp": 33
+          }
+        },
+        "balanced": {
+          "n": 6031,
+          "positive": 100,
+          "prevalence": 0.0165809981760902,
+          "accuracy": 0.9328469573868347,
+          "specificity": 0.9430112965773056,
+          "balanced_accuracy": 0.6365056482886529,
+          "alert_rate": 0.06151550323329465,
+          "majority_baseline_accuracy": 0.9834190018239098,
+          "recall": 0.33,
+          "precision": 0.0889487870619946,
+          "f1": 0.14012738853503184,
+          "f2": 0.2140077821011673,
+          "roc_auc": 0.7540785702242455,
+          "pr_auc": 0.05853719821637236,
+          "brier": 0.016294451228348498,
+          "threshold": 0.08012668191043176,
+          "confusion_matrix": {
+            "tn": 5593,
+            "fp": 338,
+            "fn": 67,
+            "tp": 33
+          }
+        }
+      }
+    }
+  },
+  "source_release": "20261102T184611Z-ebdefc95",
+  "selected_before_test_evaluation": true
+}

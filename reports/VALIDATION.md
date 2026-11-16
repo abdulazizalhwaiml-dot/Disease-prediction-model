@@ -1,3 +1,16 @@
+# Mizanak v4.2.0 — research alert-level review, 2026-11-16
+
+- Reconstructed all21,117 cohort rows from77 original XPORT files after matching source SHA256 hashes and the original cohort audit. The original published confusion matrices reproduce exactly.
+- Reviewed F2, unconstrained F1 and guarded F1 on validation cycles2001–2002/2015–2016. The first deployed stage changes cholesterol, blood-pressure and diabetes operating points; the five rare-outcome levels remain unchanged.
+- Guarded F1 permits at most a10-percentage-point validation recall decrease from the same pipeline's maximum-F2 point. This is a disclosed research preference, not a clinically validated target or a test/future recall guarantee. Plans are frozen and hashed before test evaluation.
+- Historical-test false positives: cholesterol2410→1734, blood pressure2480→1641, diabetes1660→1290. False negatives also rise:75→291,176→406 and109→149. Full before/after, accuracy baselines and rare-target exploratory regressions are disclosed in docs/THRESHOLD_REVIEW.md.
+- No model or calibration refitting, new features, new label definitions or new data. All exported probabilities round-trip identically on every cohort row; the five retained joblib artifacts are byte-identical. ROC-AUC, AP and Brier are unchanged.
+- The historical test set was previously viewed and reused in this review; this is not fresh external confirmation. Rare cardiac/stroke performance remains weak.
+- Local suite:62 tests passed without skips; Ruff lint/format checks passed. New tests cover sensitivity-guard trade-offs, invalid inputs, tied probabilities, imbalance metrics and rejection of non-validation rows.
+- Real Chromium:48 viewport/language/zoom combinations and all native help dialogs passed; desktop/mobile reports match the current registry probabilities and alert states. Existing layout, translations and user-input contract are retained.
+
+Native CI results will be linked after completion. Earlier validation follows.
+
 # Mizanak v4.1.1 — field-heading scrollbar fix, 2026-11-03
 
 - Reproduced the reported scrollbar in all eight field-heading/help rows on the previous

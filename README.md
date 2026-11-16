@@ -18,13 +18,15 @@ The merged NHANES **1999–2006 and 2011–2018** dataset contains **21,117 part
 
 The ready package includes trained models. If models are missing or incompatible, the launcher downloads historical CDC data, verifies their hashes, and retrains. Internet access is needed for installation and downloads. See [Windows setup and troubleshooting](docs/WINDOWS.md).
 
-## Interface — version 4.1.1
+## Interface and research alert levels — version 4.2.0
 
 Inputs appear above the report, with automatic scrolling after submission. The language selector is at the top, without a sidebar. Help controls beside each field open explanations; height and waist help include illustrations. Expandable report cards provide condition definitions. Three calculated values appear below the inputs and update before submission.
 
 The approved logo and favicon use a hollow rounded rectangular display on a transparent background. A separate welcome illustration combines a measurement card, measuring tape, and small heart in the site's colors. Internal scrolling in the header and all eight field-heading/help rows has been fixed.
 
-The interface retains the version 3 trained models, data, disease definitions, and probabilities. XGBoost models were exported in a format portable between Windows and Linux without retraining or changing results. Explicit UTF-8 fixes Windows report-writing errors; the launcher explains model incompatibility before fallback training.
+The fitted version 3 pipelines, data, disease definitions, and probabilities are retained. Version 4.2 changes the research alert levels for cholesterol, blood pressure, and diabetes; the other five operating points are retained. XGBoost models use a format portable between Windows and Linux. Explicit UTF-8 fixes Windows report-writing errors; the launcher explains model incompatibility before fallback training.
+
+The new levels reduce false alerts with a trade-off in missed cases. Validation F1 is maximized subject to a recall decrease of at most 10 percentage points relative to the same pipeline's validation-F2 point. This is a research preference, **not** a clinical target or an unseen-data guarantee. See the [complete before/after review](docs/THRESHOLD_REVIEW.md), including the weaker rare-outcome models and the increased false negatives.
 
 ## User inputs
 
@@ -63,7 +65,7 @@ Session inputs are not saved to a database. Results can be downloaded and are cl
 
 Any positive source overrides a missing source. A negative label requires every source to be negative; otherwise the label remains unknown. Pregnancy and incomplete examinations are excluded. Only observed, non-imputed DXA measurements are accepted, with one record per participant. Historical family-history responses were reconstructed to exclude grandparents and harmonize definitions.
 
-Four algorithms were compared for each target: Logistic Regression, Random Forest, XGBoost, and LightGBM, using class weights and separate calibration. Algorithm selection uses mean AP across ages 20–39, 40–59, and 60–79. Decision thresholds maximize F2 on selection data only. Test data are excluded from training and threshold tuning.
+Four algorithms were compared for each target: Logistic Regression, Random Forest, XGBoost, and LightGBM, using class weights and separate calibration. Algorithm selection uses mean AP across ages 20–39, 40–59, and 60–79. The three cardiometabolic thresholds use validation F1 with a recall guard; other targets retain validation F2. Numeric thresholds are selected on validation data, with the complete plan frozen before test evaluation. The historical test set has been viewed in previous releases and this review; it is not a fresh independent confirmation.
 
 | Purpose | Cycles |
 |---|---|
